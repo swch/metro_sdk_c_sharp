@@ -1,0 +1,41 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cardsavr_tests", "cardsavr_tests\cardsavr_tests.csproj", "{2BA5EE8D-3203-49FF-8641-12CC560898E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cardsavr", "cardsavr\cardsavr.csproj", "{F4085D95-5DCA-4BA5-8CE0-BF774D0AF4F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cardsavr_e2e", "cardsavr_e2e\cardsavr_e2e.csproj", "{A90957D3-0546-4B1C-81F8-6FAC9BA39B4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BA5EE8D-3203-49FF-8641-12CC560898E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA5EE8D-3203-49FF-8641-12CC560898E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA5EE8D-3203-49FF-8641-12CC560898E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA5EE8D-3203-49FF-8641-12CC560898E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4085D95-5DCA-4BA5-8CE0-BF774D0AF4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4085D95-5DCA-4BA5-8CE0-BF774D0AF4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4085D95-5DCA-4BA5-8CE0-BF774D0AF4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4085D95-5DCA-4BA5-8CE0-BF774D0AF4F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A90957D3-0546-4B1C-81F8-6FAC9BA39B4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A90957D3-0546-4B1C-81F8-6FAC9BA39B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A90957D3-0546-4B1C-81F8-6FAC9BA39B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A90957D3-0546-4B1C-81F8-6FAC9BA39B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.TabsToSpaces = True
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.scope = text/x-csharp
+		$0.DotNetNamingPolicy = $3
+		$3.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$0.StandardHeader = $4
+		$0.VersionControlPolicy = $5
+	EndGlobalSection
+EndGlobal
