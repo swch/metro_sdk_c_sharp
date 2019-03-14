@@ -1,2 +1,3 @@
-# switch_cardsavr
-Switch Cardsavr C# API (temporary repo)
+
+# Strivve CardSavr SDK for C#
+
