@@ -429,8 +429,14 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<User>> 
-            CreateUserAsync(PropertyBag body, HttpRequestHeaders headers = null)
+            CreateUserAsync(PropertyBag body, string newSafeKey, string financialInstitution, HttpRequestHeaders headers = null)
         {
+            if (headers == null) {
+                headers = new HttpRequestMessage().Headers;
+                AddNewSafeKeyHeader(headers, newSafeKey);
+                headers.Add("financial-institution", financialInstitution);
+            }
+
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
         }
 
@@ -822,8 +828,14 @@ namespace Switch.CardSavr.Http
         private void AddSafeKeyHeader(HttpRequestHeaders headers, string safeKey)
         {
             if (!string.IsNullOrEmpty(safeKey))
-                headers.Add("cardholder-safe-key", safeKey);
+                headers.Add("cardholder-safe-key", Aes256.EncryptText(safeKey, GetEncryptionKey()));
         }
+        private void AddNewSafeKeyHeader(HttpRequestHeaders headers, string newSafeKey)
+        {
+            if (!string.IsNullOrEmpty(newSafeKey))
+                headers.Add("new-cardholder-safe-key", Aes256.EncryptText(newSafeKey, GetEncryptionKey()));
+        }
+
 
         private void CopyRequestHeaders(HttpRequestHeaders dst, HttpRequestHeaders src)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 using Switch.CardSavr.Http;
 
@@ -53,14 +54,14 @@ namespace cardsavr_e2e
                 // the username, role and email help us identify these users later.
                 bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
                 bag["password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier);
-                bag["cardholder_safe_key"] = Context.GenerateBogus32BitPassword(bag.GetString("username"));
+                bag["cardholder_safe_key"] = Context.GenerateBogus32BitPassword(bag.GetString("username"));  //if we want to store it server-side
                 bag["role"] = "cardholder";
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
                 bag["email"] = $"cardsavr_e2e_{Context.random.Next(100)}@gmail.com";
                 bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}";
 
-                CardSavrResponse<User> result = await http.CreateUserAsync(bag);
+                CardSavrResponse<User> result = await http.CreateUserAsync(bag, bag.GetString("cardholder_safe_key"), "default");
                 newUsers.Add(result.Body);
             }
 

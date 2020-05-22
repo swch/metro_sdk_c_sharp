@@ -102,12 +102,11 @@ namespace cardsavr_e2e
             OperationBase[] ops = new OperationBase[]
             {
                 // these have no dependencies.
-                new MerchantSiteOps(),
-                new BinOps(),
-                new IntegratorOps(),
+                //new MerchantSiteOps(),
+                //new BinOps(),
+                //new IntegratorOps(),
                 new UserOps(),
-                new JobOps(),
-
+                
                 // addresses depends on: users
                 new AddressOps(),
 
@@ -115,12 +114,14 @@ namespace cardsavr_e2e
                 new CardOps(),
 
                 // acounts depends on: users and merchant sites.
-                new AccountOps()
+                new AccountOps(),
+                new JobOps()
+
             };
 
             try
             {
-                //_http.DefaultRequestHeaders.Add("swch-trace", "{\"c_sharp_test_id\": \"123abc\"}");
+                _http.DefaultRequestHeaders.Add("trace", $"{{\"key\": \"{Context.random.Next(50)}\"}}");
                 StartSession().Wait();
                 ExecuteOps(ops).Wait();
             }
