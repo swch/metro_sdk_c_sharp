@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "cardsavr"
+		},
+		{
+			"path": "cardsavr_e2e"
+		},
+		{
+			"path": "cardsavr_tests"
+		}
+	],
+	"settings": {}
+}

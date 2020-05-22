@@ -35,7 +35,8 @@ namespace cardsavr_e2e
 
         static async Task StartSession()
         {
-            log.Info("starting session...");
+            log.Info("starting session....");
+            log.Info(Context.accountAppID);
             _http.Setup(Context.accountBaseUrl, Context.accountStaticKey,
                 Context.accountAppID, Context.accountUserName, Context.accountPassword);
             CardSavrResponse<StartResult> start = await _http.StartAsync();
