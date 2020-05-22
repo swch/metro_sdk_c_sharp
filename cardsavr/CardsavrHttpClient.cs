@@ -107,8 +107,9 @@ namespace Switch.CardSavr.Http
             CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
                 "/session/start", null, null, headers);
 
-            _data.Encrypt = result.Body.encryptionOn;
-            log.Debug(String.Format("encryptionOn={0}", _data.Encrypt));
+            //_data.Encrypt = result.Body.encryptionOn;
+            //log.Debug(String.Format("encryptionOn={0}", _data.Encrypt));
+            
             return result;
         }
 
