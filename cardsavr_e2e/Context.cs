@@ -12,22 +12,12 @@ namespace cardsavr_e2e
     /// </summary>
     public class Context
     {
-        /* */
         // test env: account information.
-        public static readonly string accountBaseUrl = " https://api.test.tenantx.cardsavr.io";
-        public static readonly string accountAppID = "c_sharp_sdk";
-        public static readonly string accountStaticKey = "4XmFzi0clvp+qExoep/uiOoiIG4rlLKt6OlErSqSpII=";
-        public static readonly string accountUserName = "rick";
-        public static readonly string accountPassword = "12345123451234512345123451234512345123451234";
-        /* */
-
-        /*
-        // staging env: account information.
-        public static readonly string accountBaseUrl = " https://api.staging.tenantx.cardsavr.io";
-        public static readonly string accountAppID = "c_sharp_sdk";
-        public static readonly string accountStaticKey = "VeY9uD0w3zRdrlmIPxnU/l+Vr8w2bbV26E6DxajFu+A=";
-        public static readonly string accountUserName = "rick";
-        public static readonly string accountPassword = "Csharpsdk11";
+        public static readonly string accountBaseUrl = "https://api.mbudos.cardsavr.io";
+        public static readonly string accountAppID = "CardUpdatr Demo";
+        public static readonly string accountStaticKey = "<REDACATED>";
+        public static readonly string accountUserName = "cardupdatr_demo";
+        public static readonly string accountPassword = "<REDACATED>";
         /* */
 
         // other resources.
@@ -38,6 +28,7 @@ namespace cardsavr_e2e
         public List<MerchantSite> Sites { get; set; }
         public List<User> Users { get; set; }
         public List<User> NewUsers { get; set; }
+        public string Trace { get; set; }
         public BIN Bin { get; set; }
         public bool Started { get; set; }
         public string ExecutionRole { get; set; }
