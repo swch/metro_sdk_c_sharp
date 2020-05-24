@@ -19,15 +19,15 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             // pick a user and merchant site.
-            User user = ctx.GetRandomNewUser();
+            User user = ctx.GetRandomUser("cardholder");
             MerchantSite site = ctx.GetRandomSite();
 
             // create an account.
             PropertyBag bag = new PropertyBag();
             bag["cardholder_id"] = user.id;
-            bag["merchant_site_id"] = site.id;
+            bag["site_hostname"] = site.host;
             bag["username"] = user.username;
-            bag["custom_display_text"] = Context.e2e_identifier;
+            bag["password"] = "";
 
             // users created by our test-suite have known/bogus safe-key.
             string safeKey = Context.GenerateBogus32BitPassword(user.username);
@@ -36,7 +36,7 @@ namespace cardsavr_e2e
 
             // update it.
             bag.Clear();
-            bag["custom_display_text"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
+            bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
             result = await http.UpdateAccountAsync(result.Body.id, bag, safeKey);
             log.Info($"updated account-id={result.Body.id}");
         }

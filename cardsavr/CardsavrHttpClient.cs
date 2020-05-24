@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 using Newtonsoft.Json;
 
@@ -52,6 +53,7 @@ namespace Switch.CardSavr.Http
         {
             public string userName { get; set; }
             public string password { get; set; }
+            public string grant { get; set; }
         }
 
         // stores session-specific information.
@@ -67,10 +69,10 @@ namespace Switch.CardSavr.Http
             SetIdentificationHeader("sdk-csharp");
         }
 
-        public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password)
+        public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
             : this()
         {
-            Setup(baseUrl, staticKey, appName, userName, password);
+            Setup(baseUrl, staticKey, appName, userName, password, grant, cert);
         }
 
         public void SetIdentificationHeader(string clientId)
@@ -79,7 +81,7 @@ namespace Switch.CardSavr.Http
             DefaultRequestHeaders.Add("swch-client-application", clientId);
         }
 
-        public void Setup(string baseUrl, string staticKey, string appName, string userName, string password)
+        public void Setup(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
         {
             if (_data != null)
             {
@@ -87,7 +89,13 @@ namespace Switch.CardSavr.Http
                 throw new NotSupportedException();
             }
 
-            _data = new SessionData(baseUrl, staticKey, appName, userName, password);
+            _data = new SessionData(baseUrl, staticKey, appName, userName, password, grant, cert);
+        }
+
+        public async Task<CardSavrResponse<LoginResult>> Init(string trace = null) 
+        {
+            CardSavrResponse<StartResult> start = await StartAsync(null, trace);
+            return await LoginAsync(start.Body.sessionSalt);
         }
 
         /*========== GENERAL / UTILITY ==========*/
@@ -102,11 +110,14 @@ namespace Switch.CardSavr.Http
         /*========== SESSION MANAGEMENT (START, LOGIN, END) ==========*/
 
         public async Task<CardSavrResponse<StartResult>> 
-            StartAsync(HttpRequestHeaders headers = null)
+            StartAsync(HttpRequestHeaders headers = null, string trace = null)
         {
+            trace = trace != null ? trace : _data.UserName;
+            DefaultRequestHeaders.Add("trace", $"{{\"key\": \"{trace}\"}}");
             CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
                 "/session/start", null, null, headers);
 
+            //SDK's always run encrypted
             //_data.Encrypt = result.Body.encryptionOn;
             //log.Debug(String.Format("encryptionOn={0}", _data.Encrypt));
             
@@ -116,35 +127,20 @@ namespace Switch.CardSavr.Http
         public async Task<CardSavrResponse<LoginResult>> 
             LoginAsync(string sessionSalt, HttpRequestHeaders headers = null)
         {
-            object body = null;
-            if (!_data.Encrypt)
+            object body = new Login()
             {
-                body = new LoginUnencrypted()
-                {
-                    userName = _data.UserName,
-                    password = _data.Password
-                };
-            }
-            else
-            {
-                string passwordKey = MakePasswordKey(_data.UserName, _data.Password);
-                body = new Login()
-                {
-                    clientPublicKey = _data.Ecdh.PublicKey,
-                    userName = _data.UserName,
-                    signedSalt = HashUtil.HmacSign(sessionSalt, passwordKey, true)
-                };
-            }
+                clientPublicKey = _data.Ecdh.PublicKey,
+                userName = _data.UserName,
+                userCredentialGrant = _data.Grant != null ? _data.Grant : null,
+                signedSalt = _data.Password != null ? HashUtil.HmacSign(sessionSalt, MakePasswordKey(_data.UserName, _data.Password), true) : null
+            };
 
             CardSavrResponse<LoginResult> result = await ApiPostAsync<LoginResult>(
                 "/session/login", body, null, headers);
 
-            if (_data.Encrypt)
-            {
-                // the shared secret will be used in future encrpyted communications.
-                _data.Ecdh.ComputeSharedSecret(result.Body.serverPublicKey, true);
-                log.Debug("received server public key; computed shared secret.");
-            }
+            // the shared secret will be used in future encrpyted communications.
+            _data.Ecdh.ComputeSharedSecret(result.Body.serverPublicKey, true);
+            log.Debug("received server public key; computed shared secret.");
 
             return result;
         }
@@ -398,25 +394,25 @@ namespace Switch.CardSavr.Http
         /*========== MERCHANT SITES ==========*/
 
         public async Task<CardSavrResponse<List<MerchantSite>>> 
-            GetMerchantSitesAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+            GetMerchantSitesAsync()
         {
-            QueryDef qd = new QueryDef(query);
-            return await ApiGetAsync<List<MerchantSite>>("/merchant_sites", qd, paging, headers);
-        }
+            string url = "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/sites.json";
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
 
-        public async Task<CardSavrResponse<List<MerchantSiteTag>>> 
-            GetMerchantSiteTagsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
-        {
-            QueryDef qd = new QueryDef(query);
-            return await ApiGetAsync<List<MerchantSiteTag>>("/merchant_site_tags", qd, paging, headers);
-        }
-
-        public async Task<CardSavrResponse<List<MerchantSiteToSiteTagLink>>> 
-            GetMerchantSiteToSiteTagLinksAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
-        {
-            QueryDef qd = new QueryDef(query);
-            return await ApiGetAsync<List<MerchantSiteToSiteTagLink>>(
-                "/merchant_site_to_merchant_site_tag_links", qd, paging, headers);
+            using (HttpResponseMessage response = await SendAsync(request))
+            {
+                string body = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(body);
+                MerchantSite def = JsonConvert.DeserializeObject<MerchantSite>(JsonConvert.SerializeObject(data.default_settings));
+                List<MerchantSite> merchants = JsonConvert.DeserializeObject<List<MerchantSite>>(JsonConvert.SerializeObject(data.sites));
+                foreach (MerchantSite item in merchants) {
+                    item.mfa_support = item.mfa_support != null ? item.mfa_support : def.mfa_support;
+                    item.is_live = item.is_live != null ? item.is_live : def.is_live;
+                    item.has_images = item.has_images != null ? item.has_images : def.has_images;
+                    item.site_rank = item.site_rank != null ? item.site_rank : def.site_rank;
+                }
+                return new CardSavrResponse<List<MerchantSite>>(response, merchants);
+            }
         }
 
         /*========== USERS ==========*/
@@ -438,6 +434,15 @@ namespace Switch.CardSavr.Http
             }
 
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
+        }
+
+        public async Task<CardSavrResponse<CredentialGrant>> 
+            CreateUserGrantAsync(int id, HttpRequestHeaders headers = null)
+        {
+            string path = "/cardsavr_users/{0}/credential_grant";
+            path = String.Format(path, id);
+
+            return await ApiGetAsync<CredentialGrant>(path, null, null, headers);
         }
 
         public async Task<CardSavrResponse<List<User>>> 
@@ -641,6 +646,7 @@ namespace Switch.CardSavr.Http
             log.Info($"processing \"{request.Method}\" response for path: {request.RequestUri.PathAndQuery}");
             string body = await response.Content.ReadAsStringAsync();
             CheckStatusAndMaybeThrow(body, response);
+
             VerifyResponseSignature(request.RequestUri, response, body);
 
             // handle a new cookie from the server.
@@ -780,13 +786,16 @@ namespace Switch.CardSavr.Http
 
         private void VerifyResponseSignature(Uri uri, HttpResponseMessage response, string body)
         {
-            HttpHeaders headers = response.Headers;
-            string auth = ApiUtil.GetSingleHeaderValue(headers, "authorization");
-            string nonce = ApiUtil.GetSingleHeaderValue(headers, "nonce");
+            string auth = ApiUtil.GetSingleHeaderValue(response.Headers, "authorization");
+            string nonce = ApiUtil.GetSingleHeaderValue(response.Headers, "nonce");
             string toSign = $"{uri.PathAndQuery}{auth}{nonce}{body ?? ""}";
-            string signature = ApiUtil.GetSingleHeaderValue(headers, "signature");
+            string signature = ApiUtil.GetSingleHeaderValue(response.Headers, "signature");
 
-            if (!HashUtil.HmacVerify(toSign, GetEncryptionKey(), signature))
+            if (auth == null || auth == "") {
+                log.Debug("Not an authorized response, probably merchants endpoint");
+
+            } 
+            else if (!HashUtil.HmacVerify(toSign, GetEncryptionKey(), signature))
             {
                 log.Error($"failed to verify signature \"{signature}\"; auth=({auth}), nonce=({nonce})");
                 throw new InvalidSignatureException($"{uri.PathAndQuery}, expected={signature}");

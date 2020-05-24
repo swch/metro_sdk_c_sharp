@@ -33,17 +33,17 @@ namespace cardsavr_e2e
             }
         }
 
-        static async Task StartSession()
+        static async Task<CardSavrResponse<LoginResult>> StartSession(bool cardholder_agent = false)
         {
             log.Info("starting session....");
             log.Info(Context.accountAppID);
-            _http.Setup(Context.accountBaseUrl, Context.accountStaticKey,
-                Context.accountAppID, Context.accountUserName, Context.accountPassword);
-            CardSavrResponse<StartResult> start = await _http.StartAsync();
-
+            int idx = cardholder_agent ? 1 : 0;
+            _http.Setup(Context.accountBaseUrl, Context.accountStaticKey[idx],
+                Context.accountAppID[idx], Context.accountUserName[idx], Context.accountPassword[idx]);
             log.Info("logging in...");
-            CardSavrResponse<LoginResult> login = await _http.LoginAsync(start.Body.sessionSalt);
+            CardSavrResponse<LoginResult> login = await _http.Init();
             _context.Started = true;
+            return login;
         }
 
         static async Task EndSession()
@@ -97,14 +97,20 @@ namespace cardsavr_e2e
             Exception exLast = null;
             log.Info("HELLO WORLD!");
 
+            OperationBase[] ops_ch = new OperationBase[]
+            {
+                new CardholderOps()
+            };
+
             // order can be important. some operations depend on other resources having been 
             // created previosly (and stored in the context).
             OperationBase[] ops = new OperationBase[]
             {
                 // these have no dependencies.
-                //new MerchantSiteOps(),
+                new MerchantSiteOps(),
                 //new BinOps(),
                 //new IntegratorOps(),
+
                 new UserOps(),
                 
                 // addresses depends on: users
@@ -115,20 +121,35 @@ namespace cardsavr_e2e
 
                 // acounts depends on: users and merchant sites.
                 new AccountOps(),
-                new JobOps()
+                //new JobOps()
 
             };
 
             try
             {
-                _http.DefaultRequestHeaders.Add("trace", $"{{\"key\": \"{Context.random.Next(50)}\"}}");
-                StartSession().Wait();
-                ExecuteOps(ops).Wait();
+                StartSession(true).Wait();
+                ExecuteOps(ops_ch).Wait();
             }
             catch (Exception ex)
             {
                 // eat the exception for now. we'll log it again at exit cause otherwise it
                 // can get lost in all of the log output.
+                log.Error("an operation failed", ex);
+                exLast = ex;
+            }
+            finally
+            {
+                CleanupOps(ops_ch).Wait(); 
+                EndSession().Wait();
+            }
+            _http = new CardSavrHttpClient();
+            try
+            {
+                StartSession().Wait();
+                ExecuteOps(ops).Wait();
+            }
+            catch (Exception ex)
+            {
                 log.Error("an operation failed", ex);
                 exLast = ex;
             }

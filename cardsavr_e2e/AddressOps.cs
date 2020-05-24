@@ -19,15 +19,17 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            if (ctx.NewUsers == null || ctx.NewUsers.Count == 0)
+            if (ctx.Users == null || ctx.Users.Count == 0)
             {
                 log.Warn("cannot create addresses; no new users available.");
                 return;
             }
-
+            
             // create 2 addresses for each new user.
-            foreach (User u in ctx.NewUsers)
-                await CreateAddressesForUser(u, http, ctx);
+            foreach (User u in ctx.GetNewUsers())
+                if (u.role == "cardholder") {
+                    await CreateAddressesForUser(u, ctx.CardholderSessions[u.id ?? -1], ctx);
+                }
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -75,11 +77,11 @@ namespace cardsavr_e2e
             bag["address1"] = $"{Context.random.Next(1000, 9000)} SDK Ave NE";
             bag["address2"] = Context.e2e_identifier;
             bag["city"] = "Seattle";
-            bag["state"] = "Washington";
+            bag["subnational"] = "Washington";
             bag["country"] = "USA";
-            bag["zip"] = "98119";
+            bag["postal_code"] = "98119";
 
-            CardSavrResponse<Address> addr = await http.CreateAddressAsync(bag);
+            CardSavrResponse<Address> addr = await ctx.CardholderSessions[user.id ?? -1].CreateAddressAsync(bag);
             log.Info($"created primary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
 
             // update it.
@@ -95,16 +97,19 @@ namespace cardsavr_e2e
             bag["address1"] = $"{Context.random.Next(1000, 9000)} Snowshoe Way";
             bag["address2"] = Context.e2e_identifier;
             bag["city"] = "Plain";
-            bag["state"] = "Washington";
+            bag["subnational"] = "Washington";
             bag["country"] = "USA";
-            bag["zip"] = "98123";
-            addr = await http.CreateAddressAsync(bag);
+            bag["postal_code"] = "98123";
+
+            CardSavrHttpClient client = (user.role == "cardholder" ? ctx.CardholderSessions[user.id ?? -1] : http);
+
+            addr = await client.CreateAddressAsync(bag);
             log.Info($"created secondary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
 
             // might as well update that one too.
             bag.Clear();
             bag["address1"] = $"{Context.random.Next(1000, 9000)} Cross-Country Way";
-            await http.UpdateAddressAsync(addr.Body.id, bag);
+            await client.UpdateAddressAsync(addr.Body.id, bag);
             log.Info($"updated secondary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
         }
     }

@@ -19,11 +19,8 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            if (ctx.Bin == null)
-                throw new ArgumentException("must create a BIN first.");
-
             // get all addresses for the user (there should be at least 2).
-            User user = ctx.GetRandomNewUser();
+            User user = ctx.GetRandomUser("cardholder");
             CardSavrResponse<List<Address>> addrs = await http.GetAddressesAsync(new NameValueCollection() {
                 { "user_ids", user.id.ToString() }
             });
@@ -33,15 +30,17 @@ namespace cardsavr_e2e
 
             log.Info($"got {addrs.Body.Count} addresss for user \"{user.username}\"");
 
+            //Grab the session for this cardholder
+            CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1];
+
             // the card we create uses our (possibly truncated) special identifier as the color
             // so we can identify it later if needed.
             DateTime expire = DateTime.Now.AddYears(1);
             PropertyBag body = new PropertyBag()
             {
                 { "cardholder_id", user.id },
-                { "bin_id", ctx.Bin.id },
                 { "address_id", addrs.Body[0].id },
-                { "pan", "1234567809876543" },
+                { "pan", "4111111111111111" },
                 { "par", GenerateBogusPAR() },
                 { "cvv", 345 },
                 { "first_name", user.first_name },
@@ -54,14 +53,14 @@ namespace cardsavr_e2e
 
             // our test users have a known safe-key.
             string safeKey = Context.GenerateBogus32BitPassword(user.username);
-            CardSavrResponse<Card> card = await http.CreateCardAsync(body, safeKey);
+            CardSavrResponse<Card> card = await cardholder.CreateCardAsync(body, safeKey);
             log.Info($"created card-id={card.Body.id}");
 
             // update it: just change the address.
             body.Clear();
             body.Add("id", card.Body.id);
             body.Add("address_id", addrs.Body[1].id);
-            CardSavrResponse<List<Card>> upd = await http.UpdateCardAsync(null, body);
+            CardSavrResponse<List<Card>> upd = await cardholder.UpdateCardAsync(null, body);
             log.Info($"update card for user \"{user.username}\"");
         }
 

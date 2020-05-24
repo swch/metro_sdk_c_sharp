@@ -114,6 +114,7 @@ namespace Switch.CardSavr.Http
     public class Login
     {
         public string userName { get; set; }
+        public string userCredentialGrant { get; set; }
         public string clientPublicKey { get; set; }
         public string signedSalt { get; set; }
     }
@@ -121,6 +122,12 @@ namespace Switch.CardSavr.Http
     public class LoginResult
     {
         public string serverPublicKey { get; set; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class CredentialGrant
+    {
+        public string user_credential_grant { get; set; }
     }
 
     /*========== ACCOUNTS ==========*/
@@ -158,10 +165,9 @@ namespace Switch.CardSavr.Http
         public string address1 { get; set; }
         public string address2 { get; set; }
         public string city { get; set; }
-        public string state { get; set; }
+        public string subnational { get; set; }
         public string country { get; set; }
-        public string zip { get; set; }
-        public string zip_plus_four_code { get; set; }
+        public string postal_code { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
     }
@@ -300,21 +306,19 @@ namespace Switch.CardSavr.Http
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MerchantSite
     {
-        public int id { get; set; }
-        public string site_name { get; set; }
-        public string site_hostname { get; set; }
-        public int alexa_rank { get; set; }
+        public int? id { get; set; }
+        public string name { get; set; }
+        public string host { get; set; }
         public string tags { get; set; }
-        public string image_list_normal { get; set; }
-        public string image_list_normal_gray { get; set; }
-        public string image_tile_normal { get; set; }
-        public string image_tile_normal_gray { get; set; }
-        public string alternate_site_hostnames { get; set; }
-        public bool? manual_override_actions { get; set; }
-        public bool? manual_override_images { get; set; }
-        public string site_dominant_color { get; set; }
-        public string created_on { get; set; }
-        public string last_updated_on { get; set; }
+        public string image_guid { get; set; }
+        public int? mfa_support { get; set; }
+        public int? is_live { get; set; }
+        public int? vbs_preload { get; set; }
+        public int? site_rank { get; set; }
+        public int? has_images { get; set; }
+        public string additional_info_message { get; set; }
+        public string username_label { get; set; }
+        public string password_label { get; set; }
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]

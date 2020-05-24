@@ -10,7 +10,7 @@ namespace cardsavr_e2e
 {
     public class UserOps : OperationBase
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static async Task GetExecutingUserRole(CardSavrHttpClient http, Context ctx)
@@ -24,13 +24,13 @@ namespace cardsavr_e2e
             // retrieve the user and get the role.
             CardSavrResponse<List<User>> lst = await http.GetUsersAsync(new NameValueCollection()
             {
-                { "username", Context.accountUserName }
+                { "username", Context.accountUserName[0] }
             });
 
             if (lst.Body.Count != 1)
             {
-                log.Error($"found {lst.Body.Count} users for username={Context.accountUserName}; expected 1.");
-                throw new ArgumentException(Context.accountUserName);
+                log.Error($"found {lst.Body.Count} users for username={Context.accountUserName[0]}; expected 1.");
+                throw new ArgumentException(Context.accountUserName[0]);
             }
 
             ctx.ExecutionRole = lst.Body[0].role;
@@ -44,7 +44,7 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             int count = extra.Length > 0 ? (int)extra[0] : 4;
-            List<User> newUsers = new List<User>();
+            Dictionary<int, CardSavrHttpClient> sessions = new Dictionary<int, CardSavrHttpClient>();
 
             // create users.
             PropertyBag bag = new PropertyBag();
@@ -53,39 +53,34 @@ namespace cardsavr_e2e
                 // generate using an easily reproducible safe-key.
                 // the username, role and email help us identify these users later.
                 bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
-                bag["password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier);
-                bag["cardholder_safe_key"] = Context.GenerateBogus32BitPassword(bag.GetString("username"));  //if we want to store it server-side
-                bag["role"] = "cardholder";
+                bag["password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier); //cardholers don't have passwords
+                bag["role"] = "developer";
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
                 bag["email"] = $"cardsavr_e2e_{Context.random.Next(100)}@gmail.com";
-                bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}";
+                bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}".Substring(0, 12);
 
-                CardSavrResponse<User> result = await http.CreateUserAsync(bag, bag.GetString("cardholder_safe_key"), "default");
-                newUsers.Add(result.Body);
+                CardSavrResponse<User> result = await http.CreateUserAsync(bag, Context.GenerateBogus32BitPassword(bag.GetString("username")), "default");
             }
+            // get a list of all users, including the ones we just created.
+            await GetAllUsers(http, ctx, 100);
+            // log what we just did.
+            foreach (User user in ctx.Users)
+                log.Info($"created/updated user: {user.username} = \"{user.first_name} {user.last_name}\"");
 
+            List<User> newUsers = ctx.GetNewUsers();
             // update them. we'll just change the phone number.
             for (int n = 0; n < newUsers.Count; ++n)
             {
                 bag.Clear();
                 bag["id"] = newUsers[n].id;
-                bag["phone_number"] = $"206-555-{n + 3}{n + 2}{n + 1}{n}";
+                bag["phone_number"] = $"206-555-{n + 3}{n + 2}{n + 1}{n}".Substring(0, 12);
                 await http.UpdateUserAsync(bag.GetString("id"), bag);
             }
 
-            // log what we just did.
-            foreach (User user in newUsers)
-                log.Info($"created/updated user: {user.username} = \"{user.first_name} {user.last_name}\"");
-
+            User u = newUsers[Context.random.Next(0, newUsers.Count - 1)];
             // update the password for just one of the users.
-            await UpdateUserPassword(http, ctx, newUsers[Context.random.Next(0, newUsers.Count - 1)]);
-
-            // store the users we created for other code to use.
-            ctx.NewUsers = newUsers;
-
-            // get a list of all users, including the ones we just created.
-            await GetAllUsers(http, ctx, 100);
+            await UpdateUserPassword(http, ctx, u);
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -96,28 +91,14 @@ namespace cardsavr_e2e
                 return;
             }
 
-            int count = 0;
-            int n = ctx.Users.FindIndex(
-                user => user.username.StartsWith(Context.e2e_identifier, StringComparison.CurrentCulture));
-            while (n >= 0)
-            {
-                User u = ctx.Users[n];
+            foreach (User u in ctx.GetNewUsers()) {
                 log.Info($"deleting user: {u.username}");
                 await http.DeleteUserAsync(u.id);
-                ctx.Users.RemoveAt(n);
-                count++;
-
-                n = ctx.Users.FindIndex(
-                    user => user.username.StartsWith(Context.e2e_identifier, StringComparison.CurrentCulture));
             }
-
-            // all of the users we created should be history now.
-            log.Info($"deleted {count} users.");
-            if (ctx.NewUsers != null)
-                ctx.NewUsers.Clear();
+            ctx.Users.Clear();
         }
 
-        private async Task GetAllUsers(CardSavrHttpClient http, Context ctx, int pageLength = 7)
+        protected async Task GetAllUsers(CardSavrHttpClient http, Context ctx, int pageLength = 7)
         {
             log.Info("retrieving users...");
             Paging p = new Paging(1, pageLength);
@@ -134,10 +115,8 @@ namespace cardsavr_e2e
                 {
                     users.AddRange(result.Body);
 
-                    /* echo users to the log.
                     foreach (User u in result.Body)
                         log.Info(String.Format("{0} = \"{1} {2}\"", u.username, u.first_name, u.last_name));
-                    */                       
                 }
 
                 p = result.Paging;
