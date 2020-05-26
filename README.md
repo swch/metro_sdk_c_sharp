@@ -3,7 +3,7 @@
 
 ## Setup
 
-I used VS Code to install this package. There is a file called metro_sdk_c_sharp.code-workspace that contains the three "projects".  
+I used VS Code to install this package. There is a Visual Studio sln file as well, but I have not tested that out recently.  There is a file called metro_sdk_c_sharp.code-workspace that contains the three "projects" from with VS Code. 
 
 * cardsavr - This is the core SDK that you will be programming against
 * cardsavr_e2e - This contains some great examples of how to use the SDK
