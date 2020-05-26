@@ -15,7 +15,7 @@ Additionally, in order to use Cardsavr, you will require application keys, and a
 
 ## Users 
 
-All cardholder activity requires an active cardholder.  Users can be created using randomly generated usernames or based on usernames in a different sysetm (SSO).  
+All cardholder activity requires an active cardholder.  Users can be created using randomly generated usernames or based on usernames from a different source (SSO).  
 
 ## Addresses
 
