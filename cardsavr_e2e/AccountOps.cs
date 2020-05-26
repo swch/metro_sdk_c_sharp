@@ -19,14 +19,14 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             // pick a user and merchant site.
-            User user = ctx.GetRandomUser("cardholder");
-            MerchantSite site = ctx.GetRandomSite();
+            User user = ctx.GetNewUsers("cardholder")[0];
+            MerchantSite site = ctx.GetSyntheticSite();
 
             // create an account.
             PropertyBag bag = new PropertyBag();
             bag["cardholder_id"] = user.id;
             bag["site_hostname"] = site.host;
-            bag["username"] = user.username;
+            bag["username"] = "goodemail";
             bag["password"] = "";
 
             // users created by our test-suite have known/bogus safe-key.
@@ -39,6 +39,10 @@ namespace cardsavr_e2e
             bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
             result = await http.UpdateAccountAsync(result.Body.id, bag, safeKey);
             log.Info($"updated account-id={result.Body.id}");
+
+            List<Account> list = new List<Account>();
+            list.Add(result.Body);
+            ctx.CardholderSessions[user.id ?? -1].accounts = list;
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -50,9 +54,10 @@ namespace cardsavr_e2e
             while (total < paging.TotalResults || paging.TotalResults < 0)
             {
                 CardSavrResponse<List<Account>> result = await http.GetAccountsAsync(null, paging);
+                log.Info(result.Body);
                 foreach (Account a in result.Body)
                 {
-                    if (a.custom_display_text.StartsWith(Context.e2e_identifier, StringComparison.CurrentCulture))
+                    if (a.site_hostname == ctx.GetSyntheticSite().host)
                         toDelete.Add(a);
                 }
 

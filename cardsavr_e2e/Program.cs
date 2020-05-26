@@ -121,7 +121,7 @@ namespace cardsavr_e2e
 
                 // acounts depends on: users and merchant sites.
                 new AccountOps(),
-                //new JobOps()
+                new JobOps()
 
             };
 

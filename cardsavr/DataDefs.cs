@@ -114,7 +114,7 @@ namespace Switch.CardSavr.Http
     public class Login
     {
         public string userName { get; set; }
-        public string userCredentialGrant { get; set; }
+        public string userCredentialGrant { get; set; }  
         public string clientPublicKey { get; set; }
         public string signedSalt { get; set; }
     }
@@ -122,6 +122,8 @@ namespace Switch.CardSavr.Http
     public class LoginResult
     {
         public string serverPublicKey { get; set; }
+        public string cardholder_safe_key { get; set; }
+        public int user_id { get; set; }
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
@@ -141,12 +143,8 @@ namespace Switch.CardSavr.Http
     {
         public int id { get; set; }
         public int cardholder_id { get; set; }
-        public int merchant_site_id { get; set; }
+        public string site_hostname { get; set; }
         public string username { get; set; }
-        public string custom_display_text { get; set; }
-        public bool? require_master_password { get; set; }
-        public bool? auto_login { get; set; }
-        public bool? show_payment_method { get; set; }
         public string last_login { get; set; }
         public string last_password_update { get; set; }
         public string last_saved_card { get; set; }
@@ -200,7 +198,7 @@ namespace Switch.CardSavr.Http
         public string cvv { get; set; }
         public string expiration_month { get; set; }
         public string expiration_year { get; set; }
-        public string card_color { get; set; }
+        public string name_on_card { get; set; }
     }
 
     /*========== CARD PLACEMENT JOBS ==========*/
@@ -219,26 +217,6 @@ namespace Switch.CardSavr.Http
         public string status { get; set; }
         public int time_elapsed { get; set; }
         public string completed_on { get; set; }
-        public string created_on { get; set; }
-        public string last_updated_on { get; set; }
-    }
-
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class MultipleSiteCardPlacementJob
-    {
-        public int id { get; set; }
-        public int job_id { get; set; }
-        public int card_id { get; set; }
-        public string site_ids { get; set; }
-        public string queue_name { get; set; }
-        public bool do_not_queue { get; set; }
-        public string failure_reason { get; set; }
-        public int total_site_count { get; set; }
-        public int successful_site_count { get; set; }
-        public int failed_site_count { get; set; }
-        public string processed_on { get; set; }
-        public string completed_on { get; set; }
-        public string expiration_date { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
     }

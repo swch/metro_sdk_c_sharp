@@ -17,7 +17,7 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             int count = extra.Length > 0 ? (int)extra[0] : 4;
-            Dictionary<int, CardSavrHttpClient> sessions = new Dictionary<int, CardSavrHttpClient>();
+            Dictionary<int, Context.CardholderData> sessions = new Dictionary<int, Context.CardholderData>();
 
             List<User> newUsers = new List<User>();
 
@@ -46,7 +46,10 @@ namespace cardsavr_e2e
                 string token = grant.Body.user_credential_grant;
                 CardSavrHttpClient cardholder = new CardSavrHttpClient(Context.accountBaseUrl, Context.accountStaticKey[1], Context.accountAppID[1], newUsers[n].username, null, token);
                 CardSavrResponse<LoginResult> login = await cardholder.Init();
-                sessions.Add(newUsers[n].id ?? -1, cardholder); //never -1
+                Context.CardholderData chd = new Context.CardholderData();
+                chd.client = cardholder; 
+                chd.cardholder_safe_key = login.Body.cardholder_safe_key;
+                sessions.Add((int)newUsers[n].id, chd);
             }
 
             // store the users we created for other code to use.

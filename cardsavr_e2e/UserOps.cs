@@ -96,6 +96,7 @@ namespace cardsavr_e2e
                 await http.DeleteUserAsync(u.id);
             }
             ctx.Users.Clear();
+            ctx.CardholderSessions.Clear();
         }
 
         protected async Task GetAllUsers(CardSavrHttpClient http, Context ctx, int pageLength = 7)

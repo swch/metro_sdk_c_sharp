@@ -28,7 +28,7 @@ namespace cardsavr_e2e
             // create 2 addresses for each new user.
             foreach (User u in ctx.GetNewUsers())
                 if (u.role == "cardholder") {
-                    await CreateAddressesForUser(u, ctx.CardholderSessions[u.id ?? -1], ctx);
+                    await CreateAddressesForUser(u, ctx.CardholderSessions[u.id ?? -1].client, ctx);
                 }
         }
 
@@ -81,7 +81,7 @@ namespace cardsavr_e2e
             bag["country"] = "USA";
             bag["postal_code"] = "98119";
 
-            CardSavrResponse<Address> addr = await ctx.CardholderSessions[user.id ?? -1].CreateAddressAsync(bag);
+            CardSavrResponse<Address> addr = await ctx.CardholderSessions[user.id ?? -1].client.CreateAddressAsync(bag);
             log.Info($"created primary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
 
             // update it.
@@ -101,7 +101,7 @@ namespace cardsavr_e2e
             bag["country"] = "USA";
             bag["postal_code"] = "98123";
 
-            CardSavrHttpClient client = (user.role == "cardholder" ? ctx.CardholderSessions[user.id ?? -1] : http);
+            CardSavrHttpClient client = (user.role == "cardholder" ? ctx.CardholderSessions[user.id ?? -1].client : http);
 
             addr = await client.CreateAddressAsync(bag);
             log.Info($"created secondary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");

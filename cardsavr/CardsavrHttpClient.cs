@@ -116,10 +116,6 @@ namespace Switch.CardSavr.Http
             DefaultRequestHeaders.Add("trace", $"{{\"key\": \"{trace}\"}}");
             CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
                 "/session/start", null, null, headers);
-
-            //SDK's always run encrypted
-            //_data.Encrypt = result.Body.encryptionOn;
-            //log.Debug(String.Format("encryptionOn={0}", _data.Encrypt));
             
             return result;
         }
@@ -137,7 +133,6 @@ namespace Switch.CardSavr.Http
 
             CardSavrResponse<LoginResult> result = await ApiPostAsync<LoginResult>(
                 "/session/login", body, null, headers);
-
             // the shared secret will be used in future encrpyted communications.
             _data.Ecdh.ComputeSharedSecret(result.Body.serverPublicKey, true);
             log.Debug("received server public key; computed shared secret.");
@@ -185,7 +180,7 @@ namespace Switch.CardSavr.Http
         {
             EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, body, false, true);
-            return await ApiPutDelAsnyc<Account>(
+            return await ApiPutDelAsync<Account>(
                 "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
@@ -194,7 +189,7 @@ namespace Switch.CardSavr.Http
         {
             EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, null, false, true);
-            return await ApiPutDelAsnyc<Account>(
+            return await ApiPutDelAsync<Account>(
                 "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Delete, null, safeKey, headers);
         }
 
@@ -303,26 +298,22 @@ namespace Switch.CardSavr.Http
                 "/place_card_on_single_site_jobs", qd, paging, headers);
         }
 
-        public async Task<CardSavrResponse<List<MultipleSiteCardPlacementJob>>> 
-            GetBatchJobsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<SingleSiteCardPlacementJob>> 
+            CreateJobAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
         {
-            // TODO:
-            // in staging: "/place_card_batch_jobs"
-            // in test: "/place_card_on_multiple_sites_jobs"
-            QueryDef qd = new QueryDef(query);
-            return await ApiGetAsync<List<MultipleSiteCardPlacementJob>>(
-                "/place_card_on_multiple_sites_jobs", qd, paging, headers);
+            EnsureSafeKey(safeKey);
+            return await ApiPostAsync<SingleSiteCardPlacementJob>(
+                "/place_card_on_single_site_jobs", body, safeKey, headers);
         }
 
-        public async Task<CardSavrResponse<MultipleSiteCardPlacementJob>> 
-            CreateBatchJobAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<SingleSiteCardPlacementJob>>
+            UpdateJobAsync(object query, PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
         {
-            // TODO:
-            // in staging: "/place_card_batch_jobs"
-            // in test: "/place_card_on_multiple_sites_jobs"
             EnsureSafeKey(safeKey);
-            return await ApiPostAsync<MultipleSiteCardPlacementJob>(
-                "/place_card_on_multiple_sites_jobs", body, safeKey, headers);
+            QueryDef qd = new QueryDef(query, body);
+
+            return await ApiPutDelAsync<SingleSiteCardPlacementJob>(
+                "/place_card_on_single_site_jobs/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<List<CardPlacementResult>>> 
@@ -339,24 +330,6 @@ namespace Switch.CardSavr.Http
                 PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
         {
             return await ApiPostAsync<BIN>("/card_placement_result_reporting_jobs", body, null, headers);
-        }
-
-        /*========== CUSTOMERS ==========*/
-
-        public async Task<CardSavrResponse<List<Customer>>> 
-            UpdateCustomerAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
-        {
-            QueryDef qd = new QueryDef(query, body);
-            return await ApiMultiPutDelAsync<Customer>(
-                "/customers", null, qd, HttpMethod.Put, body, null, null, headers);
-        }
-
-        public async Task<CardSavrResponse<List<Customer>>> 
-            DeleteCustomerAsync(object query, HttpRequestHeaders headers = null)
-        {
-            QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<Customer>(
-                "/customers", null, qd, HttpMethod.Delete, null, null, null, headers);
         }
 
         /*========== INTEGRATORS ==========*/
@@ -466,7 +439,7 @@ namespace Switch.CardSavr.Http
         {
             QueryDef qd = new QueryDef(query, body, false, true);
             string path = "/cardsavr_users/{0}/update_password";
-            return await ApiPutDelAsnyc<PropertyBag>(path, qd.ID, HttpMethod.Put, body, null, headers);
+            return await ApiPutDelAsync<PropertyBag>(path, qd.ID, HttpMethod.Put, body, null, headers);
         }
 
         /*========== PRIVATE IMPLEMENTATION ==========*/
@@ -508,7 +481,7 @@ namespace Switch.CardSavr.Http
         }
 
         // Could be exposed publicly to give advanced users more flexibility.
-        private async Task<CardSavrResponse<T>> ApiPutDelAsnyc<T>(
+        private async Task<CardSavrResponse<T>> ApiPutDelAsync<T>(
             string path, string id, HttpMethod method, object body, string safeKey, HttpRequestHeaders headers = null)
             where T : class
         {
@@ -537,7 +510,7 @@ namespace Switch.CardSavr.Http
             if (qd.IsID)
             {
                 // this is a singular operation, so just do it.
-                CardSavrResponse<T> singleResponse = await ApiPutDelAsnyc<T>(
+                CardSavrResponse<T> singleResponse = await ApiPutDelAsync<T>(
                     pathWithId, qd.ID, method, body, safeKey, headers);
 
                 // then transform the result into a list.
@@ -559,7 +532,7 @@ namespace Switch.CardSavr.Http
                     string id = Convert.ToString(t.GetType().GetProperty("id").GetValue(t));
 
                     // should probably have some error handling here so we can continue on failure.
-                    await ApiPutDelAsnyc<T>(pathWithId, id, method, body, safeKey, headers);
+                    await ApiPutDelAsync<T>(pathWithId, id, method, body, safeKey, headers);
                 }
             }
 
@@ -594,23 +567,11 @@ namespace Switch.CardSavr.Http
             string strBody = null;
             if (body != null)
             {
-                // there is a body to deal with.
-                if (_data.Encrypt)
-                {
-                    // encrypt body, wrap in EncryptedBody, serialize to JSON.
-                    log.Debug("encrpyting request body.");
-                    strBody = JsonConvert.SerializeObject(EncryptBody(body));
-                }
-                else
-                {
-                    // no encryption, but still need to serialize to JSON.
-                    log.Debug("sending clear-text request body.");
-                    strBody = JsonConvert.SerializeObject(body);
-                }
+                // encrypt body, wrap in EncryptedBody, serialize to JSON.
+                log.Debug("encrpyting request body.");
+                strBody = JsonConvert.SerializeObject(EncryptBody(body));
             }
-
-            if (_data.Encrypt)
-                SignRequest(request.Headers, endpoint, strBody);
+            SignRequest(request.Headers, endpoint, strBody);
 
             if (strBody != null)
             {
@@ -669,21 +630,18 @@ namespace Switch.CardSavr.Http
                 return new CardSavrResponse<T>(response, tstr);
             }
 
-            if (_data.Encrypt)
+            try
             {
-                try
-                {
-                    // encryption is on, so we're expecting an encrypted body.
-                    return new CardSavrResponse<T>(response, DecryptBody<T>(body));
-                }
-                catch (JsonSerializationException ex)
-                {
-                    // this may happen when starting a session. encryption is expected, but
-                    // won't be done because we haven't completed the key exchange.
-                    // allow this to fall through so we deserialize to the expected type T
-                    // without decrypting.
-                    log.Error("possibly OK JSON serialization exception.", ex);
-                }
+                // encryption is on, so we're expecting an encrypted body.
+                return new CardSavrResponse<T>(response, DecryptBody<T>(body));
+            }
+            catch (JsonSerializationException ex)
+            {
+                // this may happen when starting a session. encryption is expected, but
+                // won't be done because we haven't completed the key exchange.
+                // allow this to fall through so we deserialize to the expected type T
+                // without decrypting.
+                log.Error("possibly OK JSON serialization exception.", ex);
             }
 
             // no encryption; we should be able to deserialize the body directly.

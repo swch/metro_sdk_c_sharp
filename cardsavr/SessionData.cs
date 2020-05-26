@@ -16,7 +16,6 @@ namespace Switch.CardSavr.Http
         private string _password;       // the user password
         private string _grant;          // a temporary short lived grant
         private string _cert;           // self signing cert for developement servers
-        private int _encrypt;           // non-zero if encryption is enabled
         private Ecdh _ecdh;             // key pair
         private string _cookie;         // session-specific cookie
 
@@ -62,12 +61,6 @@ namespace Switch.CardSavr.Http
             set { Interlocked.Exchange<string>(ref _grant, value); }
         }
 
-        public bool Encrypt
-        {
-            get { return _encrypt != 0; }
-            set { Interlocked.Exchange(ref _encrypt, value ? 1 : 0); }
-        }
-
         public Ecdh Ecdh
         {
             get { return _ecdh; }
@@ -95,7 +88,6 @@ namespace Switch.CardSavr.Http
 
             // encryption turned on by default. will be switched off if told to do so 
             // by the server.
-            _encrypt = 1;
         }
     }
 }

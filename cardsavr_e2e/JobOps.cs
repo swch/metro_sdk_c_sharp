@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 using Switch.CardSavr.Http;
+using Newtonsoft.Json;
 
 
 namespace cardsavr_e2e
@@ -19,26 +20,45 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            if (!await VerifyRole(http, ctx))
+            List<User> users = ctx.GetNewUsers("cardholder");
+            
+            if (!await VerifyRole(http, ctx) && users[0].role != "cardholder")
                 return;
 
-            CardSavrResponse<List<SingleSiteCardPlacementJob>> singleJobs = await http.GetSingleSiteJobsAsync(null);
+            Context.CardholderData chd = ctx.CardholderSessions[users[0].id ?? -1];
+            
+            PropertyBag bag = new PropertyBag()
+            {
+                { "account_id",  chd.accounts[0].id },
+                { "user_id", users[0].id },
+                { "card_id",  chd.cards[0].id },
+                { "do_not_queue", false },
+                { "requesting_brand", "mbudos" },
+                { "site_hostname", chd.accounts[0].site_hostname }
+            };
+            
+            CardSavrResponse<SingleSiteCardPlacementJob> job = await chd.client.CreateJobAsync(bag, chd.cardholder_safe_key);
+
+            CardSavrResponse<List<SingleSiteCardPlacementJob>> singleJobs = await http.GetSingleSiteJobsAsync(
+                new NameValueCollection() {
+                    { "ids", job.Body.id.ToString() }
+                }
+            );
             log.Info($"retrieved {singleJobs.Body.Count} single-site jobs.");
             foreach (SingleSiteCardPlacementJob sj in singleJobs.Body)
                 log.Info($"{sj.id}: {sj.status}");
 
-            CardSavrResponse<List<MultipleSiteCardPlacementJob>> multiJobs = await http.GetBatchJobsAsync(null);
-            log.Info($"retrieved {multiJobs.Body.Count} multiple-site jobs.");
-            foreach (MultipleSiteCardPlacementJob mj in multiJobs.Body)
-                log.Info($"{mj.id}: {mj.total_site_count}=OK({mj.successful_site_count})+Failed({mj.failure_reason})");
+            bag.Clear();
+            bag["status"] = "cancel_requested";
+            
+            job = await chd.client.UpdateJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
+            log.Info($"{job.Body.id}: {job.Body.status}");
 
-            CardSavrResponse<List<CardPlacementResult>> results = 
-                await http.GetCardPlacementResultReportingJobsAsync(null);
-            log.Info($"retrieved {results.Body.Count} card-placement result reporting jobs.");
-            foreach (CardPlacementResult cpr in results.Body)
-                log.Info($"{cpr.id}: {cpr.site_name}, {cpr.status}");
-
-            // TODO: create multi-site job.
+            //CardSavrResponse<List<CardPlacementResult>> results = 
+            //    await http.GetCardPlacementResultReportingJobsAsync(null);
+            //log.Info($"retrieved {results.Body.Count} card-placement result reporting jobs.");
+            //foreach (CardPlacementResult cpr in results.Body)
+            //    log.Info($"{cpr.id}: {cpr.site_name}, {cpr.status}");
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)

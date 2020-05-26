@@ -20,7 +20,7 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             // get all addresses for the user (there should be at least 2).
-            User user = ctx.GetRandomUser("cardholder");
+            User user = ctx.GetNewUsers("cardholder")[0]; //first user
             CardSavrResponse<List<Address>> addrs = await http.GetAddressesAsync(new NameValueCollection() {
                 { "user_ids", user.id.ToString() }
             });
@@ -31,7 +31,7 @@ namespace cardsavr_e2e
             log.Info($"got {addrs.Body.Count} addresss for user \"{user.username}\"");
 
             //Grab the session for this cardholder
-            CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1];
+           CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1].client;
 
             // the card we create uses our (possibly truncated) special identifier as the color
             // so we can identify it later if needed.
@@ -45,10 +45,9 @@ namespace cardsavr_e2e
                 { "cvv", 345 },
                 { "first_name", user.first_name },
                 { "last_name", user.last_name },
-                { "name_on_card", $"{user.first_name} {user.last_name}" },
+                { "name_on_card", "BOGUS CARD" },
                 { "expiration_month", expire.Month.ToString() },
-                { "expiration_year", (expire.Year % 2000).ToString() },
-                { "card_color", Context.e2e_identifier.Substring(0, 8) }
+                { "expiration_year", (expire.Year % 2000).ToString() }
             };
 
             // our test users have a known safe-key.
@@ -59,9 +58,11 @@ namespace cardsavr_e2e
             // update it: just change the address.
             body.Clear();
             body.Add("id", card.Body.id);
-            body.Add("address_id", addrs.Body[1].id);
+            body.Add("address_id", addrs.Body[0].id);
             CardSavrResponse<List<Card>> upd = await cardholder.UpdateCardAsync(null, body);
             log.Info($"update card for user \"{user.username}\"");
+
+            ctx.CardholderSessions[user.id ?? -1].cards = upd.Body;
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -72,12 +73,15 @@ namespace cardsavr_e2e
 
             int total = 0;
             Paging paging = new Paging() { PageLength = 100 };
+            User user = ctx.GetNewUsers("cardholder")[0];  //first cardholder
+            CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1].client;
+            log.Info($"delete cards for user \"{user.username}\"");
             while (total < paging.TotalResults || paging.TotalResults < 0)
             {
-                CardSavrResponse<List<Card>> result = await http.GetCardsAsync(null, paging);
+                CardSavrResponse<List<Card>> result = await cardholder.GetCardsAsync(null, paging);
                 foreach (Card c in result.Body)
                 {
-                    if (c.card_color == specialColor)
+                    if (c.name_on_card == "BOGUS CARD")
                         cardsToDel.Add(c);
                 }
 
@@ -91,7 +95,7 @@ namespace cardsavr_e2e
             int deleted = 0;
             foreach (Card c in cardsToDel)
             {
-                User user = ctx.FindUserById(c.cardholder_id);
+                user = ctx.FindUserById(c.cardholder_id);
                 if (user == null)
                 {
                     log.Error($"UNABLE TO DELETE CARD: no user found for card-id={c.id}");

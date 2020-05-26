@@ -26,10 +26,17 @@ namespace cardsavr_e2e
         // properties.
         public List<MerchantSite> Sites { get; set; }
         public List<User> Users { get; set; }
-        public Dictionary<int, CardSavrHttpClient> CardholderSessions { get; set; }
+        public Dictionary<int, CardholderData> CardholderSessions { get; set; }
         public string Trace { get; set; }
         public bool Started { get; set; }
         public string ExecutionRole { get; set; }
+
+        public class CardholderData {
+            public List<Card> cards { get; set; }
+            public List<Account> accounts { get; set; }
+            public String cardholder_safe_key { get; set; }
+            public CardSavrHttpClient client { get; set; }
+        }
 
         public static string GenerateBogus32BitPassword(string username)
         {
@@ -74,7 +81,7 @@ namespace cardsavr_e2e
             return users[random.Next(0, users.Count - 1)];
         }
 
-        public MerchantSite GetRandomSite(bool throwOnError = true)
+        public MerchantSite GetSyntheticSite(bool throwOnError = true)
         {
             if (Sites == null || Sites.Count == 0)
             {
@@ -82,8 +89,7 @@ namespace cardsavr_e2e
                     return null;
                 throw new ArgumentException("no merchant sites available.");
             }
-
-            return Sites[random.Next(0, Sites.Count - 1)];
+            return Sites.Find(site => site.name == "Synthetic 1-Step Login");
         }
     }
 }
