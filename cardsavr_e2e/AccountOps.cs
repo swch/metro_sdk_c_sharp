@@ -20,6 +20,7 @@ namespace cardsavr_e2e
         {
             // pick a user and merchant site.
             User user = ctx.GetNewUsers("cardholder")[0];
+            Context.CardholderData chd = ctx.CardholderSessions[user.id ?? -1];
             MerchantSite site = ctx.GetSyntheticSite();
 
             // create an account.
@@ -31,13 +32,13 @@ namespace cardsavr_e2e
 
             // users created by our test-suite have known/bogus safe-key.
             string safeKey = Context.GenerateBogus32BitPassword(user.username);
-            CardSavrResponse<Account> result = await http.CreateAccountAsync(bag, safeKey);
+            CardSavrResponse<Account> result = await chd.client.CreateAccountAsync(bag, safeKey);
             log.Info($"created account {result.Body.id} for user-id={user.id} ({user.username})");
 
             // update it.
             bag.Clear();
             bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
-            result = await http.UpdateAccountAsync(result.Body.id, bag, safeKey);
+            result = await chd.client.UpdateAccountAsync(result.Body.id, bag, safeKey);
             log.Info($"updated account-id={result.Body.id}");
 
             List<Account> list = new List<Account>();

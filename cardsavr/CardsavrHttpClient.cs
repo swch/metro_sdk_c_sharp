@@ -48,14 +48,7 @@ namespace Switch.CardSavr.Http
             public string encryptedBody { get; set; }
         }
 
-        // private class definition used during test/dev only.
-        private class LoginUnencrypted
-        {
-            public string userName { get; set; }
-            public string password { get; set; }
-            public string grant { get; set; }
-        }
-
+       
         // stores session-specific information.
         private SessionData _data;
 
@@ -77,8 +70,8 @@ namespace Switch.CardSavr.Http
 
         public void SetIdentificationHeader(string clientId)
         {
-            DefaultRequestHeaders.Remove("swch-client-application");
-            DefaultRequestHeaders.Add("swch-client-application", clientId);
+            DefaultRequestHeaders.Remove("client-application");
+            DefaultRequestHeaders.Add("client-application", clientId);
         }
 
         public void Setup(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
