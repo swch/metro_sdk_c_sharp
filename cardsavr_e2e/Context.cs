@@ -15,10 +15,10 @@ namespace cardsavr_e2e
     {
         // test env: account information.
         public static readonly string accountBaseUrl = "https://api.mbudos.cardsavr.io";
-        public static readonly string[] accountAppID = {"cardupdatr_integrator", "CardUpdatr Demo"};
-        public static readonly string[] accountStaticKey = {"sEuuK6KhawoJE9Zf+uGebJ/rkCMaCLvowM46T4JoE8Q=", "TGSEjt4TuK0j55TeF7x1cao88Bc1j8nyHeaBHueT5gQ="};
+        public static readonly string[] accountAppID = {"<recacted>", "<recacted>"};
+        public static readonly string[] accountStaticKey = {"<recacted>", "<recacted>"};
         public static readonly string[] accountUserName = {"cardupdatr_user", "cardupdatr_demo"};
-        public static readonly string[] accountPassword = {"tRSfD6HMuua6ai2S98B5zzgQC1jIo7ea06yiItQt9UQ=", "uLa64$#Rf8bh"};
+        public static readonly string[] accountPassword = {"<recacted>", "<recacted>"};
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
@@ -31,7 +31,7 @@ namespace cardsavr_e2e
         public bool Started { get; set; }
         public string ExecutionRole { get; set; }
 
-        public class CardholderData {
+        public class CardHolderData {
             public List<Card> cards { get; set; }
             public List<Account> accounts { get; set; }
             public String cardholder_safe_key { get; set; }
