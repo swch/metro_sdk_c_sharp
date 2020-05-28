@@ -39,7 +39,8 @@ namespace cardsavr_e2e
             log.Info(Context.accountAppID);
             int idx = cardholder_agent ? 1 : 0;
             _http.Setup(Context.accountBaseUrl, Context.accountStaticKey[idx],
-                Context.accountAppID[idx], Context.accountUserName[idx], Context.accountPassword[idx]);
+                Context.accountAppID[idx], Context.accountUserName[idx], Context.accountPassword[idx], 
+                null, "{\"key\": \"foo\"}");
             log.Info("logging in...");
             CardSavrResponse<LoginResult> login = await _http.Init();
             _context.Started = true;

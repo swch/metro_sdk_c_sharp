@@ -59,35 +59,33 @@ namespace Switch.CardSavr.Http
         {
             // the identification header is a default in case the client sets nothing.
             _data = null;
-            SetIdentificationHeader("sdk-csharp");
         }
 
-        public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
+        public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string trace = null, string cert = null)
             : this()
         {
-            Setup(baseUrl, staticKey, appName, userName, password, grant, cert);
+            Setup(baseUrl, staticKey, appName, userName, password, grant, trace, cert);
         }
 
         public void SetIdentificationHeader(string clientId)
         {
-            DefaultRequestHeaders.Remove("client-application");
             DefaultRequestHeaders.Add("client-application", clientId);
         }
 
-        public void Setup(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
+        public void Setup(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string trace = null, string cert = null)
         {
             if (_data != null)
             {
                 log.Error("calling the Setup method more than once isn't supported.");
                 throw new NotSupportedException();
             }
-
-            _data = new SessionData(baseUrl, staticKey, appName, userName, password, grant, cert);
+            SetIdentificationHeader(appName);
+            _data = new SessionData(baseUrl, staticKey, appName, userName, password, grant, trace, cert);
         }
 
-        public async Task<CardSavrResponse<LoginResult>> Init(string trace = null) 
+        public async Task<CardSavrResponse<LoginResult>> Init() 
         {
-            CardSavrResponse<StartResult> start = await StartAsync(null, trace);
+            CardSavrResponse<StartResult> start = await StartAsync(null);
             return await LoginAsync(start.Body.sessionSalt);
         }
 
@@ -103,10 +101,8 @@ namespace Switch.CardSavr.Http
         /*========== SESSION MANAGEMENT (START, LOGIN, END) ==========*/
 
         public async Task<CardSavrResponse<StartResult>> 
-            StartAsync(HttpRequestHeaders headers = null, string trace = null)
+            StartAsync(HttpRequestHeaders headers = null)
         {
-            trace = trace != null ? trace : _data.UserName;
-            DefaultRequestHeaders.Add("trace", $"{{\"key\": \"{trace}\"}}");
             CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
                 "/session/start", null, null, headers);
             
@@ -550,11 +546,13 @@ namespace Switch.CardSavr.Http
             log.Info($"creating \"{method}\" request for path: {path}");
             Uri endpoint = new Uri(_data.BaseUri, path);
             HttpRequestMessage request = new HttpRequestMessage(method, endpoint);
+            
             CopyRequestHeaders(request.Headers, DefaultRequestHeaders);
             CopyRequestHeaders(request.Headers, headers);
-
             if (_data.Cookie != null)
                 request.Headers.Add("cookie", _data.Cookie);
+
+            request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
 
             // encrypt the body and/or serialize to JSON.
             string strBody = null;

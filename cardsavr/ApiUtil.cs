@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Net.Http.Headers;
-
+using Newtonsoft.Json;
 
 namespace Switch.CardSavr.Http
 {
@@ -47,6 +47,22 @@ namespace Switch.CardSavr.Http
             }
 
             return String.Format("{0}?{1}", path, String.Join('&', parts));
+        }
+
+        public static string BuildValidTraceHeader(string currentTrace, string userName) {
+            string newTrace = null;
+            if (currentTrace == null) {
+                newTrace = $"{{\"key\": \"{userName}\"}}";
+            } else {
+                dynamic traceObject = JsonConvert.DeserializeObject(currentTrace);
+                if (traceObject.key == null) {
+                    traceObject.Add("key", userName);
+                    newTrace = JsonConvert.SerializeObject(traceObject);
+                } else {
+                    newTrace = currentTrace;
+                }
+            }
+            return newTrace;
         }
 
         public static IDictionary<string, object> CreateJsonSerializableObject(NameValueCollection nvc)

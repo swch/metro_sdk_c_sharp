@@ -15,6 +15,7 @@ namespace Switch.CardSavr.Http
         private string _userName;       // the Switch-provided user name
         private string _password;       // the user password
         private string _grant;          // a temporary short lived grant
+        private string _trace;          // a temporary short lived grant
         private string _cert;           // self signing cert for developement servers
         private Ecdh _ecdh;             // key pair
         private string _cookie;         // session-specific cookie
@@ -61,6 +62,12 @@ namespace Switch.CardSavr.Http
             set { Interlocked.Exchange<string>(ref _grant, value); }
         }
 
+        public string Trace
+        {
+            get { return _trace; }
+            set { Interlocked.Exchange<string>(ref _trace, value); }
+        }
+
         public Ecdh Ecdh
         {
             get { return _ecdh; }
@@ -73,7 +80,7 @@ namespace Switch.CardSavr.Http
         }
 
         public SessionData(
-            string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string cert = null)
+            string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string traceOverride = null, string cert = null)
         {
             _baseUrl = baseUrl;
             _baseUri = new Uri(baseUrl);
@@ -82,12 +89,10 @@ namespace Switch.CardSavr.Http
             _userName = userName;
             _password = password;
             _grant = grant;
+            _trace = traceOverride;
             _cert = cert;
             _ecdh = Ecdh.Create();
             _cookie = null;
-
-            // encryption turned on by default. will be switched off if told to do so 
-            // by the server.
         }
     }
 }
