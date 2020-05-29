@@ -15,14 +15,14 @@ namespace cardsavr_e2e
     {
         // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
         public static readonly string accountBaseUrl = "https://api.mbudos.cardsavr.io";
-        public static readonly string accountCustomerAgentAppID = "<REDACATED>";
-        public static readonly string accountCustomerAgentStaticKey = "<REDACATED>";
-        public static readonly string accountCustomerAgentUserName = "<REDACATED>";
-        public static readonly string accountCustomerAgentPassword = "<REDACATED>";
-        public static readonly string accountCardholderAgentAppID = "<REDACATED>";
-        public static readonly string accountCardholderAgentStaticKey = "<REDACATED>";
-        public static readonly string accountCardholderAgentUserName = "<REDACATED>";
-        public static readonly string accountCardholderAgentPassword = "<REDACATED>";
+        public static readonly string accountCustomerAgentAppID = "cardupdatr_integrator";
+        public static readonly string accountCustomerAgentStaticKey = "sEuuK6KhawoJE9Zf+uGebJ/rkCMaCLvowM46T4JoE8Q=";
+        public static readonly string accountCustomerAgentUserName = "cardupdatr_user";
+        public static readonly string accountCustomerAgentPassword = "tRSfD6HMuua6ai2S98B5zzgQC1jIo7ea06yiItQt9UQ=";
+        public static readonly string accountCardholderAgentAppID = "CardUpdatr Demo";
+        public static readonly string accountCardholderAgentStaticKey = "TGSEjt4TuK0j55TeF7x1cao88Bc1j8nyHeaBHueT5gQ=";
+        public static readonly string accountCardholderAgentUserName = "cardupdatr_demo";
+        public static readonly string accountCardholderAgentPassword = "uLa64$#Rf8bh";
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
