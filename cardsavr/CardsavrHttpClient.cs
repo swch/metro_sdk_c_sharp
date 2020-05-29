@@ -552,7 +552,12 @@ namespace Switch.CardSavr.Http
             if (_data.Cookie != null)
                 request.Headers.Add("cookie", _data.Cookie);
 
-            request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
+            try {
+                request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
+            } catch (JsonException ex) { 
+                log.Error("INVALID custom trace header: " + _data.Trace);
+                log.Error(ex.StackTrace);
+            }
 
             // encrypt the body and/or serialize to JSON.
             string strBody = null;

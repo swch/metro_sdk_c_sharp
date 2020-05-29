@@ -190,6 +190,8 @@ namespace Switch.CardSavr.Http
     public class Card
     {
         public int id { get; set; }
+        public string first_name { get; set; }
+        public string last_name { get; set; }
         public int cardholder_id { get; set; }
         public int bin_id { get; set; }
         public int address_id { get; set; }
