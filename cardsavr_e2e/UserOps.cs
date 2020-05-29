@@ -29,7 +29,7 @@ namespace cardsavr_e2e
 
             if (lst.Body.Count != 1)
             {
-                log.Error($"found {lst.Body.Count} users for username={Context.accountUserName[0]}; expected 1.");
+                log.Error($"found {lst.Body.Count} users for username={Context.accountCustomerAgentUserName}; expected 1.");
                 throw new ArgumentException(Context.accountCustomerAgentUserName);
             }
 

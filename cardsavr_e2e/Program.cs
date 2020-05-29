@@ -35,12 +35,17 @@ namespace cardsavr_e2e
 
         static async Task<CardSavrResponse<LoginResult>> StartSession(bool cardholder_agent = false)
         {
-            log.Info("starting session....");
-            log.Info(Context.accountAppID);
-            int idx = cardholder_agent ? 1 : 0;
-            _http.Setup(Context.accountBaseUrl, Context.accountStaticKey[idx],
-                Context.accountAppID[idx], Context.accountUserName[idx], Context.accountPassword[idx], 
-                null, "{\"key\": \"foo\"}");
+            if (cardholder_agent) {
+                log.Info(Context.accountCardholderAgentAppID + " starting session...");
+                log.Info(Context.accountCardholderAgentAppID);
+                _http.Setup(Context.accountBaseUrl, Context.accountCardholderAgentStaticKey,
+                    Context.accountCardholderAgentAppID, Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword);
+            } else {
+                log.Info(Context.accountCustomerAgentAppID + " starting session...");
+                log.Info(Context.accountCustomerAgentAppID);
+                _http.Setup(Context.accountBaseUrl, Context.accountCustomerAgentStaticKey,
+                    Context.accountCustomerAgentAppID, Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword);
+            }
             log.Info("logging in...");
             CardSavrResponse<LoginResult> login = await _http.Init();
             _context.Started = true;
@@ -101,7 +106,7 @@ namespace cardsavr_e2e
             OperationBase[] ops_ch = new OperationBase[]
             {
                 new CardholderOps(),
-                
+
                 new CardSavrHelperOps()
             };
 
