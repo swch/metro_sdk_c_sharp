@@ -48,7 +48,7 @@ namespace cardsavr_e2e
                     if (addr.address2 == Context.e2e_identifier)
                     {
                         log.Info($"found address for user-id={addr.user_id}");
-                        addrIds.Add(addr.id);
+                        addrIds.Add(addr.id ?? -1);
                     }
                 }
 

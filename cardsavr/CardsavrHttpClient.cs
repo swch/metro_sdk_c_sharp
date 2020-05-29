@@ -389,6 +389,10 @@ namespace Switch.CardSavr.Http
         public async Task<CardSavrResponse<User>> 
             CreateUserAsync(PropertyBag body, string newSafeKey, string financialInstitution, HttpRequestHeaders headers = null)
         {
+            if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
+                body.Add("username", ApiUtil.RandomString(40));
+            }
+
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
                 AddNewSafeKeyHeader(headers, newSafeKey);
@@ -554,7 +558,7 @@ namespace Switch.CardSavr.Http
 
             try {
                 request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
-            } catch (JsonException ex) { 
+            } catch (JsonException ex){ 
                 log.Error("INVALID custom trace header: " + _data.Trace);
                 log.Error(ex.StackTrace);
             }

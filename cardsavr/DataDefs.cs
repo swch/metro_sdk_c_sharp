@@ -111,10 +111,13 @@ namespace Switch.CardSavr.Http
         }
     }
 
-    public class Login
-    {
+    public class ClientLogin {
         public string userName { get; set; }
-        public string userCredentialGrant { get; set; }  
+        public string userCredentialGrant { get; set; }
+    }
+
+    public class Login : ClientLogin
+    {
         public string clientPublicKey { get; set; }
         public string signedSalt { get; set; }
     }
@@ -157,8 +160,8 @@ namespace Switch.CardSavr.Http
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Address
     {
-        public int id { get; set; }
-        public int user_id { get; set; }
+        public int? id { get; set; }
+        public int? user_id { get; set; }
         public bool? is_primary { get; set; }
         public string address1 { get; set; }
         public string address2 { get; set; }
@@ -189,7 +192,7 @@ namespace Switch.CardSavr.Http
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Card
     {
-        public int id { get; set; }
+        public int? id { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
         public int cardholder_id { get; set; }

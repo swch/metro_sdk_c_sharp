@@ -100,7 +100,9 @@ namespace cardsavr_e2e
 
             OperationBase[] ops_ch = new OperationBase[]
             {
-                new CardholderOps()
+                new CardholderOps(),
+                
+                new CardSavrHelperOps()
             };
 
             // order can be important. some operations depend on other resources having been 

@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using Newtonsoft.Json;  
+using System.Linq;
+using System.Security.Cryptography;
+
 
 namespace Switch.CardSavr.Http
 {
@@ -64,6 +67,14 @@ namespace Switch.CardSavr.Http
             }
             return newTrace;
         }
+        public static PropertyBag BuildPropertyBagFromObject(object obj) {
+            string s = JsonConvert.SerializeObject(obj, 
+                Newtonsoft.Json.Formatting.None, 
+                new JsonSerializerSettings { 
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+            return JsonConvert.DeserializeObject<PropertyBag>(s);
+        }
 
         public static IDictionary<string, object> CreateJsonSerializableObject(NameValueCollection nvc)
         {
@@ -105,5 +116,47 @@ namespace Switch.CardSavr.Http
             // nothing found.
             return null;
         }
+        private static Random random = new Random();
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        public static string GenerateRandomPar(string pan, string exp_month, string exp_year, string salt) {
+
+            string digits = "0123456789";
+            string letters = "abcdefghijklmnopqrstuvwxyz";
+            string both = letters + digits;
+
+            string par = "";
+            par += letters[random.Next() % letters.Length];
+            par += digits[random.Next() % digits.Length];
+            par += letters[random.Next() % letters.Length];
+            par += digits[random.Next() % digits.Length];
+
+            int remainder = 29 - par.Length;
+            for (; remainder > 0; --remainder)
+                par += both[random.Next() % both.Length];
+
+            return par.ToUpper();
+        }
+/*
+            string[] paramsArray = [pan, exp_month, exp_year, salt];
+            // Hash up the salt for use as salt
+            string hashS = crypto.createHash("sha256");
+            hashS.update(salt + exp_month + exp_year);
+            const salt_buffer = hashS.digest();
+
+            // Hashup the PAN into 128bits
+            const hashP = crypto.createHash("md5");
+            hashP.update(pan);
+            const panHash = hashP.digest();
+            const PARHash = crypto.pbkdf2Sync(panHash, salt_buffer, 5000, 16, "md5");
+            const PAR = "CSAVR" + PARHash.toString('base64');
+            return PAR;
+        }
+*/
     }
 }

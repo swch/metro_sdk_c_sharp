@@ -26,25 +26,34 @@ namespace Switch.CardSavr.Http
             public int userId { get; set; }
         }
 
-        public void setAppSettings(string cardsavrServer, string appName, string appKey) {
+        public async Task CloseSession(string userName) {
+            if (!_sessions.ContainsKey(userName)) {
+                CardSavrHttpClient client = _sessions[userName].client;
+                await client.EndAsync();
+                _sessions.Remove(userName);
+            }
+        }
+
+
+        public void SetAppSettings(string cardsavrServer, string appName, string appKey) {
             _cardsavrServer = cardsavrServer;
             _appName = appName;
             _appKey = appKey;
             _sessions = new Dictionary<string, ClientSession>();
         }
 
-        public async Task<CardSavrHttpClient> loginAndCreateSession(string userName, 
-                                                                   string password,
-                                                                   string grant = null,
-                                                                   string trace = null) {
-            if (_sessions[userName] != null) {
-                return _sessions[userName].client;
+        public async Task<ClientSession> LoginAndCreateSession(string userName, 
+                                                               string password,
+                                                               string grant = null,
+                                                               string trace = null) {
+            if (_sessions.ContainsKey(userName)) {
+                return _sessions[userName];
             }
             try {
                 CardSavrHttpClient session = new CardSavrHttpClient(_cardsavrServer, _appKey, _appName, userName, password, grant, trace);
                 CardSavrResponse<LoginResult> login = await session.Init();
                 _sessions[userName] = new ClientSession { client = session, userId = login.Body.user_id, safeKey = login.Body.cardholder_safe_key };
-                return _sessions[userName].client;
+                return _sessions[userName];
             } catch(RequestException ex) {
                 log.Error("Unable to create sessions for: " + userName);
                 log.Error(ex.StackTrace);
@@ -52,7 +61,7 @@ namespace Switch.CardSavr.Http
             return null;
         }
 
-        public async Task<Login> createCard(string agent, string financialInstitution, User user, Card card, Address address) {
+        public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, User user, Card card, Address address) {
         
             try {
                 //don't need the login data
@@ -64,34 +73,31 @@ namespace Switch.CardSavr.Http
                 u["role"] = "cardholder";
                 
                 //set the missing settings for model
-                if (user.first_name != null) u["first_name"] = card.first_name;
-                if (user.last_name != null) u["last_name"] = card.last_name;
-                if (card.name_on_card != null) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
-                u["cardholder_safe_key"] =  agentSession.client.GenerateCardholderSafeKey(card.name_on_card); 
+                if (String.IsNullOrEmpty(user.first_name)) u["first_name"] = card.first_name;
+                if (String.IsNullOrEmpty(user.last_name)) u["last_name"] = card.last_name;
+                if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
+                u["cardholder_safe_key"] =  agentSession.client.GenerateCardholderSafeKey(card.name_on_card + u["email"]); 
         
                 CardSavrResponse<User> userResponse = await agentSession.client.CreateUserAsync(u, (string)u["cardholder_safe_key"], financialInstitution);
+                if (userResponse.Body == null || userResponse.Body.id == null) {
+                    throw new RequestException($"No body returned Creating User: {u}");
+                }
                 int cardholderId = userResponse.Body.id ?? -1;
-                /*
                 //eventually these will be one time grants
-                const grant_response_login = await agent_session.getCredentialGrant(cardholder_id);
-                const grant_login = grant_response_login.body.user_credential_grant;
-                const grant_response_handoff = await agent_session.getCredentialGrant(cardholder_id);
-                const grant_handoff = grant_response_handoff.body.user_credential_grant;
+                CardSavrResponse<CredentialGrant> grantCardholder = await agentSession.client.CreateUserGrantAsync(cardholderId);
+                CardSavrResponse<CredentialGrant> grantHandoff = await agentSession.client.CreateUserGrantAsync(cardholderId);
+                
+                ClientSession cardholderSession = await LoginAndCreateSession(userResponse.Body.username, null, grantCardholder.Body.user_credential_grant);
 
-                await this.loginAndCreateSession(cardholder_data_copy.username, undefined, grant_login);
-                const session_user = this.getSession(cardholder_data_copy.username);
+                CardSavrResponse<Address> addressResponse = await cardholderSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
+                card.cardholder_id = cardholderId;
+                card.address_id = addressResponse.Body.id ?? -1;
+                card.par = ApiUtil.GenerateRandomPar(card.pan, card.expiration_month, card.expiration_year, userResponse.Body.username);
+                CardSavrResponse<Card> cardResponse = await cardholderSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), (string)u["cardholder_safe_key"]);
+                return new ClientLogin(){ userCredentialGrant = grantHandoff.Body.user_credential_grant, userName = userResponse.Body.username };
 
-                const address_response = await session_user.createAddress(address_data);
-        
-                card_data.cardholder_id = cardholder_id;
-                card_data.address_id = address_response.body.id;
-                card_data.user_id = cardholder_id;
-                card_data.par = generateRandomPar(card_data.pan, card_data.expiration_month, card_data.expiration_year, cardholder_data_copy.username);
-                const card_response = await session_user.createCard(card_data, cardholder_data_copy.cardholder_safe_key);
-        
-                return { grant: grant_handoff, username: cardholder_data_copy.username, card_id: card_response.body.id } ;
-                */
-            } catch (Exception e) {
+            } catch (RequestException e) {
+                log.Info(e.StackTrace);
             }
             return null;
         }
