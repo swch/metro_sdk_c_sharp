@@ -13,12 +13,16 @@ namespace cardsavr_e2e
     /// </summary>
     public class Context
     {
-        // test env: account information.
+        // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
         public static readonly string accountBaseUrl = "https://api.mbudos.cardsavr.io";
-        public static readonly string[] accountAppID = {"<recacted>", "<recacted>"};
-        public static readonly string[] accountStaticKey = {"<recacted>", "<recacted>"};
-        public static readonly string[] accountUserName = {"cardupdatr_user", "cardupdatr_demo"};
-        public static readonly string[] accountPassword = {"<recacted>", "<recacted>"};
+        public static readonly string accountCustomerAgentAppID = "<REDACATED>";
+        public static readonly string accountCustomerAgentStaticKey = "<REDACATED>";
+        public static readonly string accountCustomerAgentUserName = "<REDACATED>";
+        public static readonly string accountCustomerAgentPassword = "<REDACATED>";
+        public static readonly string accountCardholderAgentAppID = "<REDACATED>";
+        public static readonly string accountCardholderAgentStaticKey = "<REDACATED>";
+        public static readonly string accountCardholderAgentUserName = "<REDACATED>";
+        public static readonly string accountCardholderAgentPassword = "<REDACATED>";
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
@@ -31,7 +35,7 @@ namespace cardsavr_e2e
         public bool Started { get; set; }
         public string ExecutionRole { get; set; }
 
-        public class CardHolderData {
+        public class CardholderData {
             public List<Card> cards { get; set; }
             public List<Account> accounts { get; set; }
             public String cardholder_safe_key { get; set; }

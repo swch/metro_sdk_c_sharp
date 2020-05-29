@@ -17,20 +17,20 @@ namespace cardsavr_e2e
         {
             if (ctx.ExecutionRole != null)
             {
-                log.Info($"role of username={Context.accountUserName} already found: \"{ctx.ExecutionRole}\"");
+                log.Info($"role of username={Context.accountCustomerAgentUserName} already found: \"{ctx.ExecutionRole}\"");
                 return;
             }
 
             // retrieve the user and get the role.
             CardSavrResponse<List<User>> lst = await http.GetUsersAsync(new NameValueCollection()
             {
-                { "username", Context.accountUserName[0] }
+                { "username", Context.accountCustomerAgentUserName }
             });
 
             if (lst.Body.Count != 1)
             {
                 log.Error($"found {lst.Body.Count} users for username={Context.accountUserName[0]}; expected 1.");
-                throw new ArgumentException(Context.accountUserName[0]);
+                throw new ArgumentException(Context.accountCustomerAgentUserName);
             }
 
             ctx.ExecutionRole = lst.Body[0].role;

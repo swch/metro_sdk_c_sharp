@@ -17,9 +17,9 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             CardsavrHelper helper = new CardsavrHelper();
-            helper.SetAppSettings(Context.accountBaseUrl, Context.accountAppID[1], Context.accountStaticKey[1]);
-            await helper.LoginAndCreateSession(Context.accountUserName[1], Context.accountPassword[1]);
-            ClientLogin login = await helper.CreateCard(Context.accountUserName[1], "default", 
+            helper.SetAppSettings(Context.accountBaseUrl, Context.accountCardholderAgentAppID, Context.accountCardholderAgentStaticKey);
+            await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword);
+            ClientLogin login = await helper.CreateCard(Context.accountCardholderAgentUserName, "default", 
                 new User(){ email = "foo@foo.com", phone_number = "5555555555" },
                 new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
                 new Address(){ is_primary=true, address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }

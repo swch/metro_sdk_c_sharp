@@ -44,7 +44,7 @@ namespace cardsavr_e2e
             {
                 CardSavrResponse<CredentialGrant> grant = await http.CreateUserGrantAsync((int)newUsers[n].id);
                 string token = grant.Body.user_credential_grant;
-                CardSavrHttpClient cardholder = new CardSavrHttpClient(Context.accountBaseUrl, Context.accountStaticKey[1], Context.accountAppID[1], newUsers[n].username, null, token);
+                CardSavrHttpClient cardholder = new CardSavrHttpClient(Context.accountBaseUrl, Context.accountCardholderAgentStaticKey, Context.accountCardholderAgentAppID, newUsers[n].username, null, token);
                 CardSavrResponse<LoginResult> login = await cardholder.Init();
                 Context.CardholderData chd = new Context.CardholderData();
                 chd.client = cardholder; 
