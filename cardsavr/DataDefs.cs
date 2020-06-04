@@ -289,40 +289,31 @@ namespace Switch.CardSavr.Http
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MerchantSite
     {
-        public int? id { get; set; }
+        public int id { get; set; }
         public string name { get; set; }
         public string host { get; set; }
-        public string tags { get; set; }
-        public string image_guid { get; set; }
+        public string[] tags { get; set; }
         public int? mfa_support { get; set; }
-        public int? is_live { get; set; }
         public int? vbs_preload { get; set; }
-        public int? site_rank { get; set; }
-        public int? has_images { get; set; }
         public string additional_info_message { get; set; }
+        public LoginLabels login { get; set; }
+        public Image[] images { get; set; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class Image
+    {
+        public string url { get; set; }
+        public int width { get; set; }
+        public bool grayscale { get; set; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class LoginLabels
+    {
         public string username_label { get; set; }
         public string password_label { get; set; }
-    }
-
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class MerchantSiteTag
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string created_on { get; set; }
-        public string last_updated_on { get; set; }
-    }
-
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class MerchantSiteToSiteTagLink
-    {
-        public int id { get; set; }
-        public int merchant_site_id { get; set; }
-        public int merchant_site_tag_id { get; set; }
-        public int? rank { get; set; }
-        public string created_on { get; set; }
-        public string last_updated_on { get; set; }
+        public string mfa_label { get; set; }
     }
 
     /*========== USERS ==========*/

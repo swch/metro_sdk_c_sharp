@@ -20,7 +20,8 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            CardSavrResponse<List<MerchantSite>> merchants = await http.GetMerchantSitesAsync();
+            Paging paging = new Paging() { PageLength = 200, Sort = "name" };
+            CardSavrResponse<List<MerchantSite>> merchants = await http.GetMerchantSitesAsync(null, paging);
             foreach (MerchantSite merch in merchants.Body) {
                 log.Info($"Loaded merchant site: {merch.name}: {merch.host}");
             }

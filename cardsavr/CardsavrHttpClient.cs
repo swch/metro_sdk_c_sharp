@@ -356,25 +356,11 @@ namespace Switch.CardSavr.Http
         /*========== MERCHANT SITES ==========*/
 
         public async Task<CardSavrResponse<List<MerchantSite>>> 
-            GetMerchantSitesAsync()
+            GetMerchantSitesAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
-            string url = "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/sites.json";
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
-
-            using (HttpResponseMessage response = await SendAsync(request))
-            {
-                string body = await response.Content.ReadAsStringAsync();
-                dynamic data = JsonConvert.DeserializeObject(body);
-                MerchantSite def = JsonConvert.DeserializeObject<MerchantSite>(JsonConvert.SerializeObject(data.default_settings));
-                List<MerchantSite> merchants = JsonConvert.DeserializeObject<List<MerchantSite>>(JsonConvert.SerializeObject(data.sites));
-                foreach (MerchantSite item in merchants) {
-                    item.mfa_support = item.mfa_support != null ? item.mfa_support : def.mfa_support;
-                    item.is_live = item.is_live != null ? item.is_live : def.is_live;
-                    item.has_images = item.has_images != null ? item.has_images : def.has_images;
-                    item.site_rank = item.site_rank != null ? item.site_rank : def.site_rank;
-                }
-                return new CardSavrResponse<List<MerchantSite>>(response, merchants);
-            }
+            QueryDef qd = new QueryDef(query);
+            return await ApiGetAsync<List<MerchantSite>>("/merchant_sites", qd, paging, headers);
+            //string url = "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/sites.json";
         }
 
         /*========== USERS ==========*/
@@ -705,6 +691,7 @@ namespace Switch.CardSavr.Http
             string[] parts = encBody.encryptedBody.Split('$');
             body = Aes256.DecryptText(parts[0], parts[1], GetEncryptionKey());
             log.Debug($"decrypted body: \"{body}\"");
+            
             return JsonConvert.DeserializeObject<T>(body);
         }
 

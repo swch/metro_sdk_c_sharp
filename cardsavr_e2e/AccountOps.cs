@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 using Switch.CardSavr.Http;
@@ -21,12 +22,16 @@ namespace cardsavr_e2e
             // pick a user and merchant site.
             User user = ctx.GetNewUsers("cardholder")[0];
             Context.CardholderData chd = ctx.CardholderSessions[user.id ?? -1];
-            MerchantSite site = ctx.GetSyntheticSite();
+
+            //MerchantSite site = ctx.GetSyntheticSite();
+            CardSavrResponse<List<MerchantSite>> sites = await http.GetMerchantSitesAsync(new NameValueCollection() {
+                    { "host", "synthetic-1-step.herokuapp.com" }
+                });
 
             // create an account.
             PropertyBag bag = new PropertyBag();
             bag["cardholder_id"] = user.id;
-            bag["site_hostname"] = site.host;
+            bag["merchant_site_id"] = sites.Body[0].id;
             bag["username"] = "goodemail";
             bag["password"] = "";
 
