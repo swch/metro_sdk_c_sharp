@@ -36,18 +36,22 @@ namespace cardsavr_e2e
             // the card we create uses our (possibly truncated) special identifier as the color
             // so we can identify it later if needed.
             DateTime expire = DateTime.Now.AddYears(1);
+            string expYear =  (expire.Year % 2000).ToString();
+            string expMonth = expire.Month.ToString();
+            string pan = "4111111111111111";
+
             PropertyBag body = new PropertyBag()
             {
                 { "cardholder_id", user.id },
                 { "address_id", addrs.Body[0].id },
-                { "pan", "4111111111111111" },
-                { "par", GenerateBogusPAR() },
+                { "pan", pan },
                 { "cvv", 345 },
+                { "par", ApiUtil.GenerateRandomPAR(pan, expMonth, expYear, user.usenrame) },
                 { "first_name", user.first_name },
                 { "last_name", user.last_name },
                 { "name_on_card", "BOGUS CARD" },
-                { "expiration_month", expire.Month.ToString() },
-                { "expiration_year", (expire.Year % 2000).ToString() }
+                { "expiration_month", expMonth },
+                { "expiration_year", expYear}
             };
 
             // our test users have a known safe-key.
@@ -113,23 +117,5 @@ namespace cardsavr_e2e
             log.Info($"deleted {deleted} cards.");
         }
 
-        private string GenerateBogusPAR()
-        {
-            string digits = "0123456789";
-            string letters = "abcdefghijklmnopqrstuvwxyz";
-            string both = letters + digits;
-
-            string par = "";
-            par += letters[Context.random.Next() % letters.Length];
-            par += digits[Context.random.Next() % digits.Length];
-            par += letters[Context.random.Next() % letters.Length];
-            par += digits[Context.random.Next() % digits.Length];
-
-            int remainder = 29 - par.Length;
-            for (; remainder > 0; --remainder)
-                par += both[Context.random.Next() % both.Length];
-
-            return par.ToUpper();
-        }
     }
 }

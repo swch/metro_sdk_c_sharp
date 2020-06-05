@@ -2,12 +2,12 @@
 using System.Dynamic;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;  
 using System.Linq;
 using System.Security.Cryptography;
-
+using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace Switch.CardSavr.Http
 {
@@ -124,39 +124,24 @@ namespace Switch.CardSavr.Http
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public static string GenerateRandomPar(string pan, string exp_month, string exp_year, string salt) {
+        //These need to stay consistent across all SDKs
+        public static string GenerateRandomPAR(string pan, string expMonth, string expYear, string username)
+        {
+            string salt = $"{username}{expMonth}{expYear}";
+            HashAlgorithm hashS = new SHA256CryptoServiceProvider();
+            byte[] resultS = hashS.ComputeHash(Encoding.UTF8.GetBytes(salt));
+            Console.WriteLine(Convert.ToBase64String(resultS));
+            HashAlgorithm hashP = new MD5CryptoServiceProvider();
+            byte[] resultP = hashP.ComputeHash(Encoding.UTF8.GetBytes(pan));
+            Console.WriteLine(Convert.ToBase64String(resultP));
 
-            string digits = "0123456789";
-            string letters = "abcdefghijklmnopqrstuvwxyz";
-            string both = letters + digits;
-
-            string par = "";
-            par += letters[random.Next() % letters.Length];
-            par += digits[random.Next() % digits.Length];
-            par += letters[random.Next() % letters.Length];
-            par += digits[random.Next() % digits.Length];
-
-            int remainder = 29 - par.Length;
-            for (; remainder > 0; --remainder)
-                par += both[random.Next() % both.Length];
-
-            return par.ToUpper();
+            string hashed = "C" + Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                Encoding.UTF8.GetString(resultP),
+                resultS,
+                KeyDerivationPrf.HMACSHA1,
+                5000,
+                20));
+            return hashed;
         }
-/*
-            string[] paramsArray = [pan, exp_month, exp_year, salt];
-            // Hash up the salt for use as salt
-            string hashS = crypto.createHash("sha256");
-            hashS.update(salt + exp_month + exp_year);
-            const salt_buffer = hashS.digest();
-
-            // Hashup the PAN into 128bits
-            const hashP = crypto.createHash("md5");
-            hashP.update(pan);
-            const panHash = hashP.digest();
-            const PARHash = crypto.pbkdf2Sync(panHash, salt_buffer, 5000, 16, "md5");
-            const PAR = "CSAVR" + PARHash.toString('base64');
-            return PAR;
-        }
-*/
     }
 }

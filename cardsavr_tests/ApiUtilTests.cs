@@ -67,6 +67,14 @@ namespace cardsavr_tests
         }
 
         [Fact]
+        public void GenerateRandomPAR()
+        {
+
+            string par = ApiUtil.GenerateRandomPAR("4111111111111111", "12", "24", "markbudos");
+            Assert.Equal("C1PdrJAa7yl1bcor6cpx59TgXaFc=", par);
+        }
+
+        [Fact]
         public void CreateObject()
         {
             NameValueCollection nvc = new NameValueCollection();
