@@ -75,6 +75,32 @@ namespace cardsavr_tests
         }
 
         [Fact]
+        public void RandomString()
+        {
+
+            string r = ApiUtil.RandomString(50);
+            Assert.Equal(50, r.Length);
+        }
+
+        [Fact]
+        public void BuildValidTraceHeader()
+        {
+            string newTrace = ApiUtil.BuildValidTraceHeader("{\"key\":\"username\"}", "username");
+            dynamic obj = JsonConvert.DeserializeObject(newTrace);
+            Assert.Equal("username", obj.key.ToString());
+            newTrace = ApiUtil.BuildValidTraceHeader("{\"key\":\"value\"}", "username");
+            obj = JsonConvert.DeserializeObject(newTrace);
+            Assert.Equal("value", obj.key.ToString());
+            newTrace = ApiUtil.BuildValidTraceHeader("{}", "username");
+            obj = JsonConvert.DeserializeObject(newTrace);
+            Assert.Equal("username", obj.key.ToString());           
+            newTrace = ApiUtil.BuildValidTraceHeader("{\"other_key\":\"other_value\"}", "username");
+            obj = JsonConvert.DeserializeObject(newTrace);
+            Assert.Equal("other_value", obj.other_key.ToString());
+            Assert.Equal("username", obj.key.ToString());
+        }
+
+        [Fact]
         public void CreateObject()
         {
             NameValueCollection nvc = new NameValueCollection();

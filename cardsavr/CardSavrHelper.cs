@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Switch.CardSavr.Exceptions;
 
-using Newtonsoft.Json;
-
-
 namespace Switch.CardSavr.Http
 {
     public sealed class CardsavrHelper
