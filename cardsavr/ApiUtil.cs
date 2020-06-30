@@ -130,11 +130,9 @@ namespace Switch.CardSavr.Http
             string salt = $"{username}{expMonth}{expYear}";
             HashAlgorithm hashS = new SHA256CryptoServiceProvider();
             byte[] resultS = hashS.ComputeHash(Encoding.UTF8.GetBytes(salt));
-            Console.WriteLine(Convert.ToBase64String(resultS));
             HashAlgorithm hashP = new MD5CryptoServiceProvider();
             byte[] resultP = hashP.ComputeHash(Encoding.UTF8.GetBytes(pan));
-            Console.WriteLine(Convert.ToBase64String(resultP));
-
+            
             string hashed = "C" + Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 Encoding.UTF8.GetString(resultP),
                 resultS,

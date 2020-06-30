@@ -24,7 +24,7 @@ namespace cardsavr_e2e
                 new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
                 new Address(){ is_primary=true, address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
             );
-            await helper.CloseSession(login.userName);
+            await helper.CloseSession(Context.accountCardholderAgentUserName);
             //login can now be used as a redirect to a url that can log in and process jobs
         }
 
