@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 
 using Switch.CardSavr.Http;
+using Newtonsoft.Json;
 
 namespace cardsavr_e2e
 {
@@ -18,7 +19,7 @@ namespace cardsavr_e2e
         {
             CardsavrHelper helper = new CardsavrHelper();
             helper.SetAppSettings(Context.accountBaseUrl, Context.accountCardholderAgentAppID, Context.accountCardholderAgentStaticKey);
-            await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword);
+            await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword, null, "{\"key\": \"my_trace\"}");
             ClientLogin login = await helper.CreateCard(Context.accountCardholderAgentUserName, "default", 
                 new User(){ email = "foo@foo.com", phone_number = "5555555555" },
                 new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
