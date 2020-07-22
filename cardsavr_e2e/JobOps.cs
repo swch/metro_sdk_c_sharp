@@ -49,7 +49,7 @@ namespace cardsavr_e2e
                 log.Info($"{sj.id}: {sj.status}");
 
             bag.Clear();
-            bag["status"] = "cancel_requested";
+            bag["status"] = "CANCEL_REQUESTED";
             
             job = await chd.client.UpdateJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
             log.Info($"{job.Body.id}: {job.Body.status}");
