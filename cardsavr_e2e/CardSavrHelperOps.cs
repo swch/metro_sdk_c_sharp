@@ -15,6 +15,9 @@ namespace cardsavr_e2e
         {
         }
 
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             CardsavrHelper helper = new CardsavrHelper();
@@ -26,6 +29,7 @@ namespace cardsavr_e2e
                 new Address(){ is_primary=true, address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
             );
             await helper.CloseSession(Context.accountCardholderAgentUserName);
+            log.Info("username: " + login.cardholder.username + ", grant: " + login.userCredentialGrant + ", card_id: " + login.card.id);
             //login can now be used as a redirect to a url that can log in and process jobs
         }
 

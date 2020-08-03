@@ -91,7 +91,7 @@ namespace Switch.CardSavr.Http
                 card.address_id = addressResponse.Body.id ?? -1;
                 card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, userResponse.Body.username);
                 CardSavrResponse<Card> cardResponse = await cardholderSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), (string)u["cardholder_safe_key"]);
-                return new ClientLogin(){ userCredentialGrant = grantHandoff.Body.user_credential_grant, card = cardResponse.Body, address = addressResponse.Body };
+                return new ClientLogin(){ userCredentialGrant = grantHandoff.Body.user_credential_grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = userResponse.Body };
 
             } catch (RequestException e) {
                 log.Info(e.StackTrace);
