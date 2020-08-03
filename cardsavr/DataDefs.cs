@@ -112,9 +112,11 @@ namespace Switch.CardSavr.Http
     }
 
     public class ClientLogin {
+        public User cardholder { get; set; }
         public string userCredentialGrant { get; set; }
         public Card card { get; set; }
-        public Address address { get; set; }    }
+        public Address address { get; set; }
+    }
 
     public class Login {
         public string userCredentialGrant { get; set; }
