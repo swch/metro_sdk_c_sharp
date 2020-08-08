@@ -230,7 +230,7 @@ namespace Switch.CardSavr.Http
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class SingleSiteCardPlacementJob
+    public class SingleSiteJob
     {
         public int id { get; set; }
         public int place_card_on_multiple_sites_job_id { get; set; }

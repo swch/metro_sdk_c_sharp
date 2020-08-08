@@ -37,21 +37,21 @@ namespace cardsavr_e2e
                 { "site_hostname", chd.accounts[0].site_hostname }
             };
             
-            CardSavrResponse<SingleSiteCardPlacementJob> job = await chd.client.CreateJobAsync(bag, chd.cardholder_safe_key);
+            CardSavrResponse<SingleSiteJob> job = await chd.client.CreateSingleSiteJobAsync(bag, chd.cardholder_safe_key);
 
-            CardSavrResponse<List<SingleSiteCardPlacementJob>> singleJobs = await http.GetSingleSiteJobsAsync(
+            CardSavrResponse<List<SingleSiteJob>> singleJobs = await http.GetSingleSiteJobsAsync(
                 new NameValueCollection() {
                     { "ids", job.Body.id.ToString() }
                 }
             );
             log.Info($"retrieved {singleJobs.Body.Count} single-site jobs.");
-            foreach (SingleSiteCardPlacementJob sj in singleJobs.Body)
+            foreach (SingleSiteJob sj in singleJobs.Body)
                 log.Info($"{sj.id}: {sj.status}");
 
             bag.Clear();
             bag["status"] = "CANCEL_REQUESTED";
             
-            job = await chd.client.UpdateJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
+            job = await chd.client.UpdateSingleSiteJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
             log.Info($"{job.Body.id}: {job.Body.status}");
 
             //CardSavrResponse<List<CardPlacementResult>> results = 

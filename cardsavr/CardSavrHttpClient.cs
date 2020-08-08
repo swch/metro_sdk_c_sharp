@@ -278,29 +278,29 @@ namespace Switch.CardSavr.Http
 
         /*========== CARD PLACEMENT JOBS ==========*/
 
-        public async Task<CardSavrResponse<List<SingleSiteCardPlacementJob>>> 
+        public async Task<CardSavrResponse<List<SingleSiteJob>>> 
             GetSingleSiteJobsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
-            return await ApiGetAsync<List<SingleSiteCardPlacementJob>>(
+            return await ApiGetAsync<List<SingleSiteJob>>(
                 "/place_card_on_single_site_jobs", qd, paging, headers);
         }
 
-        public async Task<CardSavrResponse<SingleSiteCardPlacementJob>> 
-            CreateJobAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<SingleSiteJob>> 
+            CreateSingleSiteJobAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
         {
             EnsureSafeKey(safeKey);
-            return await ApiPostAsync<SingleSiteCardPlacementJob>(
+            return await ApiPostAsync<SingleSiteJob>(
                 "/place_card_on_single_site_jobs", body, safeKey, headers);
         }
 
-        public async Task<CardSavrResponse<SingleSiteCardPlacementJob>>
-            UpdateJobAsync(object query, PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<SingleSiteJob>>
+            UpdateSingleSiteJobAsync(object query, PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
         {
             EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, body);
 
-            return await ApiPutDelAsync<SingleSiteCardPlacementJob>(
+            return await ApiPutDelAsync<SingleSiteJob>(
                 "/place_card_on_single_site_jobs/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
