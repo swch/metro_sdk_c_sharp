@@ -377,12 +377,11 @@ namespace Switch.CardSavr.Http
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
                 body.Add("username", ApiUtil.RandomString(40));
             }
-
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
-                AddNewSafeKeyHeader(headers, newSafeKey);
-                headers.Add("financial-institution", financialInstitution);
             }
+            AddNewSafeKeyHeader(headers, newSafeKey);
+            headers.Add("financial-institution", financialInstitution);
 
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
         }
@@ -397,10 +396,14 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<List<User>>> 
-            UpdateUserAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+            UpdateUserAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
             string path = "/cardsavr_users";
+            if (headers == null) {
+                headers = new HttpRequestMessage().Headers;
+            }
+            AddNewSafeKeyHeader(headers, newSafeKey);
             return await ApiMultiPutDelAsync<User>(path, null, qd, HttpMethod.Put, body, null, paging, headers);
         }
 

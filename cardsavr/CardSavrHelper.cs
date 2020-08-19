@@ -67,6 +67,7 @@ namespace Switch.CardSavr.Http
                 PropertyBag u = new PropertyBag();
                 u["email"] = user.email;
                 u["phone_number"] = user.phone_number;
+                u["username"] = user.username;
                 u["role"] = "cardholder";
                 
                 //set the missing settings for model
