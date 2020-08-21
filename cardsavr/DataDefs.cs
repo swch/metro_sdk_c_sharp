@@ -219,7 +219,7 @@ namespace Switch.CardSavr.Http
         public int site_id { get; set; }
         public string parent_transaction_id { get; set; }
         public int filter_cycle { get; set; }
-        public string custom_data { get; set; }
+        public object custom_data { get; set; }
         public string job_result_data { get; set; }
         public string site_name { get; set; }
         public string status { get; set; }
@@ -245,7 +245,7 @@ namespace Switch.CardSavr.Http
         public string safe_nonce { get; set; }
         public string queue_name { get; set; }
         public string job_result_data { get; set; }
-        public string custom_data { get; set; }
+        public object custom_data { get; set; }
         public string failure_reason { get; set; }
         public bool do_not_queue { get; set; }
         public int time_elapsed { get; set; }
@@ -290,6 +290,16 @@ namespace Switch.CardSavr.Http
     /*========== MERCHANT SITES ==========*/
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class FinancialInsitution
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string lookup_key { get; set; }
+        public string alternate_lookup_key { get; set; }
+        public object custom_data { get; set; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MerchantSite
     {
         public int id { get; set; }
@@ -326,30 +336,20 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public string username { get; set; }
+        public string password { get; set; }
+        public string next_password { get; set; }
+        public string cardholder_safe_key { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
-        public string email { get; set; }
-        public string phone_number { get; set; }
-        public string TFA_SS { get; set; }
-        public string TFA_SMS { get; set; }
-        public string TFA_type { get; set; }
-        public string TFA_frequency { get; set; }
-        public string TFA_timeout { get; set; }
-        public int? failed_attempts { get; set; }
-        public bool? remember_username { get; set; }
-        public bool? is_internal { get; set; }
-        public bool? TFA { get; set; }
-        public bool? is_locked { get; set; }
-        public string proxy_login_token_expiration { get; set; }
         public string last_login_time { get; set; }
+        public bool? is_locked { get; set; }
+        public string email { get; set; }
+        public bool is_password_update_required { get; set; }
         public string role { get; set; }
+        public string phone_number { get; set; }
+        public dynamic custom_data { get; set; }
+        public string next_rotation_on { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
-
-        // these properties used only on create/update and won't be returned
-        // via a normal get request.
-        public string password { get; set; }
-        public string cardholder_safe_key { get; set; }
-        public string proxy_login_token { get; set; }
     }
 }

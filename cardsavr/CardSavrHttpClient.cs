@@ -375,7 +375,7 @@ namespace Switch.CardSavr.Http
             CreateUserAsync(PropertyBag body, string newSafeKey, string financialInstitution, HttpRequestHeaders headers = null)
         {
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
-                body.Add("username", ApiUtil.RandomString(40));
+                body["username"] = ApiUtil.RandomString(40);
             }
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;

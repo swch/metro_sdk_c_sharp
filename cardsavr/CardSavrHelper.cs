@@ -68,6 +68,7 @@ namespace Switch.CardSavr.Http
                 u["email"] = user.email;
                 u["phone_number"] = user.phone_number;
                 u["username"] = user.username;
+                u["custom_data"] = user.custom_data;
                 u["role"] = "cardholder";
                 
                 //set the missing settings for model
