@@ -82,18 +82,13 @@ namespace Switch.CardSavr.Http
                     throw new RequestException($"No body returned Creating User: {u}");
                 }
                 int cardholderId = userResponse.Body.id ?? -1;
-                //eventually these will be one time grants
-                CardSavrResponse<CredentialGrant> grantCardholder = await agentSession.client.CreateUserGrantAsync(cardholderId);
-                CardSavrResponse<CredentialGrant> grantHandoff = await agentSession.client.CreateUserGrantAsync(cardholderId);
-                
-                ClientSession cardholderSession = await LoginAndCreateSession(userResponse.Body.username, null, grantCardholder.Body.user_credential_grant);
-
-                CardSavrResponse<Address> addressResponse = await cardholderSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
+                address.user_id = cardholderId;
+                CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
                 card.cardholder_id = cardholderId;
                 card.address_id = addressResponse.Body.id ?? -1;
                 card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, userResponse.Body.username);
-                CardSavrResponse<Card> cardResponse = await cardholderSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), (string)u["cardholder_safe_key"]);
-                return new ClientLogin(){ userCredentialGrant = grantHandoff.Body.user_credential_grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = userResponse.Body };
+                CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), (string)u["cardholder_safe_key"]); //don't need safe key, stored at Strivve
+                return new ClientLogin(){ userCredentialGrant = userResponse.Body.credential_grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = userResponse.Body };
 
             } catch (RequestException e) {
                 log.Info(e.StackTrace);

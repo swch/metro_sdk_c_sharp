@@ -42,8 +42,7 @@ namespace cardsavr_e2e
             // update them. we'll just change the phone number.
             for (int n = 0; n < newUsers.Count; ++n)
             {
-                CardSavrResponse<CredentialGrant> grant = await http.CreateUserGrantAsync((int)newUsers[n].id);
-                string token = grant.Body.user_credential_grant;
+                string token = newUsers[n].credential_grant;
                 CardSavrHttpClient cardholder = new CardSavrHttpClient(Context.accountBaseUrl, Context.accountCardholderAgentStaticKey, Context.accountCardholderAgentAppID, newUsers[n].username, null, token);
                 CardSavrResponse<LoginResult> login = await cardholder.Init();
                 Context.CardholderData chd = new Context.CardholderData();

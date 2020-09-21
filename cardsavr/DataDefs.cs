@@ -351,5 +351,6 @@ namespace Switch.CardSavr.Http
         public string next_rotation_on { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
+        public string credential_grant { get; set; }
     }
 }
