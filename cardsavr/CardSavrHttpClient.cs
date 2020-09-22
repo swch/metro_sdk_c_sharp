@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -104,7 +105,8 @@ namespace Switch.CardSavr.Http
         {
             CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
                 "/session/start", null, null, headers);
-            
+            _data.SessionToken = result.Body.sessionToken;
+
             return result;
         }
 
@@ -522,7 +524,7 @@ namespace Switch.CardSavr.Http
 
         /// <summary>
         /// Creates an HttpRequestMessage by serializing and encrypting the body content (if
-        /// present), populating the message with headers (including cookie), and signing
+        /// present), populating the message with headers, and signing
         /// the request.
         /// </summary>
         /// <returns>A newly created HttpRequestMessage, ready for SendAsync().</returns>
@@ -541,8 +543,8 @@ namespace Switch.CardSavr.Http
             
             CopyRequestHeaders(request.Headers, DefaultRequestHeaders);
             CopyRequestHeaders(request.Headers, headers);
-            if (_data.Cookie != null)
-                request.Headers.Add("cookie", _data.Cookie);
+            if (_data.SessionToken != null)
+                request.Headers.Add("x-cardsavr-session-jwt", _data.SessionToken);
 
             try {
                 request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
@@ -576,7 +578,7 @@ namespace Switch.CardSavr.Http
 
         /// <summary>
         /// Processes the HTTP response by reading the body content, decrypting it and verifying
-        /// the signature. Also stores any cookie provided by the server. Returns a CardSavrResponse
+        /// the signature. Also stores the sessionToken returned by /start the server. Returns a CardSavrResponse
         /// object containing the deserialized body content, and the content of the paging header
         /// if present.
         /// 
@@ -595,17 +597,9 @@ namespace Switch.CardSavr.Http
             log.Info($"processing \"{request.Method}\" response for path: {request.RequestUri.PathAndQuery}");
             string body = await response.Content.ReadAsStringAsync();
             CheckStatusAndMaybeThrow(body, response);
-
+ 
             VerifyResponseSignature(request.RequestUri, response, body);
-
-            // handle a new cookie from the server.
-            string cookie = ApiUtil.GetSingleHeaderValue(response.Headers, "set-cookie");
-            if (cookie != null)
-            {
-                _data.Cookie = cookie;
-                log.Debug($"set-cookie: \"{cookie}\"");
-            }
-
+ 
             // the generic parameter constraint allows use of the "as" operator in this context.
             // this code sets "tstr" to the value of body if T is a string, and to null
             // otherwise. then if tstr is null (i.e., it is not a string), we can assume it 

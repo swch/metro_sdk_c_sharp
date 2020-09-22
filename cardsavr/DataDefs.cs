@@ -102,13 +102,7 @@ namespace Switch.CardSavr.Http
     public class StartResult
     {
         public string sessionSalt { get; set; }
-        public bool encryptionOn { get; set; }
-
-        public StartResult()
-        {
-            // the correct default value.
-            encryptionOn = true;
-        }
+        public string sessionToken { get; set; }
     }
 
     public class ClientLogin {
