@@ -33,7 +33,7 @@ namespace cardsavr_e2e
                 new Address(){ is_primary=true, address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
             );
             await helper.CloseSession(Context.accountCardholderAgentUserName);
-            log.Info("username: " + login.cardholder.username + ", grant: " + login.userCredentialGrant + ", card_id: " + login.card.id);
+            log.Info("CARDSAVRHELPEROPS username: " + login.cardholder.username + ", grant: " + login.userCredentialGrant + ", card_id: " + login.card.id);
             //login can now be used as a redirect to a url that can log in and process jobs
         }
 

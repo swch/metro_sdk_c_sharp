@@ -59,6 +59,8 @@ namespace Switch.CardSavr.Http
         {
             // the identification header is a default in case the client sets nothing.
             _data = null;
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, cert, chain, sslPolicyErrors) => true;
         }
 
         public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string trace = null, string cert = null)
@@ -159,25 +161,22 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Account>> 
-            CreateAccountAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+            CreateAccountAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             return await ApiPostAsync<Account>("/cardsavr_accounts", body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<Account>> 
-            UpdateAccountAsync(object query, PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+            UpdateAccountAsync(object query, PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, body, false, true);
             return await ApiPutDelAsync<Account>(
                 "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<Account>> 
-            DeleteAccountAsync(object query, string safeKey, HttpRequestHeaders headers = null)
+            DeleteAccountAsync(object query, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, null, false, true);
             return await ApiPutDelAsync<Account>(
                 "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Delete, null, safeKey, headers);
@@ -255,9 +254,8 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Card>> 
-            CreateCardAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+            CreateCardAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             return await ApiPostAsync<Card>("/cardsavr_cards", body, safeKey, headers);
         }
 
@@ -270,9 +268,8 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<List<Card>>> 
-            DeleteCardAsync(object query, string safeKey, Paging paging = null, HttpRequestHeaders headers = null)
+            DeleteCardAsync(object query, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, null, false, true);
             return await ApiMultiPutDelAsync<Card>(
                 "/cardsavr_cards", null, qd, HttpMethod.Delete, null, safeKey, paging, headers);
@@ -289,17 +286,15 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<SingleSiteJob>> 
-            CreateSingleSiteJobAsync(PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+            CreateSingleSiteJobAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             return await ApiPostAsync<SingleSiteJob>(
                 "/place_card_on_single_site_jobs", body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<SingleSiteJob>>
-            UpdateSingleSiteJobAsync(object query, PropertyBag body, string safeKey, HttpRequestHeaders headers = null)
+            UpdateSingleSiteJobAsync(object query, PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
         {
-            EnsureSafeKey(safeKey);
             QueryDef qd = new QueryDef(query, body);
 
             return await ApiPutDelAsync<SingleSiteJob>(
@@ -374,7 +369,7 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<User>> 
-            CreateUserAsync(PropertyBag body, string newSafeKey, string financialInstitution, HttpRequestHeaders headers = null)
+            CreateUserAsync(PropertyBag body, string newSafeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
         {
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
                 body["username"] = ApiUtil.RandomString(40);
@@ -471,7 +466,6 @@ namespace Switch.CardSavr.Http
             string newPath = String.Format(path, id);
             using (HttpRequestMessage request = CreateRequest(method, newPath, body, headers))
             {
-                // allows a null safe-key, callers should use EnsureSafeKey() before calling if needed.
                 AddSafeKeyHeader(request.Headers, safeKey);
                 using (HttpResponseMessage response = await SendAsync(request))
                 {
@@ -760,16 +754,6 @@ namespace Switch.CardSavr.Http
         }
 
         /// <summary>
-        /// Throws an InvalidSafeKeyException if receives a null or empty string.
-        /// </summary>
-        /// <param name="safeKey">The safe-key value to check.</param>
-        private void EnsureSafeKey(string safeKey)
-        {
-            if (string.IsNullOrEmpty(safeKey))
-                throw new InvalidSafeKeyException("safe-key cannot be null or empty.");
-        }
-
-        /// <summary>
         /// Adds the safe-key header iff a valid safe-key value is passed. 
         /// Does NOT check for a valid safe-key.
         /// </summary>
@@ -777,7 +761,7 @@ namespace Switch.CardSavr.Http
         /// <param name="safeKey">The safe-key to process.</param>
         private void AddSafeKeyHeader(HttpRequestHeaders headers, string safeKey)
         {
-            if (!string.IsNullOrEmpty(safeKey))
+            if (!string.IsNullOrEmpty(safeKey)) 
                 headers.Add("cardholder-safe-key", Aes256.EncryptText(safeKey, GetEncryptionKey()));
         }
         private void AddNewSafeKeyHeader(HttpRequestHeaders headers, string newSafeKey)

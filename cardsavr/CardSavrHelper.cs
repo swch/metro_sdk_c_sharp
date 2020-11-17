@@ -58,7 +58,7 @@ namespace Switch.CardSavr.Http
             return null;
         }
 
-        public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, User user, Card card, Address address) {
+        public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, User user, Card card, Address address, string safeKey = null) {
         
             try {
                 //don't need the login data
@@ -75,9 +75,8 @@ namespace Switch.CardSavr.Http
                 if (String.IsNullOrEmpty(user.first_name)) u["first_name"] = card.first_name;
                 if (String.IsNullOrEmpty(user.last_name)) u["last_name"] = card.last_name;
                 if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
-                u["cardholder_safe_key"] =  agentSession.client.GenerateCardholderSafeKey(card.name_on_card + u["email"]); 
-        
-                CardSavrResponse<User> userResponse = await agentSession.client.CreateUserAsync(u, (string)u["cardholder_safe_key"], financialInstitution);
+
+                CardSavrResponse<User> userResponse = await agentSession.client.CreateUserAsync(u, safeKey, financialInstitution);
                 if (userResponse.Body == null || userResponse.Body.id == null) {
                     throw new RequestException($"No body returned Creating User: {u}");
                 }
@@ -87,7 +86,7 @@ namespace Switch.CardSavr.Http
                 card.cardholder_id = cardholderId;
                 card.address_id = addressResponse.Body.id ?? -1;
                 card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, userResponse.Body.username);
-                CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), (string)u["cardholder_safe_key"]); //don't need safe key, stored at Strivve
+                CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
                 return new ClientLogin(){ userCredentialGrant = userResponse.Body.credential_grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = userResponse.Body };
 
             } catch (RequestException e) {

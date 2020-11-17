@@ -44,7 +44,6 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             int count = extra.Length > 0 ? (int)extra[0] : 4;
-            Dictionary<int, CardSavrHttpClient> sessions = new Dictionary<int, CardSavrHttpClient>();
 
             // create users.
             PropertyBag bag = new PropertyBag();
@@ -54,14 +53,19 @@ namespace cardsavr_e2e
                 // the username, role and email help us identify these users later.
                 bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
                 bag["password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier); //cardholers don't have passwords
-                bag["role"] = "developer";
+                bag["role"] = "cardholder_agent";
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
                 bag["email"] = $"cardsavr_e2e_{Context.random.Next(100)}@gmail.com";
                 bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}".Substring(0, 12);
+                string safe_key = Context.GenerateBogus32BitPassword(bag.GetString("username"));
+                CardSavrResponse<User> result = await http.CreateUserAsync(bag, safe_key, "default");
 
-                CardSavrResponse<User> result = await http.CreateUserAsync(bag, Context.GenerateBogus32BitPassword(bag.GetString("username")), "default");
+                Context.CardholderData chd = new Context.CardholderData();
+                chd.cardholder_safe_key = safe_key;
+                ctx.CardholderSessions.Add((int)result.Body.id, chd);
             }
+
             // get a list of all users, including the ones we just created.
             await GetAllUsers(http, ctx, 100);
             // log what we just did.

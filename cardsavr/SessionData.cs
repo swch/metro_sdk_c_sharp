@@ -18,7 +18,7 @@ namespace Switch.CardSavr.Http
         private string _trace;          // a temporary short lived grant
         private string _cert;           // self signing cert for developement servers
         private Ecdh _ecdh;             // key pair
-        private string _sessionToken;         // session-specific cookie
+        private string _sessionToken;         // session-specific token
 
         public string BaseUrl
         {

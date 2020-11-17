@@ -19,54 +19,54 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            // get all addresses for the user (there should be at least 2).
-            User user = ctx.GetNewUsers("cardholder")[0]; //first user
-            CardSavrResponse<List<Address>> addrs = await http.GetAddressesAsync(new NameValueCollection() {
-                { "user_ids", user.id.ToString() }
-            });
+            foreach (User user in ctx.GetNewUsers("cardholder")) {
 
-            if (addrs.Body.Count < 2)
-                throw new ArgumentOutOfRangeException($"only {addrs.Body.Count} addresses for user \"{user.username}\"; must be >= 2");
+                CardSavrResponse<List<Address>> addrs = await http.GetAddressesAsync(new NameValueCollection() {
+                    { "user_ids", user.id.ToString() }
+                });
 
-            log.Info($"got {addrs.Body.Count} addresss for user \"{user.username}\"");
+                if (addrs.Body.Count < 2)
+                    throw new ArgumentOutOfRangeException($"only {addrs.Body.Count} addresses for user \"{user.username}\"; must be >= 2");
 
-            //Grab the session for this cardholder
-           CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1].client;
+                log.Info($"got {addrs.Body.Count} addresss for user \"{user.username}\"");
 
-            // the card we create uses our (possibly truncated) special identifier as the color
-            // so we can identify it later if needed.
-            DateTime expire = DateTime.Now.AddYears(1);
-            string expYear =  (expire.Year % 2000).ToString();
-            string expMonth = expire.Month.ToString();
-            string pan = "4111111111111111";
+                //Grab the session for this cardholder
+                CardSavrHttpClient cardholder = ctx.CardholderSessions[user.id ?? -1].client;
 
-            PropertyBag body = new PropertyBag()
-            {
-                { "cardholder_id", user.id },
-                { "address_id", addrs.Body[0].id },
-                { "pan", pan },
-                { "cvv", 345 },
-                { "par", ApiUtil.GenerateRandomPAR(pan, expMonth, expYear, user.username) },
-                { "first_name", user.first_name },
-                { "last_name", user.last_name },
-                { "name_on_card", "BOGUS CARD" },
-                { "expiration_month", expMonth },
-                { "expiration_year", expYear}
-            };
+                // the card we create uses our (possibly truncated) special identifier as the color
+                // so we can identify it later if needed.
+                DateTime expire = DateTime.Now.AddYears(1);
+                string expYear =  (expire.Year % 2000).ToString();
+                string expMonth = expire.Month.ToString();
+                string pan = "4111111111111111";
 
-            // our test users have a known safe-key.
-            string safeKey = Context.GenerateBogus32BitPassword(user.username);
-            CardSavrResponse<Card> card = await cardholder.CreateCardAsync(body, safeKey);
-            log.Info($"created card-id={card.Body.id}");
+                PropertyBag body = new PropertyBag()
+                {
+                    { "cardholder_id", user.id },
+                    { "address_id", addrs.Body[0].id },
+                    { "pan", pan },
+                    { "cvv", "345" },
+                    { "par", ApiUtil.GenerateRandomPAR(pan, expMonth, expYear, user.username) },
+                    { "first_name", user.first_name },
+                    { "last_name", user.last_name },
+                    { "name_on_card", "BOGUS CARD" },
+                    { "expiration_month", expMonth },
+                    { "expiration_year", expYear}
+                };
 
-            // update it: just change the address.
-            body.Clear();
-            body.Add("id", card.Body.id);
-            body.Add("address_id", addrs.Body[0].id);
-            CardSavrResponse<List<Card>> upd = await cardholder.UpdateCardAsync(null, body);
-            log.Info($"update card for user \"{user.username}\"");
+                // our test users sometimes have a known safe-key.
+                CardSavrResponse<Card> card = await cardholder.CreateCardAsync(body, ctx.CardholderSessions[user.id ?? -1].cardholder_safe_key);
+                log.Info($"created card-id={card.Body.id}");
+                // update it: just change the address.
+                body.Clear();
+                body.Add("id", card.Body.id);
+                body.Add("address_id", addrs.Body[0].id);
+                CardSavrResponse<List<Card>> upd = await cardholder.UpdateCardAsync(null, body);
+                log.Info($"update card for user \"{user.username}\"");
+                ctx.CardholderSessions[user.id ?? -1].cards = upd.Body;
 
-            ctx.CardholderSessions[user.id ?? -1].cards = upd.Body;
+            }
+
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)

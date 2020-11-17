@@ -28,14 +28,13 @@ namespace cardsavr_e2e
                 // generate using an easily reproducible safe-key.
                 // the username, role and email help us identify these users later.
                 bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
-                bag["cardholder_safe_key"] = Context.GenerateBogus32BitPassword(bag.GetString("username"));  //if we want to store it server-side
                 bag["role"] = "cardholder";
                 bag["first_name"] = $"Otto_{n}_cardholder";
                 bag["last_name"] = $"Matic_{n}_cardholder";
                 bag["email"] = $"cardsavr_e2e_{Context.random.Next(100)}@gmail.com";
                 bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}".Substring(0, 12);
 
-                CardSavrResponse<User> result = await http.CreateUserAsync(bag, bag.GetString("cardholder_safe_key"), "default");
+                CardSavrResponse<User> result = await http.CreateUserAsync(bag, count % 2 == 0 ? null : Context.GenerateBogus32BitPassword(bag.GetString("username")));
                 newUsers.Add(result.Body);
             }
 
@@ -47,7 +46,6 @@ namespace cardsavr_e2e
                 CardSavrResponse<LoginResult> login = await cardholder.Init();
                 Context.CardholderData chd = new Context.CardholderData();
                 chd.client = cardholder; 
-                chd.cardholder_safe_key = login.Body.cardholder_safe_key;
                 sessions.Add((int)newUsers[n].id, chd);
             }
 

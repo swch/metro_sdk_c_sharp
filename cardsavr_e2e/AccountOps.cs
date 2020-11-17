@@ -36,14 +36,13 @@ namespace cardsavr_e2e
             bag["password"] = "";
 
             // users created by our test-suite have known/bogus safe-key.
-            string safeKey = Context.GenerateBogus32BitPassword(user.username);
-            CardSavrResponse<Account> result = await chd.client.CreateAccountAsync(bag, safeKey);
+            CardSavrResponse<Account> result = await chd.client.CreateAccountAsync(bag, chd.cardholder_safe_key);
             log.Info($"created account {result.Body.id} for user-id={user.id} ({user.username})");
 
             // update it.
             bag.Clear();
             bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
-            result = await chd.client.UpdateAccountAsync(result.Body.id, bag, safeKey);
+            result = await chd.client.UpdateAccountAsync(result.Body.id, bag, chd.cardholder_safe_key);
             log.Info($"updated account-id={result.Body.id}");
 
             List<Account> list = new List<Account>();
