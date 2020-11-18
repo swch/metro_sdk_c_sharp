@@ -35,7 +35,7 @@ namespace cardsavr_e2e
                 { "do_not_queue", false },
                 { "requesting_brand", "mbudos" },
                 { "site_hostname", chd.accounts[0].site_hostname},
-                { "status", "REQUESTED" }
+                { "status", "INITIATED" }
             };
             
             CardSavrResponse<SingleSiteJob> job = await chd.client.CreateSingleSiteJobAsync(bag, chd.cardholder_safe_key);
