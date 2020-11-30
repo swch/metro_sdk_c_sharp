@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Switch.CardSavr.Exceptions;
+using System.Collections.Specialized;
+using Switch.Security;
 
 namespace Switch.CardSavr.Http
 {
@@ -10,6 +12,7 @@ namespace Switch.CardSavr.Http
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private bool _rejectUnauthorized;
         private string _cardsavrServer;
         private string _appName;
         private string _appKey;
@@ -24,7 +27,7 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task CloseSession(string userName) {
-            if (!_sessions.ContainsKey(userName)) {
+            if (_sessions.ContainsKey(userName)) {
                 CardSavrHttpClient client = _sessions[userName].client;
                 await client.EndAsync();
                 _sessions.Remove(userName);
@@ -32,11 +35,12 @@ namespace Switch.CardSavr.Http
         }
 
 
-        public void SetAppSettings(string cardsavrServer, string appName, string appKey) {
+        public void SetAppSettings(string cardsavrServer, string appName, string appKey, bool rejectUnauthorized = true) {
             _cardsavrServer = cardsavrServer;
             _appName = appName;
             _appKey = appKey;
             _sessions = new Dictionary<string, ClientSession>();
+            _rejectUnauthorized = rejectUnauthorized;
         }
 
         public async Task<ClientSession> LoginAndCreateSession(string userName, 
@@ -47,15 +51,56 @@ namespace Switch.CardSavr.Http
                 return _sessions[userName];
             }
             try {
-                CardSavrHttpClient session = new CardSavrHttpClient(_cardsavrServer, _appKey, _appName, userName, password, grant, trace);
+                CardSavrHttpClient session = new CardSavrHttpClient(_rejectUnauthorized);
+                session.Setup(_cardsavrServer, _appKey, _appName, userName, password, grant, trace);
                 CardSavrResponse<LoginResult> login = await session.Init();
-                _sessions[userName] = new ClientSession { client = session, userId = login.Body.user_id, safeKey = login.Body.cardholder_safe_key };
+                _sessions[userName] = new ClientSession { client = session, userId = login.Body.user_id };
                 return _sessions[userName];
             } catch(RequestException ex) {
                 log.Error("Unable to create sessions for: " + userName);
                 log.Error(ex.StackTrace);
             }
             return null;
+        }
+
+        public async Task<String> RotateIntegrator(string user, string integrator_name) {
+            ClientSession agentSession = _sessions[user];
+            CardSavrResponse<List<Integrator>> response = await agentSession.client.GetIntegratorsAsync(new NameValueCollection() {
+                { "name", integrator_name }
+            });
+            if (response.Body == null || response.Body.Count > 1) {
+                throw new ArgumentException($"Can't reset unknown integrator: {integrator_name}");
+            }
+            Integrator integrator = response.Body[0];            
+            CardSavrResponse<Integrator> updated = await agentSession.client.RotateIntegratorsAsync(integrator.id);
+            return updated.Body.current_key;
+        }
+
+        /*
+         * Rotating this user's password could potentially break the current user, so ensure that the return password
+         * is stored someplace safely.
+         */
+        public async Task<string> RotateAgentPassword(string agent, string newPassword = null) {
+
+            ClientSession agentSession = _sessions[agent];
+            CardSavrResponse<List<User>> u = await agentSession.client.GetUsersAsync(new NameValueCollection() {
+                { "username", agent }
+            });
+
+            if (u == null) {
+                throw new ArgumentException($"Username {agent} does not exist");
+            } else if (u.Body.Count > 1) {
+                throw new ArgumentException($"{u.Body.Count} users for ${agent}, there should only be one.");
+            }
+            PropertyBag bag = new PropertyBag();
+            bag["username"] = agent;
+            string password = (newPassword ?? ApiUtil.GenerateStretchedPassword(agent, 20)); //bag gets mutated
+            bag["password"] = password;
+            CardSavrResponse<PropertyBag> response = await agentSession.client.UpdateUserPasswordAsync((int)u.Body[0].id, bag);
+            if (response.Body != null) {
+                return password;
+            }
+            throw new ArgumentException("Couldn't update provided password.");
         }
 
         public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, User user, Card card, Address address, string safeKey = null) {

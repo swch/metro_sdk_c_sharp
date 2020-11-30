@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 
 using Switch.CardSavr.Http;
+using Switch.Security;
 
 namespace cardsavr_e2e
 {
@@ -44,27 +45,38 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             int count = extra.Length > 0 ? (int)extra[0] : 4;
-
             // create users.
             PropertyBag bag = new PropertyBag();
+            string password = "";
             for (int n = 0; n < count; ++n)
             {
                 // generate using an easily reproducible safe-key.
                 // the username, role and email help us identify these users later.
                 bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
-                bag["password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier); //cardholers don't have passwords
-                bag["role"] = "cardholder_agent";
+                password = $"{Context.e2e_identifier}_{Context.random.Next(100)}_{n}";
+                bag["password"] = password; //cardholers don't have passwords
+                bag["role"] = "customer_agent";
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
                 bag["email"] = $"cardsavr_e2e_{Context.random.Next(100)}@gmail.com";
                 bag["phone_number"] = $"206-555-{n}{n + 1}{n + 2}{n + 3}".Substring(0, 12);
-                string safe_key = Context.GenerateBogus32BitPassword(bag.GetString("username"));
+                string safe_key = Aes256.GetRandomString(30);
+                log.Info(bag["username"] + " " + bag["password"]);
                 CardSavrResponse<User> result = await http.CreateUserAsync(bag, safe_key, "default");
 
                 Context.CardholderData chd = new Context.CardholderData();
                 chd.cardholder_safe_key = safe_key;
                 ctx.CardholderSessions.Add((int)result.Body.id, chd);
             }
+
+            CardsavrHelper helper = new CardsavrHelper();
+            helper.SetAppSettings(Context.accountBaseUrl, Context.accountCustomerAgentAppID, Context.accountCustomerAgentStaticKey, Context.rejectUnauthorized);
+            string testing_agent = (string)bag["username"];
+            await helper.LoginAndCreateSession(testing_agent, password);
+            string new_password = await helper.RotateAgentPassword(testing_agent);
+            log.Info("New Password: " + new_password);
+            await helper.CloseSession(testing_agent);
+            await helper.LoginAndCreateSession(testing_agent, new_password);
 
             // get a list of all users, including the ones we just created.
             await GetAllUsers(http, ctx, 100);
@@ -85,6 +97,9 @@ namespace cardsavr_e2e
             User u = newUsers[Context.random.Next(0, newUsers.Count - 1)];
             // update the password for just one of the users.
             await UpdateUserPassword(http, ctx, u);
+
+            
+
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -139,6 +154,7 @@ namespace cardsavr_e2e
             string pwBase = "foobar";
             string newPassword = pwBase.PadRight(44 - pwBase.Length);
             PropertyBag bag = new PropertyBag();
+            bag["username"] = user.username;
             bag["old_password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier);
             bag["password"] = Context.GenerateBogus32BitPassword(user.username);
             bag["password_copy"] = Context.GenerateBogus32BitPassword(user.username);

@@ -39,6 +39,17 @@ namespace Switch.CardSavr.Http
 {
     public sealed class CardSavrHttpClient : HttpClient
     {
+
+        private static HttpClientHandler _handler;
+        private static HttpClientHandler _unauthorizedHandler;
+        static CardSavrHttpClient() {
+            _handler = new HttpClientHandler();
+            _unauthorizedHandler = new HttpClientHandler();
+            _unauthorizedHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { 
+                return true; 
+            };
+        }
+
         // class logger.
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -51,22 +62,12 @@ namespace Switch.CardSavr.Http
        
         // stores session-specific information.
         private SessionData _data;
-
         /*========== INITIALIZATION AND SETUP ==========*/
 
-        public CardSavrHttpClient()
-            : base()
+        public CardSavrHttpClient(bool rejectUnauthorized = true)
+            : base(rejectUnauthorized ? _handler : _unauthorizedHandler)
         {
-            // the identification header is a default in case the client sets nothing.
             _data = null;
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, cert, chain, sslPolicyErrors) => true;
-        }
-
-        public CardSavrHttpClient(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string trace = null, string cert = null)
-            : this()
-        {
-            Setup(baseUrl, staticKey, appName, userName, password, grant, trace, cert);
         }
 
         public void SetIdentificationHeader(string clientId)
@@ -89,15 +90,6 @@ namespace Switch.CardSavr.Http
         {
             CardSavrResponse<StartResult> start = await StartAsync(null);
             return await LoginAsync(start.Body.sessionSalt);
-        }
-
-        /*========== GENERAL / UTILITY ==========*/
-
-        public string GenerateCardholderSafeKey(string username)
-        {
-            string password = Convert.ToBase64String(Aes256.GetRandomBytes(32));
-            byte[] salt = Encoding.UTF8.GetBytes(username);
-            return Convert.ToBase64String(HashUtil.Sha256Pbkdf2(password, salt, 5000, 32));
         }
 
         /*========== SESSION MANAGEMENT (START, LOGIN, END) ==========*/
@@ -333,12 +325,22 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<List<Integrator>>> 
-            UpdateIntegratorAsync(
+            UpdateIntegratorsAsync(
                 object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
             return await ApiMultiPutDelAsync<Integrator>(
                 "/integrators", null, qd, HttpMethod.Put, body, null, paging, headers);
+        }
+
+        public async Task<CardSavrResponse<Integrator>> 
+            RotateIntegratorsAsync(
+                object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            string path = "/integrators/{0}/rotate_key";
+            return await ApiPutDelAsync<Integrator>(
+                path, qd.ID, HttpMethod.Put, null, null, headers);
         }
 
         public async Task<CardSavrResponse<List<Integrator>>> 
@@ -373,6 +375,10 @@ namespace Switch.CardSavr.Http
         {
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
                 body["username"] = ApiUtil.RandomString(40);
+            }
+            if (body.ContainsKey("password")) {
+                body["password"] = MakePasswordKey((string)body["username"], (string)body["password"]);
+                log.Info((string)body["password"]);
             }
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
@@ -415,6 +421,7 @@ namespace Switch.CardSavr.Http
         public async Task<CardSavrResponse<PropertyBag>> 
             UpdateUserPasswordAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
+            body["password"] = body["password_copy"] = MakePasswordKey((string)body["username"], (string)body["password"]);
             QueryDef qd = new QueryDef(query, body, false, true);
             string path = "/cardsavr_users/{0}/update_password";
             return await ApiPutDelAsync<PropertyBag>(path, qd.ID, HttpMethod.Put, body, null, headers);
@@ -534,7 +541,7 @@ namespace Switch.CardSavr.Http
             log.Info($"creating \"{method}\" request for path: {path}");
             Uri endpoint = new Uri(_data.BaseUri, path);
             HttpRequestMessage request = new HttpRequestMessage(method, endpoint);
-            
+
             CopyRequestHeaders(request.Headers, DefaultRequestHeaders);
             CopyRequestHeaders(request.Headers, headers);
             if (_data.SessionToken != null)
@@ -566,7 +573,7 @@ namespace Switch.CardSavr.Http
                 request.Content.Headers.Remove("Content-type");
                 request.Content.Headers.Add("Content-type", "application/json");
             }
-
+            
             return request;
         }
 
@@ -588,7 +595,7 @@ namespace Switch.CardSavr.Http
             where T : class
         {
             // read response body as a string. if the response is an error, throw an exception.
-            log.Info($"processing \"{request.Method}\" response for path: {request.RequestUri.PathAndQuery}");
+            log.Info($"processing \"{request.Method}\" response for path: {request.RequestUri.PathAndQuery} {response.StatusCode}");
             string body = await response.Content.ReadAsStringAsync();
             CheckStatusAndMaybeThrow(body, response);
  

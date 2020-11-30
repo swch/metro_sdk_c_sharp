@@ -32,6 +32,30 @@ namespace cardsavr_tests
             string[] parts = encrypted.Split(new char[] { '$' });
             string result = Aes256.DecryptText(parts[0], knownIv, _staticKey);
             Assert.Equal(input, result);
+
+            int length = 100;
+            byte[] b = Aes256.GetRandomBytes(length);
+            Assert.Equal(b.Length, length);
+            
+            string s = Aes256.GetRandomString(length);
+            Assert.Equal(s.Length, length);
+
+            length = 101;
+            s = Aes256.GetRandomString(length);
+            Assert.Equal(s.Length, length);
+
+            length = 99;
+            s = Aes256.GetRandomString(length);
+            Assert.Equal(s.Length, length);
+
+            length = 44;
+            s = Aes256.GetRandomString(length);
+            Assert.Equal(s.Length, length);
+
+            s = Aes256.GetRandomString(length, 32); //this is how we make an integrator key
+            Assert.Equal(s.Length, length);
+
+
         }
     }
 }

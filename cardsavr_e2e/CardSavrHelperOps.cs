@@ -22,7 +22,7 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             CardsavrHelper helper = new CardsavrHelper();
-            helper.SetAppSettings(Context.accountBaseUrl, Context.accountCardholderAgentAppID, Context.accountCardholderAgentStaticKey);
+            helper.SetAppSettings(Context.accountBaseUrl, Context.accountCardholderAgentAppID, Context.accountCardholderAgentStaticKey, Context.rejectUnauthorized);
             await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword, null, "{\"key\": \"my_trace\"}");
             
             PropertyBag cd = new PropertyBag(){{"my_fi", new PropertyBag(){{"token", "123"}}}};

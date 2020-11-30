@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 
-
 namespace Switch.Security
 {
     /// <summary>
@@ -129,6 +128,22 @@ namespace Switch.Security
             return encrypted + "$" + Convert.ToBase64String(iv);
         }
 
+        //return a random 64 encoded string -- set modFour to guarantee it can be decoded to something of use later
+        public static string GetRandomString(int len, int originalByteLength = -1) {
+            
+            byte[] array;
+            if (originalByteLength != -1) {
+                array = GetRandomBytes(originalByteLength);
+            } else {
+                array = GetRandomBytes((int)Math.Ceiling(((double)len) * 3 / 4));
+            }
+            string ret = Convert.ToBase64String(array).Substring(0, len); 
+    		if (ret.Length != len) {
+                throw new SystemException("Can't create a base64 string legnth " + len + " with base length of " + originalByteLength);
+            }
+            return ret;
+        }
+
         /// <summary>
         /// Generate a cryptographically strong sequence of random bytes.
         /// </summary>
@@ -141,5 +156,6 @@ namespace Switch.Security
                 rng.GetBytes(bytes);
             return bytes;
         }
+
     }
 }

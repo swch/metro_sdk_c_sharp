@@ -8,6 +8,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Net;
+using Switch.Security;
 
 namespace Switch.CardSavr.Http
 {
@@ -74,6 +76,15 @@ namespace Switch.CardSavr.Http
                     NullValueHandling = NullValueHandling.Ignore
                 });
             return JsonConvert.DeserializeObject<PropertyBag>(s);
+        }
+
+        /*========== GENERAL / UTILITY ==========*/
+
+        public static string GenerateStretchedPassword(string username, int length = 32)
+        {
+            string password = Aes256.GetRandomString(length);
+            byte[] salt = Encoding.UTF8.GetBytes(username);
+            return Convert.ToBase64String(HashUtil.Sha256Pbkdf2(password, salt, 5000, (int)Math.Ceiling((double)length * 3 / 4))).Substring(0, length);
         }
 
         public static IDictionary<string, object> CreateJsonSerializableObject(NameValueCollection nvc)

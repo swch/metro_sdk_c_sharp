@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 using Switch.CardSavr.Http;
 
@@ -14,7 +15,7 @@ namespace cardsavr_e2e
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static CardSavrHttpClient _http = new CardSavrHttpClient();
+        private static CardSavrHttpClient _http;
         private static Context _context = new Context();
 
         private class WaitOp: OperationBase
@@ -35,6 +36,7 @@ namespace cardsavr_e2e
 
         static async Task<CardSavrResponse<LoginResult>> StartSession(bool cardholder_agent = false)
         {
+            _http = new CardSavrHttpClient(Context.rejectUnauthorized);
             if (cardholder_agent) {
                 log.Info(Context.accountCardholderAgentAppID + " starting session...");
                 log.Info(Context.accountCardholderAgentAppID);
@@ -100,8 +102,10 @@ namespace cardsavr_e2e
 
         static void Main(string[] args)
         {
+
+
             Exception exLast = null;
-            log.Info("HELLO WORLD!");
+            //log.Info("HELLO WORLD!");
 
             OperationBase[] ops_ch = new OperationBase[]
             {
@@ -115,9 +119,8 @@ namespace cardsavr_e2e
             OperationBase[] ops = new OperationBase[]
             {
                 // these have no dependencies.
+                new IntegratorOps(),
                 new MerchantSiteOps(),
-                //new BinOps(),
-                //new IntegratorOps(),
 
                 new UserOps(),
                 
@@ -150,7 +153,6 @@ namespace cardsavr_e2e
                 CleanupOps(ops_ch).Wait(); 
                 EndSession().Wait();
             }
-            _http = new CardSavrHttpClient();
             try
             {
                 StartSession().Wait();
