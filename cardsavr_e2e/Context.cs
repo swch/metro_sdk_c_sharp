@@ -13,33 +13,19 @@ namespace cardsavr_e2e
     /// </summary>
     public class Context
     {
+        public static readonly bool rejectUnauthorized = true;
 
-        // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
         public static readonly string accountBaseUrl = "https://api.customer-dev.cardsavr.io";
-        public static readonly string accountCustomerAgentAppID = "AdvancialDev";
-        public static readonly string accountCustomerAgentStaticKey = "WOA1Oy5VOfDO66sdBR/gCuQq/w3vxEUUM04EmHzghF8=";
-        public static readonly string accountCustomerAgentUserName = "custUser";
-        public static readonly string accountCustomerAgentPassword = "CustUser@2020";
+        public static readonly string accountCustomerAgentAppID = "CardUpdatr Demo";
+        public static readonly string accountCustomerAgentStaticKey = "<redacted>";
+        public static readonly string accountCustomerAgentUserName = "<redacted>";
+        public static readonly string accountCustomerAgentPassword = "<redacted>";
 
-        public static readonly string accountCardholderAgentAppID = "AdvancialDev";
-        public static readonly string accountCardholderAgentStaticKey = "WOA1Oy5VOfDO66sdBR/gCuQq/w3vxEUUM04EmHzghF8=";
-        public static readonly string accountCardholderAgentUserName = "cardupdatr_ux_user";
-        public static readonly string accountCardholderAgentPassword = "EaluI08Jg2iHaV5EoPA+f+4/y211W74DGMpK9v3ukfw=";
+        public static readonly string accountCardholderAgentAppID = "CardUpdatr Demo";
+        public static readonly string accountCardholderAgentStaticKey = "<redacted>";
+        public static readonly string accountCardholderAgentUserName = "<redacted>";
+        public static readonly string accountCardholderAgentPassword = "<redacted>";
 
-
-        // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
-        /*
-        public static readonly string accountBaseUrl = "https://api.advancial-dev.cardsavr.io";
-        public static readonly string accountCustomerAgentAppID = "appUser";
-        public static readonly string accountCustomerAgentStaticKey = "7//8KevjAvjKXiSD47Vj1W6r07xU312Gu5voXpgQ6yo=";
-        public static readonly string accountCustomerAgentUserName = "custUser";
-        public static readonly string accountCustomerAgentPassword = "CustUser@2020";
-
-        public static readonly string accountCardholderAgentAppID = "appUser";
-        public static readonly string accountCardholderAgentStaticKey = "7//8KevjAvjKXiSD47Vj1W6r07xU312Gu5voXpgQ6yo=";
-        public static readonly string accountCardholderAgentUserName = "cardUser";
-        public static readonly string accountCardholderAgentPassword = "CardSavr@2020";
-        */
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
