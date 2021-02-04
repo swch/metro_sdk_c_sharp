@@ -114,7 +114,7 @@ namespace Switch.CardSavr.Http
                 userCredentialGrant = _data.Grant != null ? _data.Grant : null,
                 signedSalt = _data.Password != null ? HashUtil.HmacSign(sessionSalt, MakePasswordKey(_data.UserName, _data.Password), true) : null
             };
-
+            //log.Info(JsonConvert.SerializeObject(body));
             CardSavrResponse<LoginResult> result = await ApiPostAsync<LoginResult>(
                 "/session/login", body, null, headers);
             // the shared secret will be used in future encrpyted communications.
@@ -376,6 +376,7 @@ namespace Switch.CardSavr.Http
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
                 body["username"] = ApiUtil.RandomString(40);
             }
+            log.Info("CREATE CARDHOLDER " + body["username"]);
             if (body.ContainsKey("password")) {
                 body["password"] = MakePasswordKey((string)body["username"], (string)body["password"]);
                 log.Info((string)body["password"]);
@@ -398,10 +399,11 @@ namespace Switch.CardSavr.Http
             return await ApiGetAsync<CredentialGrant>(path, null, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<User>>> 
+
+       public async Task<CardSavrResponse<List<User>>> 
             UpdateUserAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
         {
-            QueryDef qd = new QueryDef(query, body);
+           QueryDef qd = new QueryDef(query, body);
             string path = "/cardsavr_users";
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
@@ -418,6 +420,7 @@ namespace Switch.CardSavr.Http
                 "/cardsavr_users", null, qd, HttpMethod.Delete, null, null, paging, headers);
         }
 
+
         public async Task<CardSavrResponse<PropertyBag>> 
             UpdateUserPasswordAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
@@ -425,6 +428,56 @@ namespace Switch.CardSavr.Http
             QueryDef qd = new QueryDef(query, body, false, true);
             string path = "/cardsavr_users/{0}/update_password";
             return await ApiPutDelAsync<PropertyBag>(path, qd.ID, HttpMethod.Put, body, null, headers);
+        }       
+        
+         /*========== CARDHOLDERS ==========*/
+
+        public async Task<CardSavrResponse<List<Cardholder>>> 
+            GetCardholdersAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            return await ApiGetAsync<List<Cardholder>>("/cardholders", qd, paging, headers);
+        }
+
+        public async Task<CardSavrResponse<Cardholder>> 
+            CreateCardholderAsync(PropertyBag body, string newSafeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
+        {
+            if (headers == null) {
+                headers = new HttpRequestMessage().Headers;
+            }
+            AddNewSafeKeyHeader(headers, newSafeKey);
+            headers.Add("financial-institution", financialInstitution);
+
+            return await ApiPostAsync<Cardholder>("/cardholders", body, null, headers);
+        }
+
+        public async Task<CardSavrResponse<Cardholder>> 
+            AuthorizeCardholder(string grant, HttpRequestHeaders headers = null)
+        {
+            string path = "/cardholders/{0}/authorize";
+            path = String.Format(path, grant);
+
+            return await ApiGetAsync<Cardholder>(path, null, null, headers);
+        }
+
+        public async Task<CardSavrResponse<List<Cardholder>>> 
+            UpdateCardholderAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query, body);
+            string path = "/cardholders";
+            if (headers == null) {
+                headers = new HttpRequestMessage().Headers;
+            }
+            AddNewSafeKeyHeader(headers, newSafeKey);
+            return await ApiMultiPutDelAsync<Cardholder>(path, null, qd, HttpMethod.Put, body, null, paging, headers);
+        }
+
+        public async Task<CardSavrResponse<List<Cardholder>>> 
+            DeleteCardholderAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            return await ApiMultiPutDelAsync<Cardholder>(
+                "/cardholders", null, qd, HttpMethod.Delete, null, null, paging, headers);
         }
 
         /*========== PRIVATE IMPLEMENTATION ==========*/

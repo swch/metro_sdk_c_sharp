@@ -66,7 +66,6 @@ namespace cardsavr_e2e
 
                 Context.CardholderData chd = new Context.CardholderData();
                 chd.cardholder_safe_key = safe_key;
-                ctx.CardholderSessions.Add((int)result.Body.id, chd);
             }
 
             CardsavrHelper helper = new CardsavrHelper();
@@ -114,8 +113,22 @@ namespace cardsavr_e2e
                 log.Info($"deleting user: {u.username}");
                 await http.DeleteUserAsync(u.id);
             }
+
+            CardSavrResponse<List<Cardholder>> result = await http.GetCardholdersAsync(null);
+            log.Info(String.Format("{0} cardholders returned", result.Body.Count));
+            if (result.Body.Count > 0)
+            {
+                foreach (Cardholder u in result.Body) {
+                    if (u.cuid.StartsWith(Context.e2e_identifier)) {
+                        log.Info("Delete cardholder: " + u.cuid);
+                        await http.DeleteCardholderAsync(u.id);
+                    }
+                }
+            }
+
             ctx.Users.Clear();
             ctx.CardholderSessions.Clear();
+            ctx.Cardholders.Clear();
         }
 
         protected async Task GetAllUsers(CardSavrHttpClient http, Context ctx, int pageLength = 7)
@@ -136,7 +149,7 @@ namespace cardsavr_e2e
                     users.AddRange(result.Body);
 
                     foreach (User u in result.Body)
-                        log.Info(String.Format("{0} = \"{1} {2}\"", u.username, u.first_name, u.last_name));
+                        log.Info(String.Format("{0} = \"{1} {2}\" {3}", u.username, u.first_name, u.last_name, u.role));
                 }
 
                 p = result.Paging;

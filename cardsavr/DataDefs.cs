@@ -144,6 +144,7 @@ namespace Switch.CardSavr.Http
         public int id { get; set; }
         public int cardholder_id { get; set; }
         public string site_hostname { get; set; }
+        public string merchant_site_id { get; set; }
         public string username { get; set; }
         public string last_login { get; set; }
         public string last_password_update { get; set; }
@@ -159,6 +160,7 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public int? user_id { get; set; }
+        public int? cardholder_id { get; set; }
         public bool? is_primary { get; set; }
         public string address1 { get; set; }
         public string address2 { get; set; }
@@ -330,6 +332,7 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public string username { get; set; }
+        public string cuid { get; set; }
         public string password { get; set; }
         public string next_password { get; set; }
         public string cardholder_safe_key { get; set; }
@@ -346,5 +349,11 @@ namespace Switch.CardSavr.Http
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
         public string credential_grant { get; set; }
+    }
+    /*========== USERS ==========*/
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class Cardholder : User
+    {
     }
 }

@@ -26,10 +26,9 @@ namespace cardsavr_e2e
             }
             
             // create 2 addresses for each new user.
-            foreach (User u in ctx.GetNewUsers())
-                if (u.role == "cardholder") {
-                    await CreateAddressesForUser(u, ctx.CardholderSessions[u.id ?? -1].client, ctx);
-                }
+            foreach (User u in ctx.Cardholders)
+                // NOT BACKWARD COMPATIBLE - client is now always the agent
+                await CreateAddressesForUser(u, http, ctx);
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -47,7 +46,7 @@ namespace cardsavr_e2e
                 {
                     if (addr.address2 == Context.e2e_identifier)
                     {
-                        log.Info($"found address for user-id={addr.user_id}");
+                        log.Info($"found address for addr-id={addr.id}");
                         addrIds.Add(addr.id ?? -1);
                     }
                 }
@@ -81,7 +80,7 @@ namespace cardsavr_e2e
             bag["country"] = "USA";
             bag["postal_code"] = "98119";
 
-            CardSavrResponse<Address> addr = await ctx.CardholderSessions[user.id ?? -1].client.CreateAddressAsync(bag);
+            CardSavrResponse<Address> addr = await http.CreateAddressAsync(bag);
             log.Info($"created primary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
 
             // update it.
@@ -101,15 +100,15 @@ namespace cardsavr_e2e
             bag["country"] = "USA";
             bag["postal_code"] = "98123";
 
-            CardSavrHttpClient client = (user.role == "cardholder" ? ctx.CardholderSessions[user.id ?? -1].client : http);
-
-            addr = await client.CreateAddressAsync(bag);
+            // NOT BACKWARD COMPATIBLE - client is now always the agent
+            addr = await http.CreateAddressAsync(bag);
             log.Info($"created secondary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
 
             // might as well update that one too.
             bag.Clear();
             bag["address1"] = $"{Context.random.Next(1000, 9000)} Cross-Country Way";
-            await client.UpdateAddressAsync(addr.Body.id, bag);
+            // NOT BACKWARD COMPATIBLE - client is now always the agent
+            await http.UpdateAddressAsync(addr.Body.id, bag);
             log.Info($"updated secondary address {addr.Body.id} for user: {user.first_name} {user.last_name} ({user.id})");
         }
     }

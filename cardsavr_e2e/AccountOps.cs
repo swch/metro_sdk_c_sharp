@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using Switch.CardSavr.Http;
 
@@ -20,7 +21,7 @@ namespace cardsavr_e2e
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
             // pick a user and merchant site.
-            User user = ctx.GetNewUsers("cardholder")[0];
+            User user = ctx.Cardholders[0];
             Context.CardholderData chd = ctx.CardholderSessions[user.id ?? -1];
 
             //MerchantSite site = ctx.GetSyntheticSite();
@@ -36,13 +37,14 @@ namespace cardsavr_e2e
             bag["password"] = "";
 
             // users created by our test-suite have known/bogus safe-key.
-            CardSavrResponse<Account> result = await chd.client.CreateAccountAsync(bag, chd.cardholder_safe_key);
+            // NOT BACKWARD COMPATIBLE - client is now always the agent
+            CardSavrResponse<Account> result = await http.CreateAccountAsync(bag, chd.cardholder_safe_key);
             log.Info($"created account {result.Body.id} for user-id={user.id} ({user.username})");
 
             // update it.
             bag.Clear();
             bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
-            result = await chd.client.UpdateAccountAsync(result.Body.id, bag, chd.cardholder_safe_key);
+            result = await http.UpdateAccountAsync(result.Body.id, bag, chd.cardholder_safe_key);
             log.Info($"updated account-id={result.Body.id}");
 
             List<Account> list = new List<Account>();
@@ -59,10 +61,10 @@ namespace cardsavr_e2e
             while (total < paging.TotalResults || paging.TotalResults < 0)
             {
                 CardSavrResponse<List<Account>> result = await http.GetAccountsAsync(null, paging);
-                log.Info(result.Body);
                 foreach (Account a in result.Body)
                 {
-                    if (a.site_hostname == ctx.GetSyntheticSite().host)
+                    // NOT BACKWARD COMPATIBLE - merchant_site_id now required to filter site id.
+                    if (a.merchant_site_id == "1") //ctx.GetSyntheticSite().host)
                         toDelete.Add(a);
                 }
 
@@ -77,8 +79,9 @@ namespace cardsavr_e2e
             {
                 foreach (Account a in toDelete)
                 {
-                    User user = ctx.FindUserById(a.cardholder_id);
-                    string safeKey = Context.GenerateBogus32BitPassword(user.username);
+                    // NOT BACKWARD COMPATIBLE - safe key no longer required to delete an account.
+                    //User user = ctx.FindUserById(a.cardholder_id);
+                    string safeKey = null; //Context.GenerateBogus32BitPassword(user.username);
                     await http.DeleteAccountAsync(a.id, safeKey);
                 }
 

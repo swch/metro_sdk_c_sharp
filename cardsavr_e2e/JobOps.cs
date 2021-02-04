@@ -20,17 +20,14 @@ namespace cardsavr_e2e
 
         public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
         {
-            List<User> users = ctx.GetNewUsers("cardholder");
-            
-            if (!await VerifyRole(http, ctx) && users[0].role != "cardholder")
-                return;
-
-            Context.CardholderData chd = ctx.CardholderSessions[users[0].id ?? -1];
+            // NOT BACKWARD COMPATIBLE - Only using cardholders, users are a different list
+            List<User> cardholders = ctx.Cardholders;
+            Context.CardholderData chd = ctx.CardholderSessions[cardholders[0].id ?? -1];
             
             PropertyBag bag = new PropertyBag()
             {
                 { "account_id",  chd.accounts[0].id },
-                { "user_id", users[0].id },
+                { "cardholder_id", cardholders[0].id },
                 { "card_id",  chd.cards[0].id },
                 { "do_not_queue", false },
                 { "requesting_brand", "mbudos" },
@@ -38,7 +35,8 @@ namespace cardsavr_e2e
                 { "status", "INITIATED" }
             };
             
-            CardSavrResponse<SingleSiteJob> job = await chd.client.CreateSingleSiteJobAsync(bag, chd.cardholder_safe_key);
+            // NOT BACKWARD COMPATIBLE - Only using agent now
+            CardSavrResponse<SingleSiteJob> job = await http.CreateSingleSiteJobAsync(bag, chd.cardholder_safe_key);
 
             CardSavrResponse<List<SingleSiteJob>> singleJobs = await http.GetSingleSiteJobsAsync(
                 new NameValueCollection() {
@@ -52,7 +50,8 @@ namespace cardsavr_e2e
             bag.Clear();
             bag["status"] = "CANCEL_REQUESTED";
             
-            job = await chd.client.UpdateSingleSiteJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
+            // NOT BACKWARD COMPATIBLE - Only using agent now
+            job = await http.UpdateSingleSiteJobAsync(job.Body.id, bag, chd.cardholder_safe_key);
             log.Info($"{job.Body.id}: {job.Body.status}");
 
             //CardSavrResponse<List<CardPlacementResult>> results = 

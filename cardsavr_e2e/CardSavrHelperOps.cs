@@ -28,7 +28,7 @@ namespace cardsavr_e2e
             PropertyBag cd = new PropertyBag(){{"my_fi", new PropertyBag(){{"token", "123"}}}};
 
             ClientLogin login = await helper.CreateCard(Context.accountCardholderAgentUserName, "default", 
-                new User(){ email = "foo@foo.com", phone_number = "5555555555", custom_data = cd },
+                new User(){ email = "foo@foo.com", phone_number = "5555555555", custom_data = cd, username = $"{Context.e2e_identifier}_{Context.random.Next(100)}_0" },
                 new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
                 new Address(){ is_primary=true, address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
             );

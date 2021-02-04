@@ -10,6 +10,9 @@ namespace cardsavr_e2e
 {
     public class CardholderOps : UserOps
     {
+        protected new static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         public CardholderOps()
         {
         }
@@ -41,17 +44,22 @@ namespace cardsavr_e2e
             // update them. we'll just change the phone number.
             for (int n = 0; n < newUsers.Count; ++n)
             {
+                // NOT BACKWARD COMPATIBLE - No longer can assume cardholders
+                /*
                 string token = newUsers[n].credential_grant;
                 CardSavrHttpClient cardholder = new CardSavrHttpClient(false);
-                cardholder.Setup(Context.accountBaseUrl, Context.accountCardholderAgentStaticKey, Context.accountCardholderAgentAppID, newUsers[n].username, null, token);
+                cardholder.Setup(Context.accountBaseUrl, Context.accountCardholderAgentStaticKey, Context.accountCardholderAgentAppID, newUsers[n].cuid, null, token);
                 CardSavrResponse<LoginResult> login = await cardholder.Init();
+                */
                 Context.CardholderData chd = new Context.CardholderData();
-                chd.client = cardholder; 
+                //chd.client = cardholder; 
                 sessions.Add((int)newUsers[n].id, chd);
             }
-
+            
             // store the users we created for other code to use.
             ctx.CardholderSessions = sessions;
+            await GetAllCardholders(http, ctx);
+            
         }
 
         public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
@@ -59,5 +67,33 @@ namespace cardsavr_e2e
             await base.Cleanup(http, ctx);
         }
 
+        protected async Task GetAllCardholders(CardSavrHttpClient http, Context ctx, int pageLength = 7)
+        {
+            log.Info("retrieving users...");
+            Paging p = new Paging(1, pageLength);
+            List<Cardholder> users = new List<Cardholder>();
+
+            while (users.Count < p.TotalResults || p.TotalResults < 0)
+            {
+                log.Info($"getting page {p.Page}");
+
+                CardSavrResponse<List<Cardholder>> result = await http.GetCardholdersAsync(null, p);
+                log.Info(String.Format("{0} users returned", result.Body.Count));
+
+                if (result.Body.Count > 0)
+                {
+                    users.AddRange(result.Body);
+
+                    foreach (Cardholder u in result.Body)
+                        log.Info(String.Format("{0} = \"{1} {2}\" {3}", u.username, u.first_name, u.last_name, u.role));
+                }
+
+                p = result.Paging;
+                p.Page += 1;
+            }
+
+            log.Info($"retrieved a total of {users.Count} users");
+            ctx.Cardholders = users.ConvertAll(x => (User)x);
+        }
     }
 }

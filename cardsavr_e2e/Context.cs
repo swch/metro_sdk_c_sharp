@@ -13,7 +13,10 @@ namespace cardsavr_e2e
     /// </summary>
     public class Context
     {
+
+        // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
         public static readonly bool rejectUnauthorized = true;
+        
 
         public static readonly string accountBaseUrl = "https://api.customer-dev.cardsavr.io";
         public static readonly string accountCustomerAgentAppID = "CardUpdatr Demo";
@@ -25,7 +28,7 @@ namespace cardsavr_e2e
         public static readonly string accountCardholderAgentStaticKey = "<redacted>";
         public static readonly string accountCardholderAgentUserName = "<redacted>";
         public static readonly string accountCardholderAgentPassword = "<redacted>";
-
+        */
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
@@ -33,6 +36,7 @@ namespace cardsavr_e2e
         // properties.
         public List<MerchantSite> Sites { get; set; }
         public List<User> Users { get; set; }
+        public List<User> Cardholders { get; set; }
         public Dictionary<int, CardholderData> CardholderSessions { get; set; }
         public string Trace { get; set; }
         public bool Started { get; set; }
@@ -60,6 +64,7 @@ namespace cardsavr_e2e
         public Context(bool started = false)
         {
             Started = started;
+            CardholderSessions = new Dictionary<int, Context.CardholderData>();
         }
 
         public List<User> GetNewUsers(String role = null) {
