@@ -75,7 +75,7 @@ namespace Switch.CardSavr.Http
             DefaultRequestHeaders.Add("client-application", clientId);
         }
 
-        public void Setup(string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string trace = null, string cert = null)
+        public void Setup(string baseUrl, string staticKey, string appName, string username, string password, string grant = null, string trace = null, string cert = null)
         {
             if (_data != null)
             {
@@ -83,42 +83,31 @@ namespace Switch.CardSavr.Http
                 throw new NotSupportedException();
             }
             SetIdentificationHeader(appName);
-            _data = new SessionData(baseUrl, staticKey, appName, userName, password, grant, trace, cert);
+            _data = new SessionData(baseUrl, staticKey, appName, username, password, grant, trace, cert);
         }
 
         public async Task<CardSavrResponse<LoginResult>> Init() 
         {
-            CardSavrResponse<StartResult> start = await StartAsync(null);
-            return await LoginAsync(start.Body.sessionSalt);
+            return await LoginAsync();
         }
 
         /*========== SESSION MANAGEMENT (START, LOGIN, END) ==========*/
 
-        public async Task<CardSavrResponse<StartResult>> 
-            StartAsync(HttpRequestHeaders headers = null)
-        {
-            CardSavrResponse<StartResult> result = await ApiGetAsync<StartResult>(
-                "/session/start", null, null, headers);
-            _data.SessionToken = result.Body.sessionToken;
-
-            return result;
-        }
-
         public async Task<CardSavrResponse<LoginResult>> 
-            LoginAsync(string sessionSalt, HttpRequestHeaders headers = null)
+            LoginAsync(HttpRequestHeaders headers = null)
         {
             object body = new Login()
             {
-                clientPublicKey = _data.Ecdh.PublicKey,
-                userName = _data.UserName,
-                userCredentialGrant = _data.Grant != null ? _data.Grant : null,
-                signedSalt = _data.Password != null ? HashUtil.HmacSign(sessionSalt, MakePasswordKey(_data.UserName, _data.Password), true) : null
+                client_public_key = _data.Ecdh.PublicKey,
+                username = _data.UserName,
+                password_proof = _data.Password != null ? HashUtil.HmacSign(_data.StaticKey, MakePasswordKey(_data.UserName, _data.Password), true) : null
             };
             //log.Info(JsonConvert.SerializeObject(body));
             CardSavrResponse<LoginResult> result = await ApiPostAsync<LoginResult>(
                 "/session/login", body, null, headers);
             // the shared secret will be used in future encrpyted communications.
-            _data.Ecdh.ComputeSharedSecret(result.Body.serverPublicKey, true);
+            _data.SessionToken = result.Body.session_token;
+            _data.Ecdh.ComputeSharedSecret(result.Body.server_public_key, true);
             log.Debug("received server public key; computed shared secret.");
 
             return result;
@@ -707,9 +696,9 @@ namespace Switch.CardSavr.Http
 
             // compute signature and add headers.
             string signature = HashUtil.HmacSign(toSign, GetEncryptionKey());
-            headers.Add("authorization", authorization);
-            headers.Add("nonce", nonce);
-            headers.Add("signature", signature);
+            headers.Add("x-cardsavr-authorization", authorization);
+            headers.Add("x-cardsavr-nonce", nonce);
+            headers.Add("x-cardsavr-signature", signature);
             log.Debug($"signed HTTP request; signature={signature}.");
         }
 
@@ -799,9 +788,9 @@ namespace Switch.CardSavr.Http
             log.Debug($"verified response-signature \"{signature}\"");
         }
 
-        private string MakePasswordKey(string userName, string password)
+        private string MakePasswordKey(string username, string password)
         {
-            byte[] salt = HashUtil.Sha256Hash(userName);
+            byte[] salt = HashUtil.Sha256Hash(username);
             byte[] key = HashUtil.Sha256Pbkdf2(password, salt, 5000, 32);
             return Convert.ToBase64String(key);
         }

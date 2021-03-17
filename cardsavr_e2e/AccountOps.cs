@@ -26,7 +26,7 @@ namespace cardsavr_e2e
 
             //MerchantSite site = ctx.GetSyntheticSite();
             CardSavrResponse<List<MerchantSite>> sites = await http.GetMerchantSitesAsync(new NameValueCollection() {
-                    { "host", "synthetic-1-step.herokuapp.com" }
+                    { "host", "dynamic-synthetic.herokuapp.com/index.html" }
                 });
 
             // create an account.

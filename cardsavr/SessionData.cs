@@ -12,7 +12,7 @@ namespace Switch.CardSavr.Http
         private Uri _baseUri;           // a Uri created from _baseUrl
         private string _staticKey;      // the base64 Switch-provided static key
         private string _appName;        // the Switch-provided app name
-        private string _userName;       // the Switch-provided user name
+        private string _username;       // the Switch-provided user name
         private string _password;       // the user password
         private string _grant;          // a temporary short lived grant
         private string _trace;          // a temporary short lived grant
@@ -52,8 +52,8 @@ namespace Switch.CardSavr.Http
 
         public string UserName
         {
-            get { return _userName; }
-            set { Interlocked.Exchange<string>(ref _userName, value); }
+            get { return _username; }
+            set { Interlocked.Exchange<string>(ref _username, value); }
         }
 
         public string Password
@@ -80,13 +80,13 @@ namespace Switch.CardSavr.Http
         }
 
         public SessionData(
-            string baseUrl, string staticKey, string appName, string userName, string password, string grant = null, string traceOverride = null, string cert = null)
+            string baseUrl, string staticKey, string appName, string username, string password, string grant = null, string traceOverride = null, string cert = null)
         {
             _baseUrl = baseUrl;
             _baseUri = new Uri(baseUrl);
             _staticKey = staticKey;
             _appName = appName;
-            _userName = userName;
+            _username = username;
             _password = password;
             _grant = grant;
             _trace = traceOverride;

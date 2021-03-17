@@ -99,37 +99,31 @@ namespace Switch.CardSavr.Http
     /// <summary>
     /// Returned by the start-session API.
     /// </summary>
-    public class StartResult
-    {
-        public string sessionSalt { get; set; }
-        public string sessionToken { get; set; }
-    }
 
     public class ClientLogin {
         public User cardholder { get; set; }
-        public string userCredentialGrant { get; set; }
         public Card card { get; set; }
         public Address address { get; set; }
+        public String userCredentialGrant { get; set; }
     }
 
     public class Login {
-        public string userCredentialGrant { get; set; }
-        public string clientPublicKey { get; set; }
-        public string signedSalt { get; set; }
-        public string userName { get; set; }
+        public string client_public_key { get; set; }
+        public string password_proof { get; set; }
+        public string username { get; set; }
     }
 
     public class LoginResult
     {
-        public string serverPublicKey { get; set; }
+        public string server_public_key { get; set; }
         public string cardholder_safe_key { get; set; }
-        public int user_id { get; set; }
+        public string session_token { get; set; }
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CredentialGrant
     {
-        public string user_credential_grant { get; set; }
+        public string credential_grant { get; set; }
     }
 
     /*========== ACCOUNTS ==========*/

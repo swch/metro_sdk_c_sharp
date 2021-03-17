@@ -54,14 +54,14 @@ namespace Switch.CardSavr.Http
             return String.Format("{0}?{1}", path, String.Join('&', parts));
         }
 
-        public static string BuildValidTraceHeader(string currentTrace, string userName) {
+        public static string BuildValidTraceHeader(string currentTrace, string cuid) {
             string newTrace = null;
             if (currentTrace == null) {
-                newTrace = $"{{\"key\": \"{userName}\"}}";
+                newTrace = $"{{\"key\": \"{cuid}\"}}";
             } else {
                 dynamic traceObject = JsonConvert.DeserializeObject(currentTrace);
                 if (traceObject.key == null) {
-                    traceObject.Add("key", userName);
+                    traceObject.Add("key", cuid);
                     newTrace = JsonConvert.SerializeObject(traceObject);
                 } else {
                     newTrace = currentTrace;

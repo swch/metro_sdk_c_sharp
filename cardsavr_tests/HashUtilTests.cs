@@ -9,7 +9,7 @@ namespace cardsavr_tests
 {
     public class HashUtilTests
     {
-        private static readonly string _userName = "some-user-dude";
+        private static readonly string _username = "some-user-dude";
         private static readonly string _staticKey = "VeY9uD0w3zRdrlmIPxnU/l+Vr8w2bbV26E6DxajFu+A=";
 
         [Fact]
@@ -45,7 +45,7 @@ namespace cardsavr_tests
             // the expected value was generated from the Javacript code.
             string expected = "o20Wf5X6aK+BmQIYK/JSUB0rXbmLQNgbJwk9zXpvMJI=";
 
-            byte[] salt = HashUtil.Sha256Hash(_userName);
+            byte[] salt = HashUtil.Sha256Hash(_username);
             byte[] result = HashUtil.Sha256Pbkdf2("a-strong-password", salt, 5000);
             Assert.Equal(expected, Convert.ToBase64String(result));
         }

@@ -23,14 +23,13 @@ namespace Switch.CardSavr.Http
         public class ClientSession {
             public CardSavrHttpClient client { get; set; }
             public string safeKey { get; set; }
-            public int userId { get; set; }
         }
 
-        public async Task CloseSession(string userName) {
-            if (_sessions.ContainsKey(userName)) {
-                CardSavrHttpClient client = _sessions[userName].client;
+        public async Task CloseSession(string username) {
+            if (_sessions.ContainsKey(username)) {
+                CardSavrHttpClient client = _sessions[username].client;
                 await client.EndAsync();
-                _sessions.Remove(userName);
+                _sessions.Remove(username);
             }
         }
 
@@ -43,21 +42,21 @@ namespace Switch.CardSavr.Http
             _rejectUnauthorized = rejectUnauthorized;
         }
 
-        public async Task<ClientSession> LoginAndCreateSession(string userName, 
+        public async Task<ClientSession> LoginAndCreateSession(string username, 
                                                                string password,
                                                                string grant = null,
                                                                string trace = null) {
-            if (_sessions.ContainsKey(userName)) {
-                return _sessions[userName];
+            if (_sessions.ContainsKey(username)) {
+                return _sessions[username];
             }
             try {
                 CardSavrHttpClient session = new CardSavrHttpClient(_rejectUnauthorized);
-                session.Setup(_cardsavrServer, _appKey, _appName, userName, password, grant, trace);
+                session.Setup(_cardsavrServer, _appKey, _appName, username, password, grant, trace);
                 CardSavrResponse<LoginResult> login = await session.Init();
-                _sessions[userName] = new ClientSession { client = session, userId = login.Body.user_id };
-                return _sessions[userName];
+                _sessions[username] = new ClientSession { client = session };
+                return _sessions[username];
             } catch(RequestException ex) {
-                log.Error("Unable to create sessions for: " + userName);
+                log.Error("Unable to create sessions for: " + username);
                 log.Error(ex.StackTrace);
             }
             return null;
