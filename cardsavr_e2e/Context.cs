@@ -28,7 +28,7 @@ namespace cardsavr_e2e
         public static readonly string accountCardholderAgentStaticKey = "<redacted>";
         public static readonly string accountCardholderAgentUserName = "<redacted>";
         public static readonly string accountCardholderAgentPassword = "<redacted>";
-        */
+        
         // other resources.
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
