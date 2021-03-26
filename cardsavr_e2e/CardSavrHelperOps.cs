@@ -23,7 +23,7 @@ namespace cardsavr_e2e
         {
             CardsavrHelper helper = new CardsavrHelper();
             helper.SetAppSettings(Context.accountBaseUrl, Context.accountCardholderAgentAppID, Context.accountCardholderAgentStaticKey, Context.rejectUnauthorized);
-            await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword, null, "{\"key\": \"my_trace\"}");
+            await helper.LoginAndCreateSession(Context.accountCardholderAgentUserName, Context.accountCardholderAgentPassword, "{\"key\": \"my_trace\"}");
             
             PropertyBag cd = new PropertyBag(){{"my_fi", new PropertyBag(){{"token", "123"}}}};
 

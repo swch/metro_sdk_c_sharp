@@ -117,6 +117,7 @@ namespace Switch.CardSavr.Http
     {
         public string server_public_key { get; set; }
         public string cardholder_safe_key { get; set; }
+        public int user_id { get; set; }
         public string session_token { get; set; }
     }
 
