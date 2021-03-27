@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Switch.CardSavr.Http;
 using Switch.Security;
 using System.Linq;
 using Xunit;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace cardsavr_e2e
 {
@@ -15,6 +17,9 @@ namespace cardsavr_e2e
     /// </summary>
     public class Context
     {
+
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // test env: account information.  Customer Agent can do slightly more than a Cardholder Agent
         public static readonly bool rejectUnauthorized = false;
@@ -84,21 +89,7 @@ namespace cardsavr_e2e
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
 
-        // properties.
-        public List<MerchantSite> Sites { get; set; }
-        public List<User> Users { get; set; }
-        public List<User> Cardholders { get; set; }
-        public Dictionary<int, CardholderData> CardholderSessions { get; set; }
-        public string Trace { get; set; }
-        public string ExecutionRole { get; set; }
-        public string CardholderSafeKey { get; set; }
-
-        public class CardholderData {
-            public List<Card> cards { get; set; }
-            public List<Account> accounts { get; set; }
-            public String cardholder_safe_key { get; set; }
-            public CardSavrHttpClient client { get; set; }
-        }
+        private Dictionary<String, String> config = new Dictionary<String, String>(); 
 
         public static string GenerateBogus32BitPassword(string username)
         {
@@ -111,48 +102,29 @@ namespace cardsavr_e2e
             return Convert.ToBase64String(HashUtil.Sha256Pbkdf2(password, salt, 5000, 32));
         }
 
+        class KeyValue {
+            #pragma warning disable 0649
+            public string key;
+            public string value;
+        }
+
         public Context()
         {
-            CardholderSessions = new Dictionary<int, Context.CardholderData>();
-        }
-
-        public List<User> GetNewUsers(String role = null) {
-            return Users.Where(
-                user => user.username.StartsWith(Context.e2e_identifier, StringComparison.CurrentCulture) &&
-                        (role == null || user.role == role)).ToList();
-        }
-
-        public User FindUserById(int userId)
-        {
-            if (Users == null || Users.Count == 0)
-                throw new ArgumentException("user-list not available.");
-
-            return Users.Find(u => u.id == userId);
-        }
-
-        public User GetRandomUser(string role = null, bool throwOnError = true)
-        {
-            List<User> users = GetNewUsers(role);
-            if (users == null || users.Count == 0)
+            using (StreamReader r = new StreamReader("../../../docker.local.json"))
             {
-                if (!throwOnError)
-                    return null;
-                throw new ArgumentException("no new users available.");
+                string json = r.ReadToEnd();
+                KeyValue[] array = JsonConvert.DeserializeObject<KeyValue[]>(json);
+                foreach (KeyValue kv in array) {
+                    config[kv.key] = kv.value;
+                }
             }
 
-            return users[random.Next(0, users.Count - 1)];
         }
 
-        public MerchantSite GetSyntheticSite(bool throwOnError = true)
-        {
-            if (Sites == null || Sites.Count == 0)
-            {
-                if (!throwOnError)
-                    return null;
-                throw new ArgumentException("no merchant sites available.");
-            }
-            return Sites.Find(site => site.name == "Synthetic 1-Step Login");
+        public String getConfigParameter(String key) {
+            return config[key];
         }
+
     }
 
     public class CardsavrTests {
@@ -167,10 +139,15 @@ namespace cardsavr_e2e
         public CardSavrHttpClient http { get; }
         public Context context { get; }
         public CustomerAgentSession() {
-            this.http = new CardSavrHttpClient(Context.rejectUnauthorized);
-            this.http.Setup(Context.accountBaseUrl, Context.accountCustomerAgentStaticKey,
-                Context.accountCustomerAgentAppID, Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword);
+
             this.context = new Context();
+            this.http = new CardSavrHttpClient(Context.rejectUnauthorized);
+            this.http.Setup(
+                context.getConfigParameter("api_url_override"), 
+                context.getConfigParameter("testing/credentials/primary/integrator/key"), 
+                context.getConfigParameter("testing/credentials/primary/integrator/name"), 
+                context.getConfigParameter("testing/credentials/primary/user/username"), 
+                context.getConfigParameter("testing/credentials/primary/user/password"));
             this.http.Init().Wait();
         }
 
