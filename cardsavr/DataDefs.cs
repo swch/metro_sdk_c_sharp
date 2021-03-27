@@ -101,10 +101,10 @@ namespace Switch.CardSavr.Http
     /// </summary>
 
     public class ClientLogin {
-        public User cardholder { get; set; }
+        public Cardholder cardholder { get; set; }
         public Card card { get; set; }
         public Address address { get; set; }
-        public String userCredentialGrant { get; set; }
+        public String grant { get; set; }
     }
 
     public class Login {
@@ -165,6 +165,7 @@ namespace Switch.CardSavr.Http
         public string postal_code { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
+        public string phone_number { get; set; }
     }
 
     /*========== BINS ==========*/
@@ -327,10 +328,8 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public string username { get; set; }
-        public string cuid { get; set; }
         public string password { get; set; }
         public string next_password { get; set; }
-        public string cardholder_safe_key { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
         public string last_login_time { get; set; }
@@ -343,12 +342,22 @@ namespace Switch.CardSavr.Http
         public string next_rotation_on { get; set; }
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
-        public string credential_grant { get; set; }
     }
     /*========== USERS ==========*/
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class Cardholder : User
+    public class Cardholder
     {
-    }
+        public int? id { get; set; }
+        public string cuid { get; set; }
+        public string cardholder_safe_key { get; set; }
+        public string first_name { get; set; }
+        public string last_name { get; set; }
+        public string email { get; set; }
+        public dynamic custom_data { get; set; }
+        public string next_rotation_on { get; set; }
+        public string created_on { get; set; }
+        public string last_updated_on { get; set; }
+        public string grant { get; set; }
+     }
 }
