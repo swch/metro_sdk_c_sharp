@@ -89,7 +89,7 @@ namespace cardsavr_e2e
         public static readonly string e2e_identifier = "c_sharp_e2e";
         public static readonly Random random = new Random();
 
-        private Dictionary<String, String> config = new Dictionary<String, String>(); 
+        private InstanceConfig config = new InstanceConfig(); 
 
         public static string GenerateBogus32BitPassword(string username)
         {
@@ -97,7 +97,7 @@ namespace cardsavr_e2e
             for (byte n = 0; n < sequence.Length; ++n)
                 sequence[n] = n;
 
-            string password = Convert.ToBase64String(sequence);
+            String password = Convert.ToBase64String(sequence);
             byte[] salt = Encoding.UTF8.GetBytes(username);
             return Convert.ToBase64String(HashUtil.Sha256Pbkdf2(password, salt, 5000, 32));
         }
@@ -105,26 +105,67 @@ namespace cardsavr_e2e
         class KeyValue {
             #pragma warning disable 0649
             public string key;
-            public string value;
+            public dynamic value;
+        }
+
+        public class InstanceConfig {
+            public string instance;
+            public InstanceConfig[] instances;
+            public string app_name;
+            public string app_key;
+            public string app_username;
+            public string app_password;
+            public string cardsavr_server;
+            public string proxy_server;
+            public string proxy_port;
+            public string proxy_username;
+            public string proxy_password;
         }
 
         public Context()
         {
-            using (StreamReader r = new StreamReader("../../../docker.local.json"))
-            {
-                string json = r.ReadToEnd();
-                KeyValue[] array = JsonConvert.DeserializeObject<KeyValue[]>(json);
-                foreach (KeyValue kv in array) {
-                    config[kv.key] = kv.value;
+            string localGeneratedConfig = "../../../docker.local.json";
+            
+            if (File.Exists(localGeneratedConfig)) {
+                using (StreamReader r = new StreamReader("../../../docker.local.json"))
+                {
+                    string json = r.ReadToEnd();
+                    KeyValue[] array = JsonConvert.DeserializeObject<KeyValue[]>(json);
+                    Dictionary<string, string> dl = new Dictionary<string, string>();
+                    foreach (KeyValue kv in array) {
+                        dl[kv.key] = kv.value;
+                    }
+
+                    config.app_name = dl["testing/credentials/primary/integrator/name"];
+                    config.app_key = dl["testing/credentials/primary/integrator/key"];
+                    config.app_password = dl["testing/credentials/primary/user/password"];
+                    config.app_username = dl["testing/credentials/primary/user/username"];
+                    config.cardsavr_server = dl["api_url_override"];
+                }
+            } else {
+                using (StreamReader r = new StreamReader("../../../strivve_creds.json"))
+                {
+                    string json = r.ReadToEnd();
+                    config = JsonConvert.DeserializeObject<InstanceConfig>(json);
+                }
+             }
+        }
+
+        public InstanceConfig getConfig(string instance) {
+            foreach (InstanceConfig conf in config.instances) {
+                if (conf.instance == instance) {
+                    return conf;
                 }
             }
-
+            return null;
         }
 
-        public String getConfigParameter(String key) {
-            return config[key];
+        public InstanceConfig getConfig() {
+            if (config.instance == null) {
+                return config;                
+            }
+            return getConfig(config.instance);
         }
-
     }
 
     public class CardsavrTests {
@@ -138,16 +179,21 @@ namespace cardsavr_e2e
     public class CustomerAgentSession : IDisposable {
         public CardSavrHttpClient http { get; }
         public Context context { get; }
+
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public CustomerAgentSession() {
 
             this.context = new Context();
             this.http = new CardSavrHttpClient(Context.rejectUnauthorized);
+            Context.InstanceConfig config = context.getConfig();
             this.http.Setup(
-                context.getConfigParameter("api_url_override"), 
-                context.getConfigParameter("testing/credentials/primary/integrator/key"), 
-                context.getConfigParameter("testing/credentials/primary/integrator/name"), 
-                context.getConfigParameter("testing/credentials/primary/user/username"), 
-                context.getConfigParameter("testing/credentials/primary/user/password"));
+                config.cardsavr_server, 
+                config.app_key, 
+                config.app_name, 
+                config.app_username, 
+                config.app_password); 
             this.http.Init().Wait();
         }
 

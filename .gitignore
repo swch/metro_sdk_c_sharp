@@ -2,9 +2,6 @@ cardsavr*/bin/*
 cardsavr*/obj/*
 *.log
 
-##############################
-## creds files
-##############################
-creds_*.json
+*_creds.json
 creds.json
 docker.local.json
