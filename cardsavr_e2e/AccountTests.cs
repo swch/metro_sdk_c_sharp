@@ -14,15 +14,15 @@ namespace cardsavr_e2e
 {
 
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    [Collection("CustomerAgentSession collection")]
+    [Collection("CardsavrSession collection")]
     public class AccountTests
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        CustomerAgentSession session;
+        CardsavrSession session;
 
-        public AccountTests(CustomerAgentSession session)
+        public AccountTests(CardsavrSession session)
         {
             this.session = session;
         }
@@ -41,12 +41,12 @@ namespace cardsavr_e2e
             for (int n = 0; n < count; ++n)
             {
                 // generate using an easily reproducible safe-key.
-                bag["cuid"] = $"{Context.e2e_identifier}_account_tests_{Context.random.Next(10000)}_{n}";
+                bag["cuid"] = $"{CardsavrSession.e2e_identifier}_account_tests_{CardsavrSession.random.Next(10000)}_{n}";
                 bag["first_name"] = $"Otto_{n}_cardholder";
                 bag["last_name"] = $"Matic_{n}_cardholder";
-                bag["email"] = $"cardsavr_e2e_{Context.random.Next(10000)}@gmail.com";
+                bag["email"] = $"cardsavr_e2e_{CardsavrSession.random.Next(10000)}@gmail.com";
 
-                safeKeys[n] = n % 2 == 0 ? null : Context.GenerateBogus32BitPassword(bag.GetString("cuid"));
+                safeKeys[n] = n % 2 == 0 ? null : CardsavrSession.GenerateBogus32BitPassword(bag.GetString("cuid"));
                 CardSavrResponse<Cardholder> result = await this.session.http.CreateCardholderAsync(bag, safeKeys[n]);
                 cardholders.Add(result.Body);
             }
@@ -72,7 +72,7 @@ namespace cardsavr_e2e
 
                 // update it.
                 bag.Clear();
-                bag["password"] = $"{Context.e2e_identifier}-{Context.e2e_identifier}";
+                bag["password"] = $"{CardsavrSession.e2e_identifier}-{CardsavrSession.e2e_identifier}";
                 result = await this.session.http.UpdateAccountAsync(result.Body.id, bag, safeKeys[n]);
                 Assert.Equal(HttpStatusCode.Created, result.StatusCode);
                 log.Info($"updated account-id={result.Body.id}");
@@ -89,7 +89,7 @@ namespace cardsavr_e2e
             CardSavrResponse<List<Cardholder>> cardholderResponse = await this.session.http.GetCardholdersAsync(null);
 
             foreach (Cardholder c in cardholderResponse.Body) {
-                if (c.cuid.StartsWith($"{Context.e2e_identifier}_account_tests")) {
+                if (c.cuid.StartsWith($"{CardsavrSession.e2e_identifier}_account_tests")) {
                     await this.session.http.DeleteCardholderAsync(c.id);
                     count--;
                 }

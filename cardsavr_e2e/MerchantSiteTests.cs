@@ -11,15 +11,15 @@ using Xunit.Priority;
 namespace cardsavr_e2e
 {
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    [Collection("CustomerAgentSession collection")]
+    [Collection("CardsavrSession collection")]
     public class MerchantSiteTests
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        CustomerAgentSession session;
+        CardsavrSession session;
         
-        public MerchantSiteTests(CustomerAgentSession session)
+        public MerchantSiteTests(CardsavrSession session)
         {
             this.session = session;
         }

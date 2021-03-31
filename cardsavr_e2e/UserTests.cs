@@ -14,15 +14,15 @@ using Newtonsoft.Json;
 namespace cardsavr_e2e
 {
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    [Collection("CustomerAgentSession collection")]
+    [Collection("CardsavrSession collection")]
     public class UserTests
     {
         protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        CustomerAgentSession session;
+        CardsavrSession session;
 
-        public UserTests(CustomerAgentSession session)
+        public UserTests(CardsavrSession session)
         {
             this.session = session;
         }
@@ -38,20 +38,20 @@ namespace cardsavr_e2e
             {
                 // generate using an easily reproducible safe-key.
                 // the username, role and email help us identify these users later.
-                bag["username"] = $"{Context.e2e_identifier}_{Context.random.Next(1000)}_{n}";
-                password = $"{Context.e2e_identifier}_{Context.random.Next(1000)}_{n}";
+                bag["username"] = $"{CardsavrSession.e2e_identifier}_{CardsavrSession.random.Next(1000)}_{n}";
+                password = $"{CardsavrSession.e2e_identifier}_{CardsavrSession.random.Next(1000)}_{n}";
                 bag["password"] = password;
                 bag["role"] = "customer_agent";
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
-                bag["email"] = $"cardsavr_e2e_{Context.random.Next(1000)}@gmail.com";
+                bag["email"] = $"cardsavr_e2e_{CardsavrSession.random.Next(1000)}@gmail.com";
                 log.Info(bag["username"] + " " + bag["password"]);
                 CardSavrResponse<User> result = await this.session.http.CreateUserAsync(bag);
             }
 
             CardSavrResponse<List<User>> users = await this.session.http.GetUsersAsync(null);
             foreach (User user in users.Body) {
-                if (!user.username.StartsWith(Context.e2e_identifier)) {
+                if (!user.username.StartsWith(CardsavrSession.e2e_identifier)) {
                     continue;
                 }
                 bag.Clear();
@@ -66,7 +66,8 @@ namespace cardsavr_e2e
             Assert.Equal(10, list.Count);
 
             CardsavrHelper helper = new CardsavrHelper();
-            helper.SetAppSettings(Context.accountBaseUrl, Context.accountCustomerAgentAppID, Context.accountCustomerAgentStaticKey, Context.rejectUnauthorized);
+            CardsavrSession.InstanceConfig config = session.getConfig();
+            helper.SetAppSettings(config.cardsavr_server, config.app_name, config.app_key, CardsavrSession.rejectUnauthorized);
             //use the latest user
             string testing_agent = list[list.Count - 1].username;
             await helper.LoginAndCreateSession(testing_agent, password);
@@ -82,15 +83,15 @@ namespace cardsavr_e2e
         public async void TestUpdatePassword() {
             CardSavrResponse<List<User>> users = await this.session.http.GetUsersAsync(null);
             foreach (User user in users.Body) {
-                if (user.username.StartsWith(Context.e2e_identifier)) {
+                if (user.username.StartsWith(CardsavrSession.e2e_identifier)) {
                     log.Info($"updating password for user \"{user.username}\" ({user.id})");
 
                     string pwBase = "foobar";
                     string newPassword = pwBase.PadRight(44 - pwBase.Length);
                     PropertyBag bag = new PropertyBag();
                     bag["username"] = user.username;
-                    bag["old_password"] = Context.GenerateBogus32BitPassword(Context.e2e_identifier);
-                    bag["password"] = Context.GenerateBogus32BitPassword(user.username + Context.e2e_identifier);
+                    bag["old_password"] = CardsavrSession.GenerateBogus32BitPassword(CardsavrSession.e2e_identifier);
+                    bag["password"] = CardsavrSession.GenerateBogus32BitPassword(user.username + CardsavrSession.e2e_identifier);
                     bag["password_copy"] = bag["password"];
 
                     CardSavrResponse<PropertyBag> result = await this.session.http.UpdateUserPasswordAsync((int)user.id, bag);
@@ -103,7 +104,7 @@ namespace cardsavr_e2e
             List<int> list = new List<int>();
             users = await this.session.http.GetUsersAsync(null);
             foreach (User u in users.Body) {
-                if (!u.username.StartsWith(Context.e2e_identifier)) {
+                if (!u.username.StartsWith(CardsavrSession.e2e_identifier)) {
                     continue;
                 }
                 list.Add((int)u.id);

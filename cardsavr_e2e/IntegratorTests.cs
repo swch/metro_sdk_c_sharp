@@ -13,12 +13,12 @@ using Xunit.Priority;
 namespace cardsavr_e2e
 {
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    [Collection("CustomerAgentSession collection")]
+    [Collection("CardsavrSession collection")]
     public class IntegratorTests
     {
-        CustomerAgentSession session;
+        CardsavrSession session;
 
-        public IntegratorTests(CustomerAgentSession session)
+        public IntegratorTests(CardsavrSession session)
         {
             this.session = session;
         }
@@ -29,9 +29,9 @@ namespace cardsavr_e2e
         public async void TestCreateIntegrator() {
 
             PropertyBag body = new PropertyBag();
-            body["name"] = Context.e2e_identifier + $"_{Context.random.Next(1000, 2000)}";
+            body["name"] = CardsavrSession.e2e_identifier + $"_{CardsavrSession.random.Next(1000, 2000)}";
             string integrator_name = (string)body["name"];
-            body["description"] = Context.e2e_identifier;
+            body["description"] = CardsavrSession.e2e_identifier;
             body["integrator_type"] = "cust_internal";
 
             CardSavrResponse<Integrator> result = await this.session.http.CreateIntegratorAsync(body);
@@ -46,7 +46,7 @@ namespace cardsavr_e2e
             string last_key = IntegratorTests.integrator.current_key;
             string new_key = Aes256.GetRandomString(44, 32);
             PropertyBag body = new PropertyBag();
-            body["description"] = $"{Context.e2e_identifier}_{Context.e2e_identifier}";
+            body["description"] = $"{CardsavrSession.e2e_identifier}_{CardsavrSession.e2e_identifier}";
             body["current_key"] = new_key;
             body["last_key"] = last_key;
 
@@ -60,27 +60,28 @@ namespace cardsavr_e2e
 
             Assert.Equal(HttpStatusCode.Created, updated.StatusCode);
 
+            CardsavrSession.InstanceConfig config = session.getConfig();
             CardsavrHelper helper = new CardsavrHelper();
-            helper.SetAppSettings(Context.accountBaseUrl, IntegratorTests.integrator.name, last_key, Context.rejectUnauthorized);
-            ClientSession login = await helper.LoginAndCreateSession(Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword, "{\"key\": \"my_trace\"}");
+            helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, last_key, CardsavrSession.rejectUnauthorized);
+            ClientSession login = await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
             CardSavrResponse<List<Integrator>> integrator = await login.client.GetIntegratorsAsync(IntegratorTests.integrator.id);
             Assert.Equal(integrator.Body[0].id, IntegratorTests.integrator.id);
 
-            string new_new_key = await helper.RotateIntegrator(Context.accountCustomerAgentUserName, IntegratorTests.integrator.name);
+            string new_new_key = await helper.RotateIntegrator(config.app_username, IntegratorTests.integrator.name);
 
             log.Info($"rotated integrator {IntegratorTests.integrator.name} to {new_new_key} using 'old' integrator");
 
-            helper.SetAppSettings(Context.accountBaseUrl, IntegratorTests.integrator.name, new_key, Context.rejectUnauthorized);
-            login = await helper.LoginAndCreateSession(Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword, "{\"key\": \"my_trace\"}");
+            helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, new_key, CardsavrSession.rejectUnauthorized);
+            login = await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
             log.Info($"logged in successfully with 'old' 'new' integrator");
 
-            helper.SetAppSettings(Context.accountBaseUrl, IntegratorTests.integrator.name, new_new_key, Context.rejectUnauthorized);
-            login = await helper.LoginAndCreateSession(Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword, "{\"key\": \"my_trace\"}");
+            helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, new_new_key, CardsavrSession.rejectUnauthorized);
+            login = await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
             log.Info($"logged in successfully with 'new' 'new' integrator");
 
-            helper.SetAppSettings(Context.accountBaseUrl, IntegratorTests.integrator.name, last_key, Context.rejectUnauthorized);
+            helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, last_key, CardsavrSession.rejectUnauthorized);
             Exception ex = await Assert.ThrowsAsync<RequestException>(async () => {
-                await helper.LoginAndCreateSession(Context.accountCustomerAgentUserName, Context.accountCustomerAgentPassword, "{\"key\": \"my_trace\"}");
+                await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
             });
             Assert.True(ex.Message.IndexOf("Request Signature failed") >= 0);
         }
