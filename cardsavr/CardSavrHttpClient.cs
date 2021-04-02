@@ -3,9 +3,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 using Newtonsoft.Json;
 
@@ -360,12 +358,11 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<User>> 
-            CreateUserAsync(PropertyBag body, string newSafeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
+            CreateUserAsync(PropertyBag body, string financialInstitution = "default", HttpRequestHeaders headers = null)
         {
             if ((string)body["role"] == "cardholder" && !body.ContainsKey("username") || String.IsNullOrEmpty((string)body["username"])) {
                 body["username"] = ApiUtil.RandomString(40);
             }
-            log.Info("CREATE CARDHOLDER " + body["username"]);
             if (body.ContainsKey("password")) {
                 body["password"] = MakePasswordKey((string)body["username"], (string)body["password"]);
                 log.Info((string)body["password"]);
@@ -373,7 +370,6 @@ namespace Switch.CardSavr.Http
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
-            AddNewSafeKeyHeader(headers, newSafeKey);
             headers.Add("financial-institution", financialInstitution);
 
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
@@ -429,12 +425,12 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Cardholder>> 
-            CreateCardholderAsync(PropertyBag body, string newSafeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
+            CreateCardholderAsync(PropertyBag body, string safeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
         {
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
-            AddNewSafeKeyHeader(headers, newSafeKey);
+            AddSafeKeyHeader(headers, safeKey);
             headers.Add("financial-institution", financialInstitution);
 
             return await ApiPostAsync<Cardholder>("/cardholders", body, null, headers);
@@ -762,7 +758,6 @@ namespace Switch.CardSavr.Http
                 {
                     // ignore any exception that happens during the decryption attempt.
                 }
-
                 // include either the original or decrypted body as the exception message.
                 throw new RequestException(body);
             }

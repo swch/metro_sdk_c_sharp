@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Switch.CardSavr.Exceptions;
 using System.Collections.Specialized;
-using Switch.Security;
 
 namespace Switch.CardSavr.Http
 {
+    public class ClientSession {
+        public CardSavrHttpClient client { get; set; }
+    }
+
     public sealed class CardsavrHelper
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
@@ -19,11 +22,6 @@ namespace Switch.CardSavr.Http
         private Dictionary<string, ClientSession> _sessions;
 
         public CardsavrHelper() {}
-
-        public class ClientSession {
-            public CardSavrHttpClient client { get; set; }
-            public string safeKey { get; set; }
-        }
 
         public async Task CloseSession(string username) {
             if (_sessions.ContainsKey(username)) {
@@ -44,22 +42,15 @@ namespace Switch.CardSavr.Http
 
         public async Task<ClientSession> LoginAndCreateSession(string username, 
                                                                string password,
-                                                               string grant = null,
                                                                string trace = null) {
             if (_sessions.ContainsKey(username)) {
                 return _sessions[username];
             }
-            try {
-                CardSavrHttpClient session = new CardSavrHttpClient(_rejectUnauthorized);
-                session.Setup(_cardsavrServer, _appKey, _appName, username, password, grant, trace);
-                CardSavrResponse<LoginResult> login = await session.Init();
-                _sessions[username] = new ClientSession { client = session };
-                return _sessions[username];
-            } catch(RequestException ex) {
-                log.Error("Unable to create sessions for: " + username);
-                log.Error(ex.StackTrace);
-            }
-            return null;
+            CardSavrHttpClient session = new CardSavrHttpClient(_rejectUnauthorized);
+            session.Setup(_cardsavrServer, _appKey, _appName, username, password, trace);
+            CardSavrResponse<LoginResult> login = await session.Init();
+            _sessions[username] = new ClientSession { client = session };
+            return _sessions[username];
         }
 
         public async Task<String> RotateIntegrator(string user, string integrator_name) {
@@ -102,36 +93,34 @@ namespace Switch.CardSavr.Http
             throw new ArgumentException("Couldn't update provided password.");
         }
 
-        public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, User user, Card card, Address address, string safeKey = null) {
+        public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, Cardholder cardholder, Card card, Address address, string safeKey = null) {
         
             try {
                 //don't need the login data
                 ClientSession agentSession = _sessions[agent];
                 
                 PropertyBag u = new PropertyBag();
-                u["email"] = user.email;
-                u["phone_number"] = user.phone_number;
-                u["username"] = user.username;
-                u["custom_data"] = user.custom_data;
-                u["role"] = "cardholder";
+                u["email"] = cardholder.email;
+                u["cuid"] = cardholder.cuid;
+                u["custom_data"] = cardholder.custom_data;
                 
                 //set the missing settings for model
-                if (String.IsNullOrEmpty(user.first_name)) u["first_name"] = card.first_name;
-                if (String.IsNullOrEmpty(user.last_name)) u["last_name"] = card.last_name;
+                if (String.IsNullOrEmpty(cardholder.first_name)) u["first_name"] = card.first_name;
+                if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = card.last_name;
                 if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
 
-                CardSavrResponse<User> userResponse = await agentSession.client.CreateUserAsync(u, safeKey, financialInstitution);
-                if (userResponse.Body == null || userResponse.Body.id == null) {
-                    throw new RequestException($"No body returned Creating User: {u}");
+                CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.CreateCardholderAsync(u, safeKey, financialInstitution);
+                if (cardholderResponse.Body == null || cardholderResponse.Body.id == null) {
+                    throw new RequestException($"No body returned Creating Cardholder: {u}");
                 }
-                int cardholderId = userResponse.Body.id ?? -1;
-                address.user_id = cardholderId;
+                int cardholderId = cardholderResponse.Body.id ?? -1;
+                address.cardholder_id = cardholderId;
                 CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
                 card.cardholder_id = cardholderId;
                 card.address_id = addressResponse.Body.id ?? -1;
-                card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, userResponse.Body.username);
+                card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
                 CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
-                return new ClientLogin(){ userCredentialGrant = userResponse.Body.credential_grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = userResponse.Body };
+                return new ClientLogin(){ grant = cardholderResponse.Body.grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = cardholderResponse.Body };
 
             } catch (RequestException e) {
                 log.Info(e.StackTrace);

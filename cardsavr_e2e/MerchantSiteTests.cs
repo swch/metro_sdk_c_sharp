@@ -5,41 +5,40 @@ using System.Threading.Tasks;
 using System.Net;
 
 using Switch.CardSavr.Http;
-
+using Xunit;
+using Xunit.Priority;
 
 namespace cardsavr_e2e
 {
-    public class MerchantSiteOps : OperationBase
+    [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
+    [Collection("CardsavrSession collection")]
+    public class MerchantSiteTests
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public MerchantSiteOps()
+        CardsavrSession session;
+        
+        public MerchantSiteTests(CardsavrSession session)
         {
+            this.session = session;
         }
 
-        public override async Task Execute(CardSavrHttpClient http, Context ctx, params object[] extra)
-        {
+        [Fact, Priority(1)]
+        public async void TestSelectMerchants() {
             Paging paging = new Paging() { PageLength = 10, Sort = "name" };
-            CardSavrResponse<List<MerchantSite>> merchants = await http.GetMerchantSitesAsync(null, paging);
+            CardSavrResponse<List<MerchantSite>> merchants = await this.session.http.GetMerchantSitesAsync(null, paging);
+            Assert.Equal(10, merchants.Body.Count);
             foreach (MerchantSite merch in merchants.Body) {
                 log.Info($"Loaded merchant site: {merch.name}: {merch.host}");
             }
-            merchants = await http.GetMerchantSitesAsync(
+
+            merchants = await this.session.http.GetMerchantSitesAsync(
                 new NameValueCollection() {
                     { "top_hosts", "amazon.com,apple.com"}, {"exclude_hosts", "petco.com,safeway.com" }
                 }
             );
-            foreach (MerchantSite merch in merchants.Body) {
-                log.Info($"Loaded merchant site: {merch.name}: {merch.host}");
-            }
-            ctx.Sites = merchants.Body;
-        }
-
-        public override async Task Cleanup(CardSavrHttpClient http, Context ctx)
-        {
-            // nothing to do; we didn't create anything.
-            await base.Cleanup(http, ctx);
+            Assert.Equal("amazon.com", merchants.Body[0].host);          
         }
     }
 }
