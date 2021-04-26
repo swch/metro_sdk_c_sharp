@@ -41,10 +41,10 @@ To verify the tests function correctly, you may run:
 
 from the cardsavr_tests folder.
 
-To verify that your agent and integrator keys are configured correctly (See cardsavr_e2e/Context.cs), run Program.cs
+To verify that your agent and integrator keys are configured correctly, you need to create a strivve_creds.json file (there is a sample file included).
 
-`dotnet run`
+`dotnet test`
 
 ## Conclusion
 
-That's it!  We may occasionally add/remove functionality to/from the SDK, so we recommend forking the repo and keeping an eye out for changes.  We haven't fully figured out how to handle versioning, so all changes will need to be backward compatible effective 6/1/2020.
+That's it!  We may occasionally add/remove functionality to/from the SDK, so we will send notifications of changes and deprecation schedules. 
