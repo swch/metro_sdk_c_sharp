@@ -13,9 +13,9 @@ Cardsavr contains a set of REST endpoints.  Although there are APIs for over a d
 
 Additionally, in order to use Cardsavr, you will require application keys, and a username/password for your agent.  This can be achieved by contacting developer-support@strivve.com.
 
-## Users 
+## Cardholders 
 
-All cardholder activity requires an active cardholder.  Users can be created using randomly generated usernames or based on usernames from a different source (SSO).  
+All cardholder activity requires an active cardholder.  Cardholders can be created using randomly generated usernames or based on usernames from a different source (SSO).  
 
 ## Addresses
 
@@ -27,7 +27,7 @@ In order to place a job, a cardholder must have a valid card on file.
 
 ## Credential Grants
 
-These are actually are a part of the Users endpoints, but are essentail for assuming a cardholder and posting this other information.  Grants can also be sent to other parts of the system (e.g. the Javascritp SDK within the frontend) so jobs can be interactively posted.  Cards and addresses can only be saved by a cardholder, so your code will have to assume the role of a cardholder using a grant.
+These are created as part of the cardholder creation process, but are essential for embedded CardUpdatr to process updates on behalf of the cardholder.  Grants can  be sent to other parts of the system (e.g. the Javascritp SDK within the frontend) so jobs can be interactively posted.  Cardholder agents run on the frontend, and thus their permissions must be scoped to only cardholders created for those short lived client sessions.  Grants can be used once, and only work for two minutes.
 
 ## Accounts, Merchant Sites, Jobs
 
