@@ -33,7 +33,7 @@ namespace Switch.CardSavr.Http
         public CardSavrResponse(HttpResponseMessage response)
         {
             StatusCode = response.StatusCode;
-            string value = ApiUtil.GetSingleHeaderValue(response.Headers, "paging");
+            string value = ApiUtil.GetSingleHeaderValue(response.Headers, "x-cardsavr-paging");
             if (value != null)
             {
                 log.Debug($"found server paging header: \"{value}\"");
@@ -115,10 +115,10 @@ namespace Switch.CardSavr.Http
 
     public class LoginResult
     {
-        public string server_public_key { get; set; }
-        public string cardholder_safe_key { get; set; }
+        public User user { get; set; }
         public int user_id { get; set; }
         public string session_token { get; set; }
+        public string server_public_key { get; set; }
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
@@ -166,6 +166,7 @@ namespace Switch.CardSavr.Http
         public string created_on { get; set; }
         public string last_updated_on { get; set; }
         public string phone_number { get; set; }
+        public string email { get; set; }
     }
 
     /*========== BINS ==========*/
@@ -350,7 +351,6 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public string cuid { get; set; }
-        public string cardholder_safe_key { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
         public string email { get; set; }

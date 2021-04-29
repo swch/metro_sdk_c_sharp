@@ -10,6 +10,10 @@ using Newtonsoft.Json;
 using Switch.CardSavr.Exceptions;
 using Switch.Security;
 
+using System.Reflection;
+using System.Diagnostics;
+
+
 /* DEVELOPER NOTES:
  * 
  * The CardSavrHttpClient exposes public methods that mirror the Switch HTTP endpoints. Most accept
@@ -55,7 +59,7 @@ namespace Switch.CardSavr.Http
         // JSON-serializable HTTP request body used for encrypted communications.
         private class EncryptedBody
         {
-            public string encryptedBody { get; set; }
+            public string encrypted_body { get; set; }
         }
        
         // stores session-specific information.
@@ -70,7 +74,7 @@ namespace Switch.CardSavr.Http
 
         public void SetIdentificationHeader(string clientId)
         {
-            DefaultRequestHeaders.Add("client-application", clientId);
+            DefaultRequestHeaders.Add("x-cardsavr-client-application", clientId + " Strivve C# SDK v2.0.1");
         }
 
         public void Setup(string baseUrl, string staticKey, string appName, string username, string password, string grant = null, string trace = null, string cert = null)
@@ -100,13 +104,12 @@ namespace Switch.CardSavr.Http
                 username = _data.UserName,
                 password_proof = _data.Password != null ? HashUtil.HmacSign(_data.StaticKey, MakePasswordKey(_data.UserName, _data.Password), true) : null
             };
-            //log.Info(JsonConvert.SerializeObject(body));
             CardSavrResponse<LoginResult> result = await ApiPostAsync<LoginResult>(
                 "/session/login", body, null, headers);
             // the shared secret will be used in future encrpyted communications.
             _data.SessionToken = result.Body.session_token;
             _data.Ecdh.ComputeSharedSecret(result.Body.server_public_key, true);
-            log.Debug("received server public key; computed shared secret.");
+            log.Info("received server public key; computed shared secret.");
 
             return result;
         }
@@ -146,9 +149,12 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Account>> 
-            UpdateAccountAsync(object query, PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
+            UpdateAccountAsync(object query, PropertyBag body, string envelopeId, string safeKey = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body, false, true);
+            if (envelopeId != null) {
+                headers.Add("x-cardsavr-envelope_id", envelopeId);
+            }
             return await ApiPutDelAsync<Account>(
                 "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
@@ -365,35 +371,23 @@ namespace Switch.CardSavr.Http
             }
             if (body.ContainsKey("password")) {
                 body["password"] = MakePasswordKey((string)body["username"], (string)body["password"]);
-                log.Info((string)body["password"]);
             }
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
-            headers.Add("financial-institution", financialInstitution);
+            headers.Add("x-cardsavr-financial-institution", financialInstitution);
 
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
         }
 
-        public async Task<CardSavrResponse<CredentialGrant>> 
-            CreateUserGrantAsync(int id, HttpRequestHeaders headers = null)
-        {
-            string path = "/cardsavr_users/{0}/credential_grant";
-            path = String.Format(path, id);
-
-            return await ApiGetAsync<CredentialGrant>(path, null, null, headers);
-        }
-
-
-       public async Task<CardSavrResponse<List<User>>> 
-            UpdateUserAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<List<User>>> 
+            UpdateUserAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
         {
            QueryDef qd = new QueryDef(query, body);
             string path = "/cardsavr_users";
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
-            AddNewSafeKeyHeader(headers, newSafeKey);
             return await ApiMultiPutDelAsync<User>(path, null, qd, HttpMethod.Put, body, null, paging, headers);
         }
 
@@ -431,7 +425,7 @@ namespace Switch.CardSavr.Http
                 headers = new HttpRequestMessage().Headers;
             }
             AddSafeKeyHeader(headers, safeKey);
-            headers.Add("financial-institution", financialInstitution);
+            headers.Add("x-cardsavr-financial-institution", financialInstitution);
 
             return await ApiPostAsync<Cardholder>("/cardholders", body, null, headers);
         }
@@ -479,7 +473,7 @@ namespace Switch.CardSavr.Http
             using (HttpRequestMessage request = CreateRequest(HttpMethod.Get, path, null, headers))
             {
                 if (paging != null && paging.GetCount() > 0)
-                    request.Headers.Add("paging", paging.Stringify());
+                    request.Headers.Add("x-cardsavr-paging", paging.Stringify());
 
                 using (HttpResponseMessage response = await SendAsync(request))
                 {
@@ -586,12 +580,10 @@ namespace Switch.CardSavr.Http
                 request.Headers.Add("x-cardsavr-session-jwt", _data.SessionToken);
 
             try {
-                request.Headers.Add("trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
+                request.Headers.Add("x-cardsavr-trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
             } catch (JsonException ex){ 
-                log.Error("INVALID custom trace header: " + _data.Trace);
-                log.Error(ex.StackTrace);
+                log.Error("INVALID custom trace header: " + _data.Trace + " " + ex);
             }
-
             // encrypt the body and/or serialize to JSON.
             string strBody = null;
             if (body != null)
@@ -636,7 +628,6 @@ namespace Switch.CardSavr.Http
             log.Info($"processing \"{request.Method}\" response for path: {request.RequestUri.PathAndQuery} {response.StatusCode}");
             string body = await response.Content.ReadAsStringAsync();
             CheckStatusAndMaybeThrow(body, response);
- 
             VerifyResponseSignature(request.RequestUri, response, body);
  
             // the generic parameter constraint allows use of the "as" operator in this context.
@@ -650,7 +641,6 @@ namespace Switch.CardSavr.Http
                 log.Debug($"returning body as a string: \"{body}\"");
                 return new CardSavrResponse<T>(response, tstr);
             }
-
             try
             {
                 // encryption is on, so we're expecting an encrypted body.
@@ -703,7 +693,7 @@ namespace Switch.CardSavr.Http
             string jsonBody = JsonConvert.SerializeObject(body);
             return new EncryptedBody()
             {
-                encryptedBody = Aes256.EncryptText(jsonBody, GetEncryptionKey())
+                encrypted_body = Aes256.EncryptText(jsonBody, GetEncryptionKey())
             };
         }
 
@@ -713,17 +703,17 @@ namespace Switch.CardSavr.Http
             // won't work in the initial stages (e.g., start, login). instead, see if the 
             // deserialized object contains a property called "encryptedBody".
             EncryptedBody encBody = JsonConvert.DeserializeObject<EncryptedBody>(body);
-            if (encBody == null || encBody.encryptedBody == null)
+            if (encBody == null || encBody.encrypted_body == null)
             {
                 // deserialize directly into the expected type.
-                log.Debug($"clear-text body: \"{body}\"");
+                log.Info($"clear-text body: \"{body}\"");
                 return JsonConvert.DeserializeObject<T>(body);
             }
 
             // we have an EncryptedBody object containing an encrypted response.
             // split the text string into cipher text and IV, then decrypt.
             log.Debug($"encrypted body: \"{body}\"");
-            string[] parts = encBody.encryptedBody.Split('$');
+            string[] parts = encBody.encrypted_body.Split('$');
             body = Aes256.DecryptText(parts[0], parts[1], GetEncryptionKey());
             log.Debug($"decrypted body: \"{body}\"");
             
@@ -745,13 +735,13 @@ namespace Switch.CardSavr.Http
                 try
                 {
                     EncryptedBody enc = JsonConvert.DeserializeObject<EncryptedBody>(body);
-                    if (enc != null && enc.encryptedBody != null)
+                    if (enc != null && enc.encrypted_body != null)
                     {
                         // we have an EncryptedBody object containing an encrypted response.
                         // split the text string into cipher text and IV, then decrypt.
-                        string[] parts = enc.encryptedBody.Split('$');
+                        string[] parts = enc.encrypted_body.Split('$');
                         body = Aes256.DecryptText(parts[0], parts[1], GetEncryptionKey());
-                        log.Error($"decrypted body: \"{body}\"");
+                        //log.Error($"decrypted body: \"{body}\"");
                     }
                 }
                 catch (Exception)
@@ -806,12 +796,12 @@ namespace Switch.CardSavr.Http
         private void AddSafeKeyHeader(HttpRequestHeaders headers, string safeKey)
         {
             if (!string.IsNullOrEmpty(safeKey)) 
-                headers.Add("cardholder-safe-key", Aes256.EncryptText(safeKey, GetEncryptionKey()));
+                headers.Add("x-cardsavr-cardholder-safe-key", Aes256.EncryptText(safeKey, GetEncryptionKey()));
         }
         private void AddNewSafeKeyHeader(HttpRequestHeaders headers, string newSafeKey)
         {
             if (!string.IsNullOrEmpty(newSafeKey))
-                headers.Add("new-cardholder-safe-key", Aes256.EncryptText(newSafeKey, GetEncryptionKey()));
+                headers.Add("x-cardsavr-new-cardholder-safe-key", Aes256.EncryptText(newSafeKey, GetEncryptionKey()));
         }
 
 

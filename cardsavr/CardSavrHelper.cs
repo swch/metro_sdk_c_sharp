@@ -95,37 +95,31 @@ namespace Switch.CardSavr.Http
 
         public async Task<ClientLogin> CreateCard(string agent, string financialInstitution, Cardholder cardholder, Card card, Address address, string safeKey = null) {
         
-            try {
-                //don't need the login data
-                ClientSession agentSession = _sessions[agent];
-                
-                PropertyBag u = new PropertyBag();
-                u["email"] = cardholder.email;
-                u["cuid"] = cardholder.cuid;
-                u["custom_data"] = cardholder.custom_data;
-                
-                //set the missing settings for model
-                if (String.IsNullOrEmpty(cardholder.first_name)) u["first_name"] = card.first_name;
-                if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = card.last_name;
-                if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
+            //don't need the login data
+            ClientSession agentSession = _sessions[agent];
+            
+            PropertyBag u = new PropertyBag();
+            u["email"] = cardholder.email;
+            u["cuid"] = cardholder.cuid;
+            u["custom_data"] = cardholder.custom_data;
+            
+            //set the missing settings for model
+            if (String.IsNullOrEmpty(cardholder.first_name)) u["first_name"] = card.first_name;
+            if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = card.last_name;
+            if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
 
-                CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.CreateCardholderAsync(u, safeKey, financialInstitution);
-                if (cardholderResponse.Body == null || cardholderResponse.Body.id == null) {
-                    throw new RequestException($"No body returned Creating Cardholder: {u}");
-                }
-                int cardholderId = cardholderResponse.Body.id ?? -1;
-                address.cardholder_id = cardholderId;
-                CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
-                card.cardholder_id = cardholderId;
-                card.address_id = addressResponse.Body.id ?? -1;
-                card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
-                CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
-                return new ClientLogin(){ grant = cardholderResponse.Body.grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = cardholderResponse.Body };
-
-            } catch (RequestException e) {
-                log.Info(e.StackTrace);
+            CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.CreateCardholderAsync(u, safeKey, financialInstitution);
+            if (cardholderResponse.Body == null || cardholderResponse.Body.id == null) {
+                throw new RequestException($"No body returned Creating Cardholder: {u}");
             }
-            return null;
+            int cardholderId = cardholderResponse.Body.id ?? -1;
+            address.cardholder_id = cardholderId;
+            CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
+            card.cardholder_id = cardholderId;
+            card.address_id = addressResponse.Body.id ?? -1;
+            card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
+            CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
+            return new ClientLogin(){ grant = cardholderResponse.Body.grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = cardholderResponse.Body };
         }
     }
 }

@@ -73,13 +73,13 @@ namespace cardsavr_e2e
                 // update it.
                 bag.Clear();
                 bag["password"] = $"{CardsavrSession.e2e_identifier}-{CardsavrSession.e2e_identifier}";
-                result = await this.session.http.UpdateAccountAsync(result.Body.id, bag, safeKeys[n]);
+                result = await this.session.http.UpdateAccountAsync(result.Body.id, bag, null, safeKeys[n]);
                 Assert.Equal(HttpStatusCode.Created, result.StatusCode);
                 log.Info($"updated account-id={result.Body.id}");
 
                 if (safeKeys[n] != null) {
                     Exception ex = await Assert.ThrowsAsync<RequestException>(async () => {
-                        result = await this.session.http.UpdateAccountAsync(result.Body.id, bag, null);
+                        result = await this.session.http.UpdateAccountAsync(result.Body.id, bag, null, null);
                     });
                     Assert.True(ex.Message.IndexOf("No safe_key for this cardholder_id") >= 0);
                 }
@@ -87,7 +87,6 @@ namespace cardsavr_e2e
             }
 
             CardSavrResponse<List<Cardholder>> cardholderResponse = await this.session.http.GetCardholdersAsync(null);
-
             foreach (Cardholder c in cardholderResponse.Body) {
                 if (c.cuid.StartsWith($"{CardsavrSession.e2e_identifier}_account_tests")) {
                     await this.session.http.DeleteCardholderAsync(c.id);

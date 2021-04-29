@@ -1,12 +1,19 @@
 {
 	"folders": [
 		{
+			"name": "cardsavr",
 			"path": "cardsavr"
 		},
 		{
+			"name": "cardsavr_app",
+			"path": "cardsavr_app"
+		},
+		{
+			"name": "cardsavr_e2e",
 			"path": "cardsavr_e2e"
 		},
 		{
+			"name": "cardsavr_tests",
 			"path": "cardsavr_tests"
 		}
 	],

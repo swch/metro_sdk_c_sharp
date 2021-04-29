@@ -45,7 +45,6 @@ namespace cardsavr_e2e
                 bag["first_name"] = $"Otto_{n}";
                 bag["last_name"] = $"Matic_{n}";
                 bag["email"] = $"cardsavr_e2e_{CardsavrSession.random.Next(1000)}@gmail.com";
-                log.Info(bag["username"] + " " + bag["password"]);
                 CardSavrResponse<User> result = await this.session.http.CreateUserAsync(bag);
             }
 
@@ -72,7 +71,6 @@ namespace cardsavr_e2e
             string testing_agent = list[list.Count - 1].username;
             await helper.LoginAndCreateSession(testing_agent, password);
             string new_password = await helper.RotateAgentPassword(testing_agent);
-            log.Info("New Password: " + new_password);
             await helper.CloseSession(testing_agent);
             ClientSession login = await helper.LoginAndCreateSession(testing_agent, new_password);
             Assert.NotNull(login);
