@@ -66,8 +66,7 @@ namespace cardsavr_e2e
         public CardsavrSession()
         {
 
-           string localGeneratedConfig = "../../../docker.local.json";
-            
+            string localGeneratedConfig = "../../../docker.local.json";
             if (File.Exists(localGeneratedConfig)) {
                 using (StreamReader r = new StreamReader("../../../docker.local.json"))
                 {
@@ -82,7 +81,7 @@ namespace cardsavr_e2e
                     this.config.app_key = dl["testing/credentials/primary/integrator/key"];
                     this.config.app_password = dl["testing/credentials/primary/user/password"];
                     this.config.app_username = dl["testing/credentials/primary/user/username"];
-                    this.config.cardsavr_server = dl["api_url_override"];
+                    this.config.cardsavr_server = "https://" + dl["cardsavr/config/base_url"];
                 }
             } else {
                 using (StreamReader r = new StreamReader("../../../strivve_creds.json"))

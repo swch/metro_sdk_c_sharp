@@ -5,3 +5,6 @@ cardsavr*/obj/*
 *_creds.json
 creds.json
 docker.local.json
+
+*.trx
+TestResults

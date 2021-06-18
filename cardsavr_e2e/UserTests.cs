@@ -48,7 +48,7 @@ namespace cardsavr_e2e
                 CardSavrResponse<User> result = await this.session.http.CreateUserAsync(bag);
             }
 
-            CardSavrResponse<List<User>> users = await this.session.http.GetUsersAsync(null);
+            CardSavrResponse<List<User>> users = await this.session.http.GetUsersAsync(null, new Paging() { PageLength = 100 });
             foreach (User user in users.Body) {
                 if (!user.username.StartsWith(CardsavrSession.e2e_identifier)) {
                     continue;
@@ -100,7 +100,7 @@ namespace cardsavr_e2e
             }
 
             List<int> list = new List<int>();
-            users = await this.session.http.GetUsersAsync(null);
+            users = await this.session.http.GetUsersAsync(null, new Paging() { PageLength = 100 });
             foreach (User u in users.Body) {
                 if (!u.username.StartsWith(CardsavrSession.e2e_identifier)) {
                     continue;

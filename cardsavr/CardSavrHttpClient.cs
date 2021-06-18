@@ -474,7 +474,6 @@ namespace Switch.CardSavr.Http
             {
                 if (paging != null && paging.GetCount() > 0)
                     request.Headers.Add("x-cardsavr-paging", paging.Stringify());
-
                 using (HttpResponseMessage response = await SendAsync(request))
                 {
                     return await ProcessResponseAsync<T>(request, response);
@@ -743,6 +742,7 @@ namespace Switch.CardSavr.Http
                         body = Aes256.DecryptText(parts[0], parts[1], GetEncryptionKey());
                         //log.Error($"decrypted body: \"{body}\"");
                     }
+                    log.Error($"failed request ({response.StatusCode}): body contents: \"{body}\"");
                 }
                 catch (Exception)
                 {
