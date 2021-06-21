@@ -81,7 +81,7 @@ namespace cardsavr_e2e
                     this.config.app_key = dl["testing/credentials/primary/integrator/key"];
                     this.config.app_password = dl["testing/credentials/primary/user/password"];
                     this.config.app_username = dl["testing/credentials/primary/user/username"];
-                    this.config.cardsavr_server = "https://" + dl["cardsavr/config/base_url"];
+                    this.config.cardsavr_server = "https://api." + dl["cardsavr/config/base_url"];
                 }
             } else {
                 using (StreamReader r = new StreamReader("../../../strivve_creds.json"))
