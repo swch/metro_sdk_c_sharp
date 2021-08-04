@@ -104,8 +104,8 @@ namespace Switch.CardSavr.Http
             u["custom_data"] = cardholder.custom_data;
             
             //set the missing settings for model
-            if (String.IsNullOrEmpty(cardholder.first_name)) u["first_name"] = card.first_name;
-            if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = card.last_name;
+            if (String.IsNullOrEmpty(cardholder.first_name)) u["first_name"] = address.first_name;
+            if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = address.last_name;
             if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
 
             CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.CreateCardholderAsync(u, safeKey, financialInstitution);

@@ -36,8 +36,8 @@ namespace cardsavr_e2e
             string cuid = $"{CardsavrSession.e2e_identifier}_{CardsavrSession.random.Next(10000)}_0";
             ClientLogin login = await helper.CreateCard(config.app_username, "default", 
                 new Cardholder(){ custom_data = cd, cuid = cuid },
-                new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
-                new Address(){ email = "foo@foo.com", is_primary=true, phone_number = "5555555555", address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
+                new Card(){ pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
+                new Address(){ first_name="Strivve", last_name="User", email = "foo@foo.com", is_primary=true, phone_number = "5555555555", address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
             );
             await helper.CloseSession(config.app_username);
             Assert.NotNull(login.cardholder.grant);

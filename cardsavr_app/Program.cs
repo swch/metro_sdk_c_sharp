@@ -15,14 +15,14 @@ namespace cardsavr_app
 
             try {
                 CardsavrHelper helper = new CardsavrHelper();
-                helper.SetAppSettings("<REDACTED>", "<REDACTED>", "<REDACTED>", true);
-                ClientSession auth = await helper.LoginAndCreateSession("<REDACTED>", "<REDACTED>", "{\"key\": \"my_trace\"}");
+                helper.SetAppSettings("https://api.<SERVERR>.cardsavr.io/", "<INTEGRATOR NAME>", "<INTEGRATOR KEY>", false);
+                ClientSession auth = await helper.LoginAndCreateSession("<USERNAME>", "<PASSWORD>", "{\"key\": \"my_trace\"}");
                 
                 PropertyBag cd = new PropertyBag(){{"my_fi", new PropertyBag(){{"token", "123"}}}};
                 ClientLogin login = await helper.CreateCard("testing_user", "default", 
-                    new Cardholder(){ email = "foo@foo.com", custom_data = cd, cuid = "1234" },
-                    new Card(){ first_name="Strivve", last_name="User", pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
-                    new Address(){ is_primary=true, phone_number = "5555555555", address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
+                    new Cardholder(){ email = "foo@foo.com", custom_data = cd, cuid = "12345" },
+                    new Card(){ pan="4111111111111111", cvv="111", expiration_month="01", expiration_year="25" },
+                    new Address(){ first_name="Strivve", last_name="User", is_primary=true, phone_number = "5555555555", address1="1234 1st ave", city="Seattle", subnational="WA", postal_code="98006", country="USA" }
                 );
                 await helper.CloseSession("AdvAppUser");
                 Console.WriteLine("CARDSAVRHELPERTESTS cuid: " + login.cardholder.cuid + ", grant: " + login.grant + ", card_id: " + login.card.id);

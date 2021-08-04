@@ -74,7 +74,7 @@ namespace Switch.CardSavr.Http
 
         public void SetIdentificationHeader(string clientId)
         {
-            DefaultRequestHeaders.Add("x-cardsavr-client-application", clientId + " Strivve C# SDK v2.0.1");
+            DefaultRequestHeaders.Add("x-cardsavr-client-application", clientId + " Strivve C# SDK v2.1.0");
         }
 
         public void Setup(string baseUrl, string staticKey, string appName, string username, string password, string grant = null, string trace = null, string cert = null)
