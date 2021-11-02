@@ -64,7 +64,7 @@ namespace cardsavr_e2e
             CardsavrHelper helper = new CardsavrHelper();
             helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, last_key, CardsavrSession.rejectUnauthorized);
             ClientSession login = await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
-            CardSavrResponse<List<Integrator>> integrator = await helper.login.client.GetIntegratorsAsync(IntegratorTests.integrator.id);
+            CardSavrResponse<List<Integrator>> integrator = await login.client.GetIntegratorsAsync(IntegratorTests.integrator.id);
             Assert.Equal(integrator.Body[0].id, IntegratorTests.integrator.id);
 
             string new_new_key = await helper.RotateIntegrator(config.app_username, IntegratorTests.integrator.name);

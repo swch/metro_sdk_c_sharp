@@ -143,8 +143,10 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Account>> 
-            CreateAccountAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
+            CreateAccountAsync(PropertyBag body, string safeKey = null, string financialInstitution = null, HttpRequestHeaders headers = null)
         {
+            if (financialInstitution != null)
+                headers.Add("x-cardsavr-financial-institution", financialInstitution);
             return await ApiPostAsync<Account>("/cardsavr_accounts", body, safeKey, headers);
         }
 
@@ -177,8 +179,10 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Address>> 
-            CreateAddressAsync(PropertyBag body, HttpRequestHeaders headers = null)
+            CreateAddressAsync(PropertyBag body, string financialInstitution = null, HttpRequestHeaders headers = null)
         {
+            if (financialInstitution != null)
+                headers.Add("x-cardsavr-financial-institution", financialInstitution);
             return await ApiPostAsync<Address>("/cardsavr_addresses", body, null, headers);
         }
 
@@ -239,8 +243,10 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Card>> 
-            CreateCardAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
+            CreateCardAsync(PropertyBag body, string safeKey = null, string financialInstitution = null, HttpRequestHeaders headers = null)
         {
+            if (financialInstitution != null)
+                headers.Add("x-cardsavr-financial-institution", financialInstitution);
             return await ApiPostAsync<Card>("/cardsavr_cards", body, safeKey, headers);
         }
 
@@ -271,7 +277,7 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<SingleSiteJob>> 
-            CreateSingleSiteJobAsync(PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
+            CreateSingleSiteJobAsync(PropertyBag body, string safeKey = null, string financialInstitution = null, HttpRequestHeaders headers = null)
         {
             return await ApiPostAsync<SingleSiteJob>(
                 "/place_card_on_single_site_jobs", body, safeKey, headers);
@@ -419,13 +425,14 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Cardholder>> 
-            CreateCardholderAsync(PropertyBag body, string safeKey = null, string financialInstitution = "default", HttpRequestHeaders headers = null)
+            CreateCardholderAsync(PropertyBag body, string safeKey = null, string financialInstitution = null, HttpRequestHeaders headers = null)
         {
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
             AddSafeKeyHeader(headers, safeKey);
-            headers.Add("x-cardsavr-financial-institution", financialInstitution);
+            if (financialInstitution != null)
+                headers.Add("x-cardsavr-financial-institution", financialInstitution);
 
             return await ApiPostAsync<Cardholder>("/cardholders", body, null, headers);
         }

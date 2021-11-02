@@ -34,7 +34,7 @@ namespace cardsavr_e2e
 
             // create cardholders.
             PropertyBag bag = new PropertyBag();
-            int count = 2;
+            int count = 10;
 
             string[] safeKeys = new string[count];
 
