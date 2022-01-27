@@ -1,5 +1,5 @@
 
-# Switch CardSavr SDK for C#
+# Strivve CardSavr SDK for C#
 
 ## Setup
 
