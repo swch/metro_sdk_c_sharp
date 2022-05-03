@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TargetFrameworks>net48;net60</TargetFrameworks>
+    <TargetFrameworks>net48;net50</TargetFrameworks>
     <RootNamespace>Switch</RootNamespace>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <Authors>markbudos</Authors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>keyfile.snk</AssemblyOriginatorKeyFile>

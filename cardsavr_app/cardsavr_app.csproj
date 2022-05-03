@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net60</TargetFrameworks>
+    <TargetFrameworks>net50</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="cardsavr" Version="2.1.3" />
+    <PackageReference Include="cardsavr" Version="2.2.1" />
   </ItemGroup>
 
 </Project>
