@@ -83,7 +83,7 @@ namespace Switch.CardSavr.Http
             }
             else if (arg is string)
             {
-                ConvertStringList((arg as string).Split(',', StringSplitOptions.RemoveEmptyEntries));
+                ConvertStringList((arg as string).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
             }
             else
             {

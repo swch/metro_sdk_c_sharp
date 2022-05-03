@@ -48,10 +48,10 @@ namespace Switch.CardSavr.Http
                         throw new ArgumentException($"A value for query parameter \"{key}\" is null or empty.");
                 }
 
-                parts[index++] = String.Format("{0}={1}", key, String.Join(',', values));
+                parts[index++] = String.Format("{0}={1}", key, String.Join(",", values));
             }
 
-            return String.Format("{0}?{1}", path, String.Join('&', parts));
+            return String.Format("{0}?{1}", path, String.Join("&", parts));
         }
 
         public static string BuildValidTraceHeader(string currentTrace, string cuid) {
