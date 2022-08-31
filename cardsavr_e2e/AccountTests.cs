@@ -55,7 +55,7 @@ namespace cardsavr_e2e
 
             //MerchantSite site = ctx.GetSyntheticSite();
             CardSavrResponse<List<MerchantSite>> sites = await this.session.http.GetMerchantSitesAsync(new NameValueCollection() {
-                    { "host", "dynamic-synthetic.herokuapp.com/index.html" }
+                    { "host", "synthetic-sites-server.vercel.app/index.html" }
                 });
 
             for (int n = 0; n < count; ++n) {
