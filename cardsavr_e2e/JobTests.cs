@@ -61,14 +61,28 @@ namespace cardsavr_e2e
                 Assert.Equal(HttpStatusCode.Created, account.StatusCode);
 
                 bag.Clear();
+                bag = new PropertyBag();
+
+                bag["pan"] = "4111411141114111";
+                bag["cvv"] = "123";
+                bag["name_on_card"] = "Test Name";
+                bag["expiration_month"] = "11";
+                bag["expiration_year"] = "24";
+                bag["cardholder_id"] = cardholders[n].id;
+
+                CardSavrResponse<Card> card = await this.session.http.CreateCardAsync(bag, safeKeys[n]);
+                Assert.Equal(HttpStatusCode.Created, card.StatusCode);
+
+                bag.Clear();
                 bag = new PropertyBag()
                 {
                     { "cardholder_id", cardholders[n].id },
                     { "requesting_brand", "mbudos" },
                     { "status", "INITIATED" },
-                    { "account_id", account.Body.id }
+                    { "account_id", account.Body.id },
+                    { "card_id", card.Body.id }
                 };
-                
+
                 CardSavrResponse<SingleSiteJob> job = await this.session.http.CreateSingleSiteJobAsync(bag, safeKeys[n]);
                 Assert.Equal(HttpStatusCode.Created, job.StatusCode);
 
