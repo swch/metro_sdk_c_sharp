@@ -72,7 +72,9 @@ namespace cardsavr_e2e
                 // update it.
                 bag.Clear();
                 bag["address1"] = $"{CardsavrSession.random.Next(1000, 9000)} CSharp-SDK Ave NE";
-                addr = (await this.session.http.UpdateAddressAsync(addr.id, bag)).Body[0];
+                log.Info(JsonConvert.SerializeObject(bag));
+                addr = (await this.session.http.UpdateAddressAsync(addr.id, bag)).Body;
+                log.Info(JsonConvert.SerializeObject(addr));
                 Assert.Equal(addr.address1, bag["address1"]);
                 log.Info($"updated primary address {addr.id} for cardholder: {cardholders[n].first_name} {cardholders[n].last_name} ({cardholders[n].id})");
 
@@ -105,8 +107,8 @@ namespace cardsavr_e2e
                 body.Clear();
                 body.Add("id", card.Body.id);
                 body.Add("name_on_card", "REALLY BOGUS CARD");
-                CardSavrResponse<List<Card>> upd = await this.session.http.UpdateCardAsync(null, body);
-                Assert.Equal(upd.Body[0].name_on_card, body["name_on_card"]);
+                CardSavrResponse<Card> upd = await this.session.http.UpdateCardAsync(null, body);
+                Assert.Equal(upd.Body.name_on_card, body["name_on_card"]);
 
                 log.Info($"update card for cardholder \"{cardholders[n].cuid}\"");
 

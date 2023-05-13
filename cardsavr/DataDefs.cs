@@ -65,6 +65,11 @@ namespace Switch.CardSavr.Http
         /// </summary>
         /// <value>The paging parameters returned from the server.</value>
         public Paging Paging { get; set; }
+
+        public static implicit operator CardSavrResponse<T>(CardSavrResponse<List<Cardholder>> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

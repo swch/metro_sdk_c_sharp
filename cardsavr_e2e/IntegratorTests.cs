@@ -50,10 +50,9 @@ namespace cardsavr_e2e
             body["current_key"] = new_key;
             body["last_key"] = last_key;
 
-            CardSavrResponse<List<Integrator>> updated = await this.session.http.UpdateIntegratorsAsync(IntegratorTests.integrator.id, body);
-            Assert.Single(updated.Body);
+            CardSavrResponse<Integrator> updated = await this.session.http.UpdateIntegratorsAsync(IntegratorTests.integrator.id, body);
 
-            IntegratorTests.integrator = updated.Body[0];
+            IntegratorTests.integrator = updated.Body;
             Assert.Equal(new_key, IntegratorTests.integrator.current_key);
             Assert.Equal(last_key, IntegratorTests.integrator.last_key);
             log.Info($"updated integrator {IntegratorTests.integrator.name}");
@@ -89,12 +88,10 @@ namespace cardsavr_e2e
         [Fact, Priority(10)]
         public async void TestDeleteIntegrator() {
 
-            CardSavrResponse<List<Integrator>> deleted = await this.session.http.DeleteIntegratorAsync(IntegratorTests.integrator.id);
-            Assert.Single(deleted.Body);
+            CardSavrResponse<Integrator> deleted = await this.session.http.DeleteIntegratorAsync(IntegratorTests.integrator.id);
 
-            IntegratorTests.integrator = deleted.Body[0];
+            IntegratorTests.integrator = deleted.Body;
 
-            Assert.Single(deleted.Body);
             Assert.Equal(HttpStatusCode.OK, deleted.StatusCode);
 
         }
