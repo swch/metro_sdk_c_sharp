@@ -117,8 +117,8 @@ namespace Switch.CardSavr.Http
             CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
             card.cardholder_id = cardholderId;
             card.address_id = addressResponse.Body.id ?? -1;
-            if (card.par == null) {
-                card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
+            if (card.customer_key == null) {
+                card.customer_key = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
             }
             CardSavrResponse<Card> cardResponse = await agentSession.client.UpdateCardAsync(null, ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
             return new ClientLogin(){ grant = cardholderResponse.Body.grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = cardholderResponse.Body };
