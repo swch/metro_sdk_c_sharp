@@ -36,7 +36,7 @@ namespace Switch.CardSavr.Http
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public object _arg;
+        private object _arg;
         private NameValueCollection _nvc;
 
         /// <summary>
@@ -98,8 +98,6 @@ namespace Switch.CardSavr.Http
                 log.Info($"taking entity ID={bag["id"]} from PropertyBag");
                 _arg = bag["id"];
             } else if (IsEmpty && bag != null && (bag.ContainsKey("cuid") || bag.ContainsKey("customer_key")) ) {
-                log.Info("WE FOUND OURSELVES AN UPSERT!!!");
-                log.Info(_arg);
                 // all good, we have a customer key we can use for updating
             }
 
