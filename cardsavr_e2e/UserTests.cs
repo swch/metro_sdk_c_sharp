@@ -56,9 +56,9 @@ namespace cardsavr_e2e
                 bag.Clear();
                 bag["id"] = user.id;
                 bag["email"] = "new_" + user.email;
-                CardSavrResponse<List<User>> updated_users = await this.session.http.UpdateUserAsync(user.id, bag);
+                CardSavrResponse<User> updated_users = await this.session.http.UpdateUserAsync(user.id, bag);
                 //log.Info(JsonConvert.SerializeObject(updated_users.Body[0], Formatting.Indented));
-                Assert.Equal(bag["email"], updated_users.Body[0].email);
+                Assert.Equal(bag["email"], updated_users.Body.email);
                 list.Add(user);
             }
 
@@ -107,7 +107,7 @@ namespace cardsavr_e2e
                 }
                 list.Add((int)u.id);
             }
-            CardSavrResponse<List<User>> deleted_users = await this.session.http.DeleteUserAsync(list);
+            CardSavrResponse<List<User>> deleted_users = await this.session.http.DeleteUsersAsync(list);
             Assert.Equal(10, deleted_users.Body.Count);
         }
 

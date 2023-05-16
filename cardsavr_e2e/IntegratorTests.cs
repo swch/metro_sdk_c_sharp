@@ -50,7 +50,7 @@ namespace cardsavr_e2e
             body["current_key"] = new_key;
             body["last_key"] = last_key;
 
-            CardSavrResponse<Integrator> updated = await this.session.http.UpdateIntegratorsAsync(IntegratorTests.integrator.id, body);
+            CardSavrResponse<Integrator> updated = await this.session.http.UpdateIntegratorAsync(IntegratorTests.integrator.id, body);
 
             IntegratorTests.integrator = updated.Body;
             Assert.Equal(new_key, IntegratorTests.integrator.current_key);
@@ -63,8 +63,8 @@ namespace cardsavr_e2e
             CardsavrHelper helper = new CardsavrHelper();
             helper.SetAppSettings(config.cardsavr_server, IntegratorTests.integrator.name, last_key, CardsavrSession.rejectUnauthorized);
             ClientSession login = await helper.LoginAndCreateSession(config.app_username, config.app_password, "{\"key\": \"my_trace\"}");
-            CardSavrResponse<List<Integrator>> integrator = await login.client.GetIntegratorsAsync(IntegratorTests.integrator.id);
-            Assert.Equal(integrator.Body[0].id, IntegratorTests.integrator.id);
+            CardSavrResponse<Integrator> integrator = await login.client.GetIntegratorAsync(IntegratorTests.integrator.id);
+            Assert.Equal(integrator.Body.id, IntegratorTests.integrator.id);
 
             string new_new_key = await helper.RotateIntegrator(config.app_username, IntegratorTests.integrator.name);
 

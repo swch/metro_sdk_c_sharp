@@ -196,10 +196,11 @@ namespace Switch.CardSavr.Http
     {
         public int? id { get; set; }
         public int cardholder_id { get; set; }
-        public int bin_id { get; set; }
+        public int? bin_id { get; set; }
         public int address_id { get; set; }
         public string pan { get; set; }
         public string par { get; set; }
+        public string customer_key { get; set; }
         public string cvv { get; set; }
         public string expiration_month { get; set; }
         public string expiration_year { get; set; }
@@ -295,17 +296,27 @@ namespace Switch.CardSavr.Http
     {
         public int id { get; set; }
         public string name { get; set; }
+        //public string note { get; }
         public string host { get; set; }
-        public string queue_name { get; }
+        public string queue_name { get; }   
         public string[] tags { get; }
-        public bool mfa { get; }
-        public bool quick_start { get; }
-        public string additional_info_message { get; }
+        public string job_type { get; }   
+        public string interface_type { get; }   
         public string login_page { get; }
         public string forgot_password_page { get; }
         public string credit_card_page { get; }        
         public string[] required_form_fields { get; }
         public Image[] images { get; }
+        public AccountLink[] account_link { get; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class AccountLink
+    {
+        public string key_name;
+        public string label;
+        public string type;
+        public Boolean storaable;
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
