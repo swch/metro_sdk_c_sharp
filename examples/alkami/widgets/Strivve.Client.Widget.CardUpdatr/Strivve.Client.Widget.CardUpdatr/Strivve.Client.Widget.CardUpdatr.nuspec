@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>Strivve.Client.Widget.CardUpdatr</id>
+		<version>1.0.0</version>
+		<title>CardUpdatr</title>
+		<authors>Strivve, Inc</authors>
+		<owners>Strivve, Inc</owners>
+		<projectUrl>https://www.strivve.com</projectUrl>
+		<iconUrl>https://www.strivve.com/wp-content/uploads/2019/09/StrivveLogoLG.png</iconUrl>
+		<licenseUrl>https://www.strivve.com</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Strivve CardUpdatr Widget Package for Alkami</description>
+		<releaseNotes>Put any release notes you like here.</releaseNotes>
+		<tags>SDK WIDGET</tags>
+		<copyright>Copyright ©  2022</copyright>
+		<dependencies>
+			
+		</dependencies>
+	</metadata>
+	<files>
+		<!-- The following defines where to find the files for packaging and what to exclude-->
+		<file src="tools\chocolateyInstall.ps1" target="tools" />
+		<file src="tools\chocolateyUninstall.ps1" target="tools" />
+		<file src="AlkamiManifest.xml" target="AlkamiManifest.xml" />
+		<file src="**\*.*" target="src" exclude="**\obj\**\*.*;**\.vs\**\*.*;**\bin\**\*.*;**\packages\**\*.*;**\.nuget\**\*.*;**\.git\**\*.*;**\.gitignore;**\node_modules\**\*.*;**\.suo;**\.user;**\Tests\**\*.*;**\Test\**\*.*;**\UnitTest\**\*.*;**\UnitTests\**\*.*;**\tools\**\chocolatey*.ps1;**\web.config" />
+
+		<!-- bin files | define the libraries that should be a part of this package -->
+		<file src="bin\Strivve.Client.Widget.CardUpdatr.*" target="lib" exclude="**\*.config"/>
+		<file src="bin\Strivve.MS.*" target="lib" exclude="**\*.config"/>
+		<file src="bin\Alkami.Microservices.Accounts.*" target="lib" exclude="**\*.config"/>
+		<file src="bin\Alkami.Microservices.Security.*" target="lib" exclude="**\*.config"/>
+		<file src="bin\Alkami.MicroServices.CardManagement.*" target="lib" exclude="**\*.config"/>
+		<file src="bin\Alkami.MicroServices.CardManagementProviders.*" target="lib" exclude="**\*.config"/>
+
+		<!-- WebClient content -->
+		<file src="**\Scripts\" target="content\Areas\App" />
+		<file src="**\Styles\" target="content\Areas\App" exclude="**\*.scss" />
+		<file src="**\Views\" target="content\Areas\App" />
+		<file src="**\Images\" target="content\Areas\App" />
+		<file src="**\_SiteText\" target="content\Areas\App" exclude="**\*.xx.xml"/>
+	</files>
+</package>
