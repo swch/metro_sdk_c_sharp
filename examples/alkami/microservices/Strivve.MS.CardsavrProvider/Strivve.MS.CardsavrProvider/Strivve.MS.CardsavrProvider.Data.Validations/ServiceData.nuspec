@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Strivve.MS.CardsavrProvider.Data</id>
+		<version>1.0.0</version>
+		<title>Strivve.MS.CardsavrProvider.Data</title>
+		<authors>Alkami Technology, Inc.</authors>
+		<owners>Alkami Technology, Inc.</owners>
+		<projectUrl>https://confluence.alkami.com/display/</projectUrl>
+		<iconUrl>https://www.alkami.com/files/alkamilogo75x75.png</iconUrl>
+		<licenseUrl>http://alkami.com/files/orblicense.html</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>This is the data and contract for the Strivve.MS.CardsavrProvider Provider Service</description>
+		<releaseNotes/>
+		<copyright>Copyright (c) 2023 Alkami Technology, Inc.</copyright>
+	</metadata>
+	<files>
+		<file src="bin\Release\Strivve.MS.CardsavrProvider.*" target="lib\net48\" />
+	</files>
+</package>
