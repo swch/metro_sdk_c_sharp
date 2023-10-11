@@ -346,17 +346,17 @@
     <Reference Include="Remotion.Data.Linq, Version=1.13.41.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea, processorArchitecture=MSIL">
       <HintPath>..\packages\NHibernate.3.0.0.4000\lib\Remotion.Data.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="Strivve.MS.CardSavrProviderService.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Strivve.MS.CardSavrProviderService.Data.1.0.0\lib\net48\Strivve.MS.CardSavrProviderService.Contracts.dll</HintPath>
+    <Reference Include="Strivve.MS.CardsavrProvider.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Strivve.MS.CardsavrProvider.Data.1.0.0\lib\net48\Strivve.MS.CardsavrProvider.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Strivve.MS.CardSavrProviderService.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Strivve.MS.CardSavrProviderService.Data.1.0.0\lib\net48\Strivve.MS.CardSavrProviderService.Data.dll</HintPath>
+    <Reference Include="Strivve.MS.CardsavrProvider.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Strivve.MS.CardsavrProvider.Data.1.0.0\lib\net48\Strivve.MS.CardsavrProvider.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Strivve.MS.CardSavrProviderService.Data.Validations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Strivve.MS.CardSavrProviderService.Data.1.0.0\lib\net48\Strivve.MS.CardSavrProviderService.Data.Validations.dll</HintPath>
+    <Reference Include="Strivve.MS.CardsavrProvider.Data.Validations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Strivve.MS.CardsavrProvider.Data.1.0.0\lib\net48\Strivve.MS.CardsavrProvider.Data.Validations.dll</HintPath>
     </Reference>
-    <Reference Include="Strivve.MS.CardSavrProviderService.Service.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Strivve.MS.CardSavrProviderService.Client.1.0.0\lib\net48\Strivve.MS.CardSavrProviderService.Service.Client.dll</HintPath>
+    <Reference Include="Strivve.MS.CardsavrProvider.Service.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Strivve.MS.CardsavrProvider.Client.1.0.0\lib\net48\Strivve.MS.CardsavrProvider.Service.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

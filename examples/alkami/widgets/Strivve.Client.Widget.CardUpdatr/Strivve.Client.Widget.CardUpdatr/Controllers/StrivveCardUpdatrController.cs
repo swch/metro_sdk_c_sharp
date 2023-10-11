@@ -8,12 +8,11 @@ using Alkami.MicroServices.Security.Contracts.Requests;
 using Alkami.MicroServices.Security.Service.Client;
 using Common.Logging;
 using Strivve.Client.Widget.CardUpdatr.Models;
-using Strivve.MS.CardSavrDelegate.Contracts.Requests;
-using Strivve.MS.CardSavrDelegate.Contracts.Responses;
-using Strivve.MS.CardSavrDelegate.Data;
-using Strivve.MS.CardSavrProviderService.Contracts;
-using Strivve.MS.CardSavrProviderService.Service.Client;
-using Strivve.MS.CardSavrProviderService.Data;
+using Strivve.MS.CardsavrProvider.Contracts.Requests;
+using Strivve.MS.CardsavrProvider.Contracts.Responses;
+using Strivve.MS.CardsavrProvider.Data;
+using Strivve.MS.CardsavrProvider.Contracts;
+using Strivve.MS.CardsavrProvider.Service.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace Strivve.Client.Widget.CardUpdatr.Controllers
         /// </summary>
         private static readonly ILog Logger = LogManager.GetLogger<StrivveCardUpdatrController>();
 
-        public static readonly Func<ICardSavrProviderServiceServiceContract> ServiceFactory = () => new CardSavrProviderServiceServiceClient();
+        public static readonly Func<ICardsavrProviderServiceContract> ServiceFactory = () => new CardsavrProviderServiceClient();
         public static Func<IAccountServiceContract> accountsService = () => new AccountServiceClient();
         public static Func<ISecurityServiceContract> securityService = () => new SecurityServiceClient();
         public static Func<ICardManagementServiceContract> cardManagementService = () => new CardManagementServiceClient();
@@ -79,7 +78,6 @@ namespace Strivve.Client.Widget.CardUpdatr.Controllers
             if ( card != null )
             {
                 Logger.Info("Card found");
-                Logger.Info(card.CardNumber);
             }
 
             UserContactEmail emailContact =
