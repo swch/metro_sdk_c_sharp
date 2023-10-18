@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CBEBF3C3-D83C-4E16-B81C-B9C2C5B4A2C2}</ProjectGuid>
+    <ProjectGuid>{47C1C52B-0A98-45C9-899A-F88C8F550C93}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Strivve.MS.CardsavrProvider.Data</RootNamespace>

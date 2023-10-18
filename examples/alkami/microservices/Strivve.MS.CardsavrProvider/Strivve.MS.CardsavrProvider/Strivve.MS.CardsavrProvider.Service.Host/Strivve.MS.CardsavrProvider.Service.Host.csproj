@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{46580F11-5761-4478-A04B-74C1E3C599AE}</ProjectGuid>
+    <ProjectGuid>{3986D69A-D13D-470E-9D65-B82E34B6F10C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Strivve.MS.CardsavrProvider.Service.Host</RootNamespace>
@@ -127,17 +127,13 @@
     <Reference Include="NetMQ, Version=3.3.2.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NetMQ.3.3.2.1\lib\net40\NetMQ.dll</HintPath>
     </Reference>
-    <Reference Include="NewRelic.Api.Agent, Version=8.30.0.0, Culture=neutral, PublicKeyToken=06552fced0b33d87, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NewRelic.Agent.Api.8.30.0\lib\net45\NewRelic.Api.Agent.dll</HintPath>
+    <Reference Include="NewRelic.Api.Agent, Version=9.0.0.0, Culture=neutral, PublicKeyToken=06552fced0b33d87, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NewRelic.Agent.Api.9.4.0\lib\net45\NewRelic.Api.Agent.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="NewRelic.Api.Agent, Version=8.50.0.0, Culture=neutral, PublicKeyToken=06552fced0b33d87, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NewRelic.Agent.Api.8.30.0\lib\net45\NewRelic.Api.Agent.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -203,20 +199,13 @@
     <Content Include="Doc\gettingstarted.html" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Installer\ChocolateyBeforeModify.ps1" />
     <Content Include="Installer\ChocolateyInstall.ps1" />
     <Content Include="Installer\ChocolateyUninstall.ps1" />
-    <Content Include="Installer\Config.ps1" />
-    <Content Include="Installer\Library.ps1" />
     <Content Include="Installer\Strivve.MS.CardsavrProvider.Service.Host.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="InstallerOverrides\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="AlkamiManifest.xml" />
-    <None Include="configureInstaller.ps1" />
     <None Include="sem.ver" />
     <None Include="ProviderScripts\insert_provider_setting.sql" />
     <None Include="packages.config" />
@@ -226,36 +215,28 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Contracts\Strivve.MS.CardsavrProvider.Contracts.csproj">
-      <Project>{aef4c13b-0f7d-490d-bf5b-49cf96972895}</Project>
+      <Project>{deba65ad-7e6f-446d-b055-6d5be85f8a2c}</Project>
       <Name>Strivve.MS.CardsavrProvider.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj">
-      <Project>{cbebf3c3-d83c-4e16-b81c-b9c2c5b4a2c2}</Project>
+      <Project>{47c1c52b-0a98-45c9-899a-f88c8f550c93}</Project>
       <Name>Strivve.MS.CardsavrProvider.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data.Validations\Strivve.MS.CardsavrProvider.Data.Validations.csproj">
-      <Project>{3c6041ab-2636-4e38-b7e7-e102fd7104f2}</Project>
+      <Project>{03757ec0-a066-4cf6-bf03-ed13f6acb0d9}</Project>
       <Name>Strivve.MS.CardsavrProvider.Data.Validations</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service\Strivve.MS.CardsavrProvider.Service.csproj">
-      <Project>{4a400fb8-7157-4047-a4a1-345c4459577e}</Project>
+      <Project>{1ea0496e-897e-48a4-8de8-14eab1073ad3}</Project>
       <Name>Strivve.MS.CardsavrProvider.Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-			if $(ConfigurationName) == Release (
-			if exist "$(ProjectDir)InstallerOverrides\$(ProjectName).nuspec" (
-			xcopy "$(ProjectDir)InstallerOverrides\$(ProjectName).nuspec" "$(ProjectDir)Installer" /Y
-			)
-			if exist "$(ProjectDir)AlkamiManifest.xml" (
-			xcopy "$(ProjectDir)AlkamiManifest.xml" "$(SolutionDir)$(SolutionName)" /Y
-			)
-			)
-		</PreBuildEvent>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" choco pack $(ProjectDir)Installer\$(ProjectName).nuspec -OutputDirectory $(ProjectDir)Installer</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "Release" choco pack $(ProjectDir)Installer\$(ProjectName).nuspec -OutputDirectory $(ProjectDir)Installer</PostBuildEvent>
+    <PreBuildEvent>if $(ConfigurationName) == Release ( NuGet.exe update "$(ProjectDir)packages.config" -id Alkami.MicroServices.Installer.Logic -NonInteractive
+Powershell -File "$(ProjectDir)\configureInstaller.ps1 " "$(SolutionDir) " "$(ProjectDir) " "$(ProjectPath) ")</PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Strivve.MS.CardsavrProvider.Data.Validations
 {
     /// This is a basic example of a validation that we've provided in this template.  Each validator
-	/// implements the abstract class EntityValidatorImpl<T> and passes in the request object to be validated.
+	/// implements the abstract class <![CDATA[EntityValidatorImpl<T>]]> and passes in the request object to be validated.
 	/// What you will see implemented below is an override of our ValidateInternal method.  This method can be
 	/// used to validate any number of members in the request object and will return a list of validation results.
 	/// Each result can be as specific as desired for the member being validated and will be shown in the

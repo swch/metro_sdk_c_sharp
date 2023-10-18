@@ -3,12 +3,12 @@
 	<metadata>
 		<id>Strivve.MS.CardsavrProvider.Client</id>
 		<version>1.0.0</version>
-		<title>Strivve.MS.CardsavrProvider.Client</title>
-		<authors>Alkami Technology, Inc.</authors>
-		<owners>Alkami Technology, Inc.</owners>
-		<projectUrl>https://confluence.alkami.com/display/</projectUrl>
-		<iconUrl>https://www.alkami.com/files/alkamilogo75x75.png</iconUrl>
-		<licenseUrl>http://alkami.com/files/orblicense.html</licenseUrl>
+		<title>Strivve CardsavrProvider Client</title>
+		<authors>Strivve, Inc.</authors>
+		<owners>Strivve, Inc.</owners>
+		<projectUrl>https://developers.strivve.com/</projectUrl>
+		<iconUrl>https://developers.strivve.com/images/strivve_logo_icon.png</iconUrl>
+		<licenseUrl>https://strivve.com/terms-of-use/</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The client libraries for the Strivve.MS.CardsavrProvider Provider Service</description>
 		<copyright>Copyright (c) $ext_year_created$ Alkami Technology, Inc.</copyright>

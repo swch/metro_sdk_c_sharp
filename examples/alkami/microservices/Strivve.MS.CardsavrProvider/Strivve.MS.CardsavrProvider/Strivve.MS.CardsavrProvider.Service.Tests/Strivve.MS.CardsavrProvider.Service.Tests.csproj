@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DCCEFB59-7AD8-4388-AA85-C8DEE1AFB1CE}</ProjectGuid>
+    <ProjectGuid>{EA652A21-E1FC-4C32-8064-51632E70D246}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Strivve.MS.CardsavrProvider.Service.Tests</RootNamespace>
@@ -137,7 +137,7 @@
     <Reference Include="NetMQ, Version=3.3.2.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NetMQ.3.3.2.1\lib\net40\NetMQ.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.3.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.13.2.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -200,27 +200,27 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Contracts\Strivve.MS.CardsavrProvider.Contracts.csproj">
-      <Project>{aef4c13b-0f7d-490d-bf5b-49cf96972895}</Project>
+      <Project>{deba65ad-7e6f-446d-b055-6d5be85f8a2c}</Project>
       <Name>Strivve.MS.CardsavrProvider.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj">
-      <Project>{cbebf3c3-d83c-4e16-b81c-b9c2c5b4a2c2}</Project>
+      <Project>{47c1c52b-0a98-45c9-899a-f88c8f550c93}</Project>
       <Name>Strivve.MS.CardsavrProvider.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data.Validations\Strivve.MS.CardsavrProvider.Data.Validations.csproj">
-      <Project>{3c6041ab-2636-4e38-b7e7-e102fd7104f2}</Project>
+      <Project>{03757ec0-a066-4cf6-bf03-ed13f6acb0d9}</Project>
       <Name>Strivve.MS.CardsavrProvider.Data.Validations</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service\Strivve.MS.CardsavrProvider.Service.csproj">
-      <Project>{4a400fb8-7157-4047-a4a1-345c4459577e}</Project>
+      <Project>{1ea0496e-897e-48a4-8de8-14eab1073ad3}</Project>
       <Name>Strivve.MS.CardsavrProvider.Service</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service.Client\Strivve.MS.CardsavrProvider.Service.Client.csproj">
-      <Project>{c3e52e3a-63c5-4118-a0b3-0291a177af69}</Project>
+      <Project>{862fcab9-757a-4031-998e-6599851ab419}</Project>
       <Name>Strivve.MS.CardsavrProvider.Service.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service.Host\Strivve.MS.CardsavrProvider.Service.Host.csproj">
-      <Project>{46580f11-5761-4478-a04b-74c1e3c599ae}</Project>
+      <Project>{3986d69a-d13d-470e-9d65-b82e34b6f10c}</Project>
       <Name>Strivve.MS.CardsavrProvider.Service.Host</Name>
     </ProjectReference>
   </ItemGroup>

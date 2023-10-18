@@ -40,6 +40,9 @@ namespace Switch.Security.Cryptography
     {
         private AsymmetricCipherKeyPair _keyPair;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public EcdhBC()
             : base()
         {
@@ -63,6 +66,10 @@ namespace Switch.Security.Cryptography
             PublicKey = Convert.ToBase64String(value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="privateBlob"></param>
         public EcdhBC(byte[] privateBlob)
             : base()
         {
@@ -84,6 +91,12 @@ namespace Switch.Security.Cryptography
             PublicKey = Convert.ToBase64String(value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="otherKey"></param>
+        /// <param name="isBase64"></param>
+        /// <returns></returns>
         public override string ComputeSharedSecret(string otherKey, bool isBase64 = true)
         {
             byte[] blob = (isBase64 ? Convert.FromBase64String(otherKey) : Encoding.UTF8.GetBytes(otherKey));
@@ -105,6 +118,10 @@ namespace Switch.Security.Cryptography
             return SharedSecret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetBlob()
         {
             // get private key as byte array, and length of private key as byte array.

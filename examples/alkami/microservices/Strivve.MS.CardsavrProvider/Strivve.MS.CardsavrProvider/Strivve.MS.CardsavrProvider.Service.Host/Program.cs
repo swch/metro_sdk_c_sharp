@@ -24,7 +24,7 @@ namespace Strivve.MS.CardsavrProvider.Service.Host
 
             HostFactory.Run(configurator =>
             {
-                // Alkami.Monitoring.Setup.UseNewRelic();
+                Alkami.Monitoring.Setup.UseNewRelic();
 
                 // TODO: Use this if your microservice uses EntityFramework.
                 //Exceptions.EntityFramework.Setup.UseEntityFrameworkExceptionHandling();

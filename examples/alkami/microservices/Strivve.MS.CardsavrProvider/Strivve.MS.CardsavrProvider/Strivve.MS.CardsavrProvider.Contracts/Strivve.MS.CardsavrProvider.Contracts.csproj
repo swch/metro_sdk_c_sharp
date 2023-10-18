@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AEF4C13B-0F7D-490D-BF5B-49CF96972895}</ProjectGuid>
+    <ProjectGuid>{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Strivve.MS.CardsavrProvider.Contracts</RootNamespace>
@@ -87,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj">
-      <Project>{cbebf3c3-d83c-4e16-b81c-b9c2c5b4a2c2}</Project>
+      <Project>{47c1c52b-0a98-45c9-899a-f88c8f550c93}</Project>
       <Name>Strivve.MS.CardsavrProvider.Data</Name>
     </ProjectReference>
   </ItemGroup>

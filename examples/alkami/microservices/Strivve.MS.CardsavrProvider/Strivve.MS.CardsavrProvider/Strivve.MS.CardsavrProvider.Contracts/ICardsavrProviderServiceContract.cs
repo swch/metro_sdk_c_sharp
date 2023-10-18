@@ -1,4 +1,5 @@
-﻿using Strivve.MS.CardsavrProvider.Contracts.Requests;
+﻿using Alkami.Contracts;
+using Strivve.MS.CardsavrProvider.Contracts.Requests;
 using Strivve.MS.CardsavrProvider.Contracts.Responses;
 using System.ServiceModel;
 using System.Threading.Tasks;
