@@ -42,6 +42,11 @@ namespace Strivve.MS.CardsavrProvider.Service
                 settings.Add(SettingNames.CustomerAgentPassword, "");
             }
 
+            if (!settings.ContainsKey(SettingNames.CardupdatrAppURL))
+            {
+                settings.Add(SettingNames.CardupdatrAppURL, "");
+            }
+
             return settings;
         }
 
@@ -63,6 +68,7 @@ namespace Strivve.MS.CardsavrProvider.Service
             descriptors.Add(new SettingDescriptor(SettingNames.IntegratorKey, "Integrator Key obtained from the portal.", typeof(string), true, "A meaningful display name", false));
             descriptors.Add(new SettingDescriptor(SettingNames.CustomerAgentUsername, "Customer Agent Username.", typeof(string), true, "A meaningful display name", false));
             descriptors.Add(new SettingDescriptor(SettingNames.CustomerAgentPassword, "Customer Agent Password.", typeof(string), true, "A meaningful display name", false));
+            descriptors.Add(new SettingDescriptor(SettingNames.CardupdatrAppURL, "Cardupdatr App URL.", typeof(string), true, "A meaningful display name", false));
 
             return descriptors;
         }
@@ -83,9 +89,6 @@ namespace Strivve.MS.CardsavrProvider.Service
             {
                 case SettingNames.CardsavrURL:
                     {
-                        // The developer should decide how best to validate the changed settings, these two validations demonstrate the pattern you should use for your settings.
-                        // For this example, we're going to make sure that the FirstProviderSetting value contains the word "First"
-                        // This makes sure that the Admin user cannot save a value that is not "valid"
                         if (!settingValue.Contains("cardsavr") && !settingValue.Contains("https://"))
                         {
                             Logger.Error(
@@ -99,8 +102,6 @@ namespace Strivve.MS.CardsavrProvider.Service
                     }
                 case SettingNames.IntegratorName:
                     {
-                        // We will do the same for the SecondProviderSetting, check if the value contains the word "Second"
-                        // Again, this is up to the developers discretion on how best to validate
                         if (!settingValue.Contains("integrator"))
                         {
                             Logger.Error(
@@ -116,8 +117,19 @@ namespace Strivve.MS.CardsavrProvider.Service
                 case SettingNames.CustomerAgentUsername:
                 case SettingNames.CustomerAgentPassword:
                     {
-                        // We will do the same for the SecondProviderSetting, check if the value contains the word "Second"
-                        // Again, this is up to the developers discretion on how best to validate
+                        performedValidation = true;
+                        break;
+                    }
+                case SettingNames.CardupdatrAppURL:
+                    {
+                        if (!settingValue.Contains("cardupdatr") && !settingValue.Contains("https://"))
+                        {
+                            Logger.Error(
+                                $"{settingDescriptor.Name} value requires that the word `cardupdatr` exist as part of the string value. [{settingValue}]");
+                            errors.AddValidationError(SettingNames.CardupdatrAppURL,
+                                "URL must contain the word `cardupdatr` and must be https", SubCode.ValueUnsupported);
+                        }
+
                         performedValidation = true;
                         break;
                     }

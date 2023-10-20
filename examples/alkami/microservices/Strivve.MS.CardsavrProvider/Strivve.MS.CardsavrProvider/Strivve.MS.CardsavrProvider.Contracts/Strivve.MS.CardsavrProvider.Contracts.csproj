@@ -32,23 +32,23 @@
     <DocumentationFile>bin\Release\Strivve.MS.CardsavrProvider.Contracts.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Alkami.Contracts, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Contracts.dll</HintPath>
+    <Reference Include="Alkami.Contracts, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Data.Access, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Data.Access.dll</HintPath>
+    <Reference Include="Alkami.Data.Access, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Data.Access.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Data.Validations, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Data.Validations.dll</HintPath>
+    <Reference Include="Alkami.Data.Validations, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Data.Validations.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Exceptions, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Exceptions.dll</HintPath>
+    <Reference Include="Alkami.Exceptions, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Exceptions.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Monitoring, Version=2.6.0.972, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.Monitoring.2.6.0\lib\net462\Alkami.Monitoring.dll</HintPath>
+    <Reference Include="Alkami.Monitoring, Version=2.9.0.974, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Monitoring.2.9.0\lib\net462\Alkami.Monitoring.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Security, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Security.dll</HintPath>
+    <Reference Include="Alkami.Security, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Security.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>

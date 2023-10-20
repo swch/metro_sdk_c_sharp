@@ -36,5 +36,11 @@ namespace Strivve.MS.CardsavrProvider.Data.ProviderSettings
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
         public const string CustomerAgentPassword = "CustomerAgentPassword";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public const string CardupdatrAppURL = "CardupdatrAppURL";
     }
 }

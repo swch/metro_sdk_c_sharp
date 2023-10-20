@@ -20,5 +20,6 @@
     <file src="*.psm1" target="tools" />
 	<file src="..\InstallerOverrides\*.ps1" target="tools" />
 	<file src="..\..\..\**\*.*" target="src" exclude="**\Installer\**\*.*;**\Dependencies\**\*.*;**\obj\**\*.*;**\.vs\**\*.*;**\bin\**\*.*;**\tools\**\*.*;**\packages\**\*.*;**\.nuget\**\*.*;**\.git\**\*.*;**\.gitignore;**\node_modules\**\*.*;**\.suo;**\.user;**\tests\**\*.*;**\test\**\*.*" />
+	<file src="../AlkamiManifest.xml" target="/" />
   </files>
 </package>
