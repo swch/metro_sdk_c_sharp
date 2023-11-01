@@ -89,30 +89,18 @@ namespace Strivve.MS.CardsavrProvider.Service
             {
                 case SettingNames.CardsavrURL:
                     {
-                        if (!settingValue.Contains("cardsavr") && !settingValue.Contains("https://"))
+                        if (!settingValue.Contains("https://"))
                         {
                             Logger.Error(
-                                $"{settingDescriptor.Name} value requires that the word `cardsavr` exist as part of the string value. [{settingValue}]");
+                                $"{settingDescriptor.Name} value requires that the `https://` exist as part of the string value. [{settingValue}]");
                             errors.AddValidationError(SettingNames.CardsavrURL,
-                                "URL must contain the word `cardsavr` and must be https", SubCode.ValueUnsupported);
+                                "URL must be https", SubCode.ValueUnsupported);
                         }
 
                         performedValidation = true;
                         break;
                     }
                 case SettingNames.IntegratorName:
-                    {
-                        if (!settingValue.Contains("integrator"))
-                        {
-                            Logger.Error(
-                                $"{settingDescriptor.Name} value requires that the word `integrator` exist as part of the string value. [{settingValue}]");
-                            errors.AddValidationError(SettingNames.IntegratorName,
-                                "Value must contain the word `integrator`", SubCode.ValueUnsupported);
-                        }
-
-                        performedValidation = true;
-                        break;
-                    }
                 case SettingNames.IntegratorKey:
                 case SettingNames.CustomerAgentUsername:
                 case SettingNames.CustomerAgentPassword:
@@ -122,12 +110,12 @@ namespace Strivve.MS.CardsavrProvider.Service
                     }
                 case SettingNames.CardupdatrAppURL:
                     {
-                        if (!settingValue.Contains("cardupdatr") && !settingValue.Contains("https://"))
+                        if (!settingValue.Contains("https://"))
                         {
                             Logger.Error(
-                                $"{settingDescriptor.Name} value requires that the word `cardupdatr` exist as part of the string value. [{settingValue}]");
+                                $"{settingDescriptor.Name} value requires that `https://` exist as part of the string value. [{settingValue}]");
                             errors.AddValidationError(SettingNames.CardupdatrAppURL,
-                                "URL must contain the word `cardupdatr` and must be https", SubCode.ValueUnsupported);
+                                "URL must be https", SubCode.ValueUnsupported);
                         }
 
                         performedValidation = true;

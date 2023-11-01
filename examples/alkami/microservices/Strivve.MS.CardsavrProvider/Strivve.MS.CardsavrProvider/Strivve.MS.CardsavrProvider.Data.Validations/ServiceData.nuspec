@@ -4,15 +4,15 @@
 		<id>Strivve.MS.CardsavrProvider.Data</id>
 		<version>1.0.0</version>
 		<title>Strivve.MS.CardsavrProvider.Data</title>
-		<authors>Alkami Technology, Inc.</authors>
-		<owners>Alkami Technology, Inc.</owners>
-		<projectUrl>https://confluence.alkami.com/display/</projectUrl>
-		<iconUrl>https://www.alkami.com/files/alkamilogo75x75.png</iconUrl>
-		<licenseUrl>http://alkami.com/files/orblicense.html</licenseUrl>
+		<authors>Strivve, Inc.</authors>
+		<owners>Strivve, Inc.</owners>
+		<projectUrl>https://developers.strivve.com/</projectUrl>
+		<iconUrl>https://developers.strivve.com/images/strivve_logo_icon.png</iconUrl>
+		<licenseUrl>https://strivve.com/terms-of-use/</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>This is the data and contract for the Strivve.MS.CardsavrProvider Provider Service</description>
 		<releaseNotes/>
-		<copyright>Copyright (c) 2023 Alkami Technology, Inc.</copyright>
+		<copyright>Copyright (c) 2023 Strivve, Inc.</copyright>
 	</metadata>
 	<files>
 		<file src="bin\Release\Strivve.MS.CardsavrProvider.*" target="lib\net48\" />

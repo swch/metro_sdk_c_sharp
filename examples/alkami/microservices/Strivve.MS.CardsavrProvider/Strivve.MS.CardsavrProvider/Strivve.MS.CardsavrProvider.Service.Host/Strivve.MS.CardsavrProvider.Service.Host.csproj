@@ -73,11 +73,11 @@
     <Reference Include="Alkami.MicroServices.Settings.Service.Client.4.9, Version=4.9.0.4082, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Alkami.MicroServices.Settings.Client.4.9.0\lib\net452\Alkami.MicroServices.Settings.Service.Client.4.9.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Monitoring, Version=2.9.0.974, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.Monitoring.2.9.0\lib\net462\Alkami.Monitoring.dll</HintPath>
+    <Reference Include="Alkami.Monitoring, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Monitoring.2.10.0\lib\net462\Alkami.Monitoring.dll</HintPath>
     </Reference>
-    <Reference Include="Alkami.Monitoring.NewRelic, Version=2.6.0.972, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Alkami.Monitoring.NewRelic.2.6.0\lib\net462\Alkami.Monitoring.NewRelic.dll</HintPath>
+    <Reference Include="Alkami.Monitoring.NewRelic, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Monitoring.NewRelic.2.10.0\lib\net462\Alkami.Monitoring.NewRelic.dll</HintPath>
     </Reference>
     <Reference Include="Alkami.Security, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Security.dll</HintPath>
