@@ -68,6 +68,7 @@ namespace Switch.CardSavr.Http
 
         public QueryDef(object arg, PropertyBag bag = null, bool allowEmpty = true, bool requireSingle = false)
         {
+
             if (arg == null)
             {
                 _arg = null;
@@ -91,11 +92,13 @@ namespace Switch.CardSavr.Http
                 _nvc = null;
             }
 
-            if (IsEmpty && bag != null && bag.ContainsKey("id"))
+            if (IsEmpty && bag != null && (bag.ContainsKey("id")))
             {
                 // many endpoints allow the ID to be specified in the body or the URL path.
                 log.Info($"taking entity ID={bag["id"]} from PropertyBag");
                 _arg = bag["id"];
+            } else if (IsEmpty && bag != null && (bag.ContainsKey("cuid") || bag.ContainsKey("customer_key")) ) {
+                // all good, we have a customer key we can use for updating
             }
 
             if (IsEmpty && !allowEmpty)

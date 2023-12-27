@@ -62,7 +62,7 @@ namespace Switch.CardSavr.Http
                 throw new ArgumentException($"Can't reset unknown integrator: {integrator_name}");
             }
             Integrator integrator = response.Body[0];            
-            CardSavrResponse<Integrator> updated = await agentSession.client.RotateIntegratorsAsync(integrator.id);
+            CardSavrResponse<Integrator> updated = await agentSession.client.RotateIntegratorAsync(integrator.id);
             return updated.Body.current_key;
         }
 
@@ -108,7 +108,7 @@ namespace Switch.CardSavr.Http
             if (String.IsNullOrEmpty(cardholder.last_name)) u["last_name"] = address.last_name;
             if (String.IsNullOrEmpty(card.name_on_card)) card.name_on_card = $"{u["first_name"]} {u["last_name"]}";
 
-            CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.CreateCardholderAsync(u, safeKey, financialInstitution);
+            CardSavrResponse<Cardholder> cardholderResponse = await agentSession.client.UpdateCardholderAsync(null, u, safeKey, financialInstitution);
             if (cardholderResponse.Body == null || cardholderResponse.Body.id == null) {
                 throw new RequestException($"No body returned Creating Cardholder: {u}");
             }
@@ -117,8 +117,10 @@ namespace Switch.CardSavr.Http
             CardSavrResponse<Address> addressResponse = await agentSession.client.CreateAddressAsync(ApiUtil.BuildPropertyBagFromObject(address));
             card.cardholder_id = cardholderId;
             card.address_id = addressResponse.Body.id ?? -1;
-            card.par = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
-            CardSavrResponse<Card> cardResponse = await agentSession.client.CreateCardAsync(ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
+            if (card.customer_key == null) {
+                card.customer_key = ApiUtil.GenerateRandomPAR(card.pan, card.expiration_month, card.expiration_year, cardholderResponse.Body.cuid);
+            }
+            CardSavrResponse<Card> cardResponse = await agentSession.client.UpdateCardAsync(null, ApiUtil.BuildPropertyBagFromObject(card), safeKey); 
             return new ClientLogin(){ grant = cardholderResponse.Body.grant, card = cardResponse.Body, address = addressResponse.Body, cardholder = cardholderResponse.Body };
         }
     }
