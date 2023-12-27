@@ -16,6 +16,9 @@ namespace Switch.Security
     {
         private readonly byte[] _testIv;     // initialization vector; for test purposes only.
 
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public Aes256()
         {
             // under normal (non-test) conditions this value is never used.
@@ -63,29 +66,19 @@ namespace Switch.Security
         /// </summary>
         public string Decrypt(string b64CipherText, string b64Iv, string b64Key)
         {
-            byte[] iv = Convert.FromBase64String(b64Iv);
+            byte[] IV = Convert.FromBase64String(b64Iv);
             byte[] key = Convert.FromBase64String(b64Key);
-            byte[] cipher = Convert.FromBase64String(b64CipherText);
+            byte[] rv = Convert.FromBase64String(b64CipherText);
+            byte[] cipherText = new byte[rv.Length - 16];
+            byte[] tag = new byte[16];
+            System.Buffer.BlockCopy(rv, 0, cipherText, 0, cipherText.Length);
+            System.Buffer.BlockCopy(rv, cipherText.Length, tag, 0, tag.Length);
+            var plainBytes = new byte[cipherText.Length];
+            
+            var aesGcm = new AesGcm(Convert.FromBase64String(b64Key));
+            aesGcm.Decrypt(IV, cipherText, tag, plainBytes);
 
-            using (Aes aes = Aes.Create())
-            {
-                aes.IV = iv;
-                aes.Mode = CipherMode.CBC;
-                using (var decryptor = aes.CreateDecryptor(key, iv))
-                {
-                    using (MemoryStream ms = new MemoryStream(cipher))
-                    {
-                        using (CryptoStream cs = new CryptoStream(
-                            ms, decryptor, CryptoStreamMode.Read))
-                        {
-                            using (StreamReader reader = new StreamReader(cs))
-                            {
-                                return reader.ReadToEnd();
-                            }
-                        }
-                    }
-                }
-            }
+            return System.Text.Encoding.UTF8.GetString(plainBytes);
         }
 
         /// <summary>
@@ -94,38 +87,25 @@ namespace Switch.Security
         /// </summary>
         public string Encrypt(string clearText, string b64Key)
         {
-            byte[] iv = _testIv ?? GetRandomBytes(16);
-            byte[] key = Convert.FromBase64String(b64Key);
+            var aesGcm = new System.Security.Cryptography.AesGcm(Convert.FromBase64String(b64Key));
+            var plainBytes = System.Text.Encoding.UTF8.GetBytes(clearText);
+            var cipherText = new byte[plainBytes.Length];
 
-            string encrypted;
-            using (Aes aes = Aes.Create())
-            {
-                aes.IV = iv;
-                aes.Mode = CipherMode.CBC;
-                using (var encryptor = aes.CreateEncryptor(key, iv))
-                {
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        using (CryptoStream cs = new CryptoStream(
-                            ms, encryptor, CryptoStreamMode.Write))
-                        {
-                            // a StreamWriter defaults to using UTF8 encoding to write to
-                            // the underlying stream.
-                            using (StreamWriter writer = new StreamWriter(cs))
-                            {
-                                writer.Write(clearText);
-                                writer.Flush();
-                            }
+            var keygen = new System.Security.Cryptography.Rfc2898DeriveBytes(new DateTime().ToString("r"), 64, 10000);
+            byte[] IV = _testIv ?? keygen.GetBytes(AesGcm.NonceByteSizes.MaxSize);
 
-                            // get the encrypted result as a base64 string.
-                            encrypted = Convert.ToBase64String(ms.ToArray());
-                        }
-                    }
-                }
-            }
+            var tag = new byte[16];
+        
+            aesGcm.Encrypt(IV, plainBytes, cipherText, tag);
+            byte[] rv = new byte[cipherText.Length + tag.Length];
+
+            //public static void BlockCopy (Array src, int srcOffset, Array dst, int dstOffset, int count);
+            System.Buffer.BlockCopy(cipherText, 0, rv, 0, cipherText.Length);
+            System.Buffer.BlockCopy(tag, 0, rv, cipherText.Length, tag.Length);
 
             // the base64 encrypted data is suffixed with the IV, separated by "$".
-            return encrypted + "$" + Convert.ToBase64String(iv);
+            return Convert.ToBase64String(rv) + "$" + Convert.ToBase64String(IV) + "$aes-256-gcm";
+
         }
 
         //return a random 64 encoded string -- set modFour to guarantee it can be decoded to something of use later
