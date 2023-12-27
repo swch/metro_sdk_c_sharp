@@ -13,18 +13,19 @@
 
 <div class="container" style="background-color: white; width: 100%; text-align: center; min-height: 100vh;">
 	<!-- This script loads in from a .cardupdatr.app domain. -->
-	<script src="https://pkumar.cardupdatr.app/cardupdatr-client-v2.js"></script>
+	<script src="@Model.ScriptSrcUrl"></script>
 	<!-- Empty div to initialize the iFrame which loads CardUpdatr. -->
 	<div class="cardupdatr-frame" id="cardupdatr-frame"></div>
 </div>
 <script>
-var my_grant = '@Model.Grant';
-var my_cardid = '@Model.CardID';
+    var my_grant = '@Model.Grant';
+	var my_cardid = '@Model.CardID';
+	var cardupdatr_app_url = '@Model.CardupdatrAppUrl';
 
 	window.embedCardUpdatr(settings = {
         config: {
-            app_container_id: "cardupdatr-frame",
-            hostname: "https://pkumar.cardupdatr.app/"
+			app_container_id: "cardupdatr-frame",
+			hostname: cardupdatr_app_url
         },
         user: {
             grant: my_grant,

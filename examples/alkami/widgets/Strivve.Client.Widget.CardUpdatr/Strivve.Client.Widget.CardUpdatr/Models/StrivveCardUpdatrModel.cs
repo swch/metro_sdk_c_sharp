@@ -60,5 +60,14 @@ namespace Strivve.Client.Widget.CardUpdatr.Models
         /// </summary>
         public string Phone { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CardupdatrAppUrl { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ScriptSrcUrl { get; set; }
     }
 }

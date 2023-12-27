@@ -588,7 +588,8 @@ namespace Switch.CardSavr.Http
             try {
                 request.Headers.Add("x-cardsavr-trace", ApiUtil.BuildValidTraceHeader(_data.Trace, _data.UserName));
             } catch (JsonException ex){ 
-                log.Error("INVALID custom trace header: " + _data.Trace + " " + ex);
+//                log.Error("INVALID custom trace header: " + _data.Trace + " " + ex);
+                log.Error("INVALID custom trace header");
             }
             // encrypt the body and/or serialize to JSON.
             string strBody = null;

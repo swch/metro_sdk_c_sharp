@@ -2,7 +2,7 @@
 <packageManifest>
     <version>1.0</version>
     <general>
-        <creatorCode>Alkami</creatorCode>
+        <creatorCode>Strivve</creatorCode>
         <element>Strivve.MS.CardsavrProvider.Service.Host</element>
         <componentType>Service</componentType>
         <dependencies>

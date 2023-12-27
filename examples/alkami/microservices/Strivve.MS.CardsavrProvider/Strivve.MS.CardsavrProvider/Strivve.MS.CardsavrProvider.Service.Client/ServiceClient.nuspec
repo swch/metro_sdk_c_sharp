@@ -11,7 +11,7 @@
 		<licenseUrl>https://strivve.com/terms-of-use/</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The client libraries for the Strivve.MS.CardsavrProvider Provider Service</description>
-		<copyright>Copyright (c) $ext_year_created$ Alkami Technology, Inc.</copyright>
+		<copyright>Copyright (c) $ext_year_created$ Strivve, Inc.</copyright>
 		<releaseNotes/>
 		<dependencies>
 			<dependency id="Alkami.Subscription.ParticipatingClient" version="1.0.0" />

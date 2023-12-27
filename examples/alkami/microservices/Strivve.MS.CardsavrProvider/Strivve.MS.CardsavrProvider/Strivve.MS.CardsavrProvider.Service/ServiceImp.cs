@@ -32,6 +32,7 @@ namespace Strivve.MS.CardsavrProvider.Service
             string integratorKey = string.Empty;
             string custAgentUsername = string.Empty;
             string custAgentPassword = string.Empty;
+            string cardupdatrAppUrl = string.Empty;
 
             // GetScopeAsync() is how we retrieve settings using the request type of this service
             using (var scope = await GetScopeAsync(request))
@@ -42,10 +43,11 @@ namespace Strivve.MS.CardsavrProvider.Service
                 integratorKey = scope.GetSettingOrDefault<string>(SettingNames.IntegratorKey);
                 custAgentUsername = scope.GetSettingOrDefault<string>(SettingNames.CustomerAgentUsername);
                 custAgentPassword = scope.GetSettingOrDefault<string>(SettingNames.CustomerAgentPassword);
+                cardupdatrAppUrl = scope.GetSettingOrDefault<string>(SettingNames.CardupdatrAppURL);
             }
 
             // It's always good to add a trace log for future troubleshooting
-            Logger.Trace($"{nameof(GetSettingsAsync)} | Cardsavr URL: [{cardsavrUrl}] | Integrator Name: [{cardsavrUrl}] | Integrator Key : [{integratorKey}] | | Customer Agent Username : [{custAgentUsername}]");
+            Logger.Trace($"{nameof(GetSettingsAsync)} | Cardsavr URL: [{cardsavrUrl}] | Integrator Name: [{cardsavrUrl}] | Integrator Key : [{integratorKey}] | Customer Agent Username : [{custAgentUsername}] | Cardupdatr App URL: [{cardupdatrAppUrl}]");
 
             // Populate the details of the Setting object with this service's two template settings
             // The response object's "ItemList" property is an enumerable list of the type we passed into the class definition of SettingsResponse
@@ -88,6 +90,14 @@ namespace Strivve.MS.CardsavrProvider.Service
                 DefaultValue = DefaultSettings()[SettingNames.CustomerAgentPassword],
                 CurrentValue = custAgentPassword,
                 Description = SettingDescriptors().FirstOrDefault(x => x.Name == SettingNames.CustomerAgentPassword)?.Description
+            });
+
+            response.ItemList.Add(new Setting
+            {
+                Name = SettingNames.CardupdatrAppURL,
+                DefaultValue = DefaultSettings()[SettingNames.CardupdatrAppURL],
+                CurrentValue = cardupdatrAppUrl,
+                Description = SettingDescriptors().FirstOrDefault(x => x.Name == SettingNames.CardupdatrAppURL)?.Description
             });
 
 

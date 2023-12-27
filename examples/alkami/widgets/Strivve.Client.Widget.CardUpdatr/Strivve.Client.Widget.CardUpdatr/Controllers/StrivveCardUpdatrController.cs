@@ -32,6 +32,7 @@ using Alkami.MicroServices.CardManagement.Contracts.Requests;
 using Alkami.MicroServices.CardManagement.Contracts.Responses;
 using Alkami.MicroServices.CardManagement.Contracts.Filters;
 using Alkami.MicroServices.CardManagementProviders.Data;
+using Strivve.MS.CardsavrProvider.Data.ProviderSettings;
 
 namespace Strivve.Client.Widget.CardUpdatr.Controllers
 {
@@ -156,6 +157,24 @@ namespace Strivve.Client.Widget.CardUpdatr.Controllers
             var items = response.ItemList.ToArray();
             CardholderGrant grantData = items[0];
 
+            GetSettingsRequest settingsRequest = new GetSettingsRequest();
+            this.AugmentRequest(settingsRequest);
+
+            SettingsResponse settingsResponse = await ServiceFactory().GetSettingsAsync(settingsRequest);
+            var settingsItems = settingsResponse.ItemList;
+            
+            var cardupdatrAppUrlSetting = settingsItems.Find(x => x.Name == SettingNames.CardupdatrAppURL);
+            var cardupdatrAppUrl = "";
+            if (cardupdatrAppUrlSetting != null )
+            {
+                cardupdatrAppUrl = cardupdatrAppUrlSetting.CurrentValue;
+            }
+
+            if ( !cardupdatrAppUrl.EndsWith("/") )
+            {
+                cardupdatrAppUrl += "/";
+            }
+
             var model = new StrivveCardUpdatrModel();
             model.UserDisplayName = userDisplayName;
             model.Grant = grantData.Grant;
@@ -168,6 +187,8 @@ namespace Strivve.Client.Widget.CardUpdatr.Controllers
             model.Phone = phone;
             model.FirstName = firstName;
             model.LastName = lastName;
+            model.CardupdatrAppUrl = cardupdatrAppUrl;
+            model.ScriptSrcUrl = cardupdatrAppUrl + "cardupdatr-client-v2.js";
 
             try
             {

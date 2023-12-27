@@ -17,7 +17,7 @@ namespace Strivve.MS.CardsavrProvider.Data.ProviderSettings
         /// Integrator Name configured in portal
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
-        public const string IntegratorName = "IntegratorNameNew";
+        public const string IntegratorName = "IntegratorName";
 
         /// <summary>
         /// Integrator Key
@@ -36,5 +36,11 @@ namespace Strivve.MS.CardsavrProvider.Data.ProviderSettings
         /// </summary>
         [DataMember(EmitDefaultValue = false)]
         public const string CustomerAgentPassword = "CustomerAgentPassword";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public const string CardupdatrAppURL = "CardupdatrAppURL";
     }
 }
