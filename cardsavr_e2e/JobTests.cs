@@ -77,13 +77,54 @@ namespace cardsavr_e2e
                 bag = new PropertyBag()
                 {
                     { "cardholder_id", cardholders[n].id },
-                    { "requesting_brand", "mbudos" },
                     { "status", "INITIATED" },
                     { "account_id", account.Body.id },
                     { "card_id", card.Body.id }
                 };
 
+                Exception ex = await Assert.ThrowsAsync<RequestException>(async () => {
+                    await this.session.http.CreateSingleSiteJobAsync(bag, safeKeys[n]);
+                });
+
+                bag.Clear();
+                bag = new PropertyBag()
+                {
+                    { "cardholder_id", cardholders[n].id },
+                    { "is_primary", true },
+                    { "first_name", "first" },
+                    { "last_name", "last" },
+                    { "phone_number", "5555555555"},
+                    { "address1", "123 4th St"},
+                    { "address2", "Suite 100"},
+                    { "city", "Seattle"},
+                    { "subnational", "WA"},
+                    { "postal_code", "98105"},
+                    { "country", "USA" },
+                    { "email", "email@foo.com" }
+                };
+
+                CardSavrResponse<Address> address = await this.session.http.CreateAddressAsync(bag);
+                Assert.Equal(HttpStatusCode.Created, address.StatusCode);
+                
+                bag.Clear();
+                bag = new PropertyBag();
+                bag["address_id"] = address.Body.id;
+
+                card = await this.session.http.UpdateCardAsync(card.Body.id, bag);
+                Assert.Equal(HttpStatusCode.Created, card.StatusCode);
+
+                bag.Clear();
+                bag = new PropertyBag()
+                {
+                    { "cardholder_id", cardholders[n].id },
+                    { "status", "INITIATED" },
+                    { "account_id", account.Body.id },
+                    { "queue_name_override", "vbs_localstack_queue" },
+                    { "card_id", card.Body.id }
+                };
+
                 CardSavrResponse<SingleSiteJob> job = await this.session.http.CreateSingleSiteJobAsync(bag, safeKeys[n]);
+
                 Assert.Equal(HttpStatusCode.Created, job.StatusCode);
 
                 CardSavrResponse<List<SingleSiteJob>> singleJobs = await this.session.http.GetSingleSiteJobsAsync(
