@@ -87,7 +87,7 @@ namespace Switch.Security
         /// </summary>
         public string Encrypt(string clearText, string b64Key)
         {
-            var aesGcm = new System.Security.Cryptography.AesGcm(Convert.FromBase64String(b64Key));
+            var aesGcm = new AesGcm(Convert.FromBase64String(b64Key));
             var plainBytes = System.Text.Encoding.UTF8.GetBytes(clearText);
             var cipherText = new byte[plainBytes.Length];
 
