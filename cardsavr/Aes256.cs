@@ -91,7 +91,7 @@ namespace Switch.Security
             var plainBytes = System.Text.Encoding.UTF8.GetBytes(clearText);
             var cipherText = new byte[plainBytes.Length];
 
-            var keygen = new System.Security.Cryptography.Rfc2898DeriveBytes(new DateTime().ToString("r"), 64, 10000);
+            var keygen = new Rfc2898DeriveBytes(new DateTime().ToString("r"), 64, 10000);
             byte[] IV = _testIv ?? keygen.GetBytes(AesGcm.NonceByteSizes.MaxSize);
 
             var tag = new byte[16];
