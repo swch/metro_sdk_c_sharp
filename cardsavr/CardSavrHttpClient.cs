@@ -250,12 +250,13 @@ namespace Switch.CardSavr.Http
             return await ApiPostAsync<Card>("/cardsavr_cards", body, safeKey, headers);
         }
 
-        public async Task<CardSavrResponse<List<Card>>> 
-            UpdateCardAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Card>> 
+            UpdateCardAsync(object query, PropertyBag body, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
-            return await ApiMultiPutDelAsync<Card>(
-                "/cardsavr_cards", null, qd, HttpMethod.Put, body, null, paging, headers);
+
+            return await ApiPutDelAsync<Card>(
+                "/cardsavr_cards/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<List<Card>>> 

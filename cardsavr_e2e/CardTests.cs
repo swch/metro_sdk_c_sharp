@@ -105,8 +105,8 @@ namespace cardsavr_e2e
                 body.Clear();
                 body.Add("id", card.Body.id);
                 body.Add("name_on_card", "REALLY BOGUS CARD");
-                CardSavrResponse<List<Card>> upd = await this.session.http.UpdateCardAsync(null, body);
-                Assert.Equal(upd.Body[0].name_on_card, body["name_on_card"]);
+                CardSavrResponse<Card> upd = await this.session.http.UpdateCardAsync(null, body);
+                Assert.Equal(upd.Body.name_on_card, body["name_on_card"]);
 
                 log.Info($"update card for cardholder \"{cardholders[n].cuid}\"");
 
