@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="cardsavr" Version="2.2.1" />
+    <PackageReference Include="cardsavr" Version="3.1.0" />
   </ItemGroup>
 
 </Project>
