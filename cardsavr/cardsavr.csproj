@@ -24,6 +24,10 @@
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="log4net" Version="2.0.14" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+	<Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
   <ItemGroup>
     <None Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
