@@ -22,7 +22,7 @@ namespace Switch.Security
     {
         private const int DEFAULT_KEY_BIT_SIZE = 256;
         private const int DEFAULT_MAC_BIT_SIZE = 128;
-        private const int DEFAULT_NONCE_BIT_SIZE = 128;
+        private const int DEFAULT_NONCE_BIT_SIZE = 96;
         private readonly int _keySize;
         private readonly int _macSize;
         private readonly int _nonceSize;
