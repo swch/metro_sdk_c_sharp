@@ -26,8 +26,6 @@ namespace Switch.Security
         private readonly int _keySize;
         private readonly int _macSize;
         private readonly int _nonceSize;
-        private readonly SecureRandom _random;
-
         private readonly byte[] _testIv;     // initialization vector; for test purposes only.
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
@@ -43,8 +41,6 @@ namespace Switch.Security
             // a predictable/repeatable outcome for testing/comparison purposes.
             _testIv = base64TestIv != null ? Convert.FromBase64String(base64TestIv) : null;
 
-            _random = new SecureRandom();
-        
             _keySize = keyBitSize;
             _macSize = macBitSize;
             _nonceSize = nonceBitSize;        
@@ -166,8 +162,7 @@ namespace Switch.Security
             //Using random nonce large enough not to repeat
             var nonce = _testIv;
             if (_testIv == null) {
-                nonce = new byte[_nonceSize / 8];
-                _random.NextBytes(nonce, 0, nonce.Length);
+                nonce = Aes256.GetRandomBytes(_nonceSize / 8);
             }
 
             var cipher = new GcmBlockCipher(new AesEngine());
