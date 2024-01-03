@@ -26,7 +26,7 @@ namespace cardsavr_tests
             string knownIv = Convert.ToBase64String(Encoding.UTF8.GetBytes("abcdefghijkl"));
             Aes256 aes = new Aes256(knownIv);
             string encrypted = aes.Encrypt(input, _staticKey);
-            Console.Write("Actual Encrypted Value = "+encrypted);
+            Console.WriteLine("Actual Encrypted Value = "+encrypted);
             Assert.Equal(expected, encrypted);
             
             // decrypt using the static method call.
