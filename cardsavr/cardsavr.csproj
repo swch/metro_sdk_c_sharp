@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TargetFrameworks>netcoreapp3.1;net50;net60</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net48;net50;net60</TargetFrameworks>
     <RootNamespace>Switch</RootNamespace>
     <Version>3.0.0</Version>
     <Authors>markbudos</Authors>
