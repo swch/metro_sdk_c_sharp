@@ -220,7 +220,13 @@ namespace Switch.Security
         /// <param name="len">The desired sequence length.</param>
         public static byte[] GetRandomBytes(int len)
         {
-            return RandomNumberGenerator.GetBytes(len);
+            byte[] random = new Byte[len];
+
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(random); // The array is now filled with cryptographically strong
+
+            return random;
+
         }
 
     }
