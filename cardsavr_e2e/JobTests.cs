@@ -9,6 +9,8 @@ using Switch.Security;
 using Switch.CardSavr.Exceptions;
 using Xunit;
 using Xunit.Priority;
+using Newtonsoft.Json;
+
 
 namespace cardsavr_e2e
 {
@@ -137,15 +139,35 @@ namespace cardsavr_e2e
                     Assert.Equal(job.Body.id, sj.id);
     
                 bag.Clear();
-                bag["status"] = "CANCEL_REQUESTED";
+                bag["status"] = "CANCELLED";
                 
                 // NOT BACKWARD COMPATIBLE - Only using agent now
                 job = await this.session.http.UpdateSingleSiteJobAsync(job.Body.id, bag, null);
                 log.Info($"{job.Body.id}: {job.Body.status}");
                 Assert.Equal(job.Body.status, bag["status"]);
 
+                CardSavrResponse<List<CardholderSession>> sessionsResponse = await this.session.http.GetCardholderSessionsAsync(
+                    new NameValueCollection() {
+                        { "cuid", cardholders[n].cuid }
+                    }
+                );
+
+                Assert.Equal(1, sessionsResponse.Body.Count);
+                Assert.Equal(sessionsResponse.Body[0].cardholder_id, cardholders[n].id);
             }            
-            
+
+            CardSavrResponse<List<CardholderSession>> sr = await this.session.http.GetCardholderSessionsAsync(
+                new NameValueCollection() {
+                    { "created_on_min", DateTime.UtcNow.AddSeconds(-10).ToString("s") + 'Z' } 
+                });
+            Assert.Equal(2, sr.Body.Count);
+
+            CardSavrResponse<List<CardPlacementResult>> cpr = await this.session.http.GetCardPlacementResultsAsync(
+                new NameValueCollection() {
+                    { "cuids", cardholders[0].cuid + "," + cardholders[1].cuid} 
+                });
+            Assert.Equal(2, sr.Body.Count);
+
             CardSavrResponse<List<Cardholder>> cardholderResponse = await this.session.http.GetCardholdersAsync(null);
 
             foreach (Cardholder c in cardholderResponse.Body) {
