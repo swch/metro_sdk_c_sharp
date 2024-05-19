@@ -8,3 +8,10 @@ docker.local.json
 
 *.trx
 TestResults
+*.dll
+*.png
+*.nupkg
+*.p7s
+*.xml
+*._
+*.TXT
