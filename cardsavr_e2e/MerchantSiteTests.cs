@@ -7,6 +7,7 @@ using System.Net;
 using Switch.CardSavr.Http;
 using Xunit;
 using Xunit.Priority;
+using Newtonsoft.Json;
 
 namespace cardsavr_e2e
 {

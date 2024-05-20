@@ -21,7 +21,7 @@ namespace Switch.CardSavr.Http
                 return path;
 
             if (qd.IsID)
-                return $"{path}?ids={qd.ID}";
+                return $"{path}/{qd.ID}";
 
             return AppendQueryString(path, qd.Collection);
         }

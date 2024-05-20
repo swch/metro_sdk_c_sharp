@@ -75,7 +75,7 @@ namespace Switch.CardSavr.Http
 
         public void SetIdentificationHeader(string clientId)
         {
-            DefaultRequestHeaders.Add("x-cardsavr-client-application", clientId + " Strivve C# SDK v2.2.2");
+            DefaultRequestHeaders.Add("x-cardsavr-client-application", clientId + " Strivve C# SDK v3.0.0");
         }
 
         public void Setup(string baseUrl, string staticKey, string appName, string username, string password, string grant = null, string trace = null, string cert = null)
@@ -140,7 +140,20 @@ namespace Switch.CardSavr.Http
             GetAccountsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetAccountAsync when querying a single element");
+            }
             return await ApiGetAsync<List<Account>>("/cardsavr_accounts", qd, paging, headers);
+        }
+
+        public async Task<CardSavrResponse<Account>> 
+            GetAccountAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            if (!qd.IsID) {
+                throw new ArgumentException("Use GetAccountsAsync when querying multiple elements");
+            }
+            return await ApiGetAsync<Account>("/cardsavr_accounts", qd, null, headers);
         }
 
         public async Task<CardSavrResponse<Account>> 
@@ -163,19 +176,46 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Account>> 
-            DeleteAccountAsync(object query, string safeKey = null, HttpRequestHeaders headers = null)
+            DeleteAccountAsync(object query, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, null, false, true);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetAccountsAsync when deleting multiple elements");
+            }
             return await ApiPutDelAsync<Account>(
-                "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Delete, null, safeKey, headers);
+                "/cardsavr_accounts/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
+        }
+
+        public async Task<CardSavrResponse<Account>> 
+            DeleteAccountsAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query, null, false, true);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetAccountAsync when deleting a single element");
+            }
+            return await ApiPutDelAsync<Account>(
+                "/cardsavr_accounts", null, HttpMethod.Delete, null, null, headers);
         }
 
         /*========== ADDRESSES ==========*/
+
+        public async Task<CardSavrResponse<Address>> 
+            GetAddressAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            if (!qd.IsID) {
+                throw new ArgumentException("Use GetAddressesAsync when querying multiple elements");
+            }
+            return await ApiGetAsync<Address>("/cardsavr_addresses", qd, null, headers);
+        }
 
         public async Task<CardSavrResponse<List<Address>>> 
             GetAddressesAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetAddressAsync when querying a single elements");
+            }
             return await ApiGetAsync<List<Address>>("/cardsavr_addresses", qd, paging, headers);
         }
 
@@ -187,20 +227,20 @@ namespace Switch.CardSavr.Http
             return await ApiPostAsync<Address>("/cardsavr_addresses", body, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<Address>>> 
-            UpdateAddressAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Address>> 
+            UpdateAddressAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
-            return await ApiMultiPutDelAsync<Address>(
-                "/cardsavr_addresses", null, qd, HttpMethod.Put, body, null, paging, headers);
+            return await ApiPutDelAsync<Address>(
+                "/cardsavr_addresses/{0}", qd.ID, HttpMethod.Put, body, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<Address>>> 
-            DeleteAddressAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Address>> 
+            DeleteAddressAsync(object query, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<Address>(
-                "/cardsavr_addresses", null, qd, HttpMethod.Delete, null, null, paging, headers);
+            return await ApiPutDelAsync<Address>(
+                "/cardsavr_addresses/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
         }
 
         /*========== BINS ==========*/
@@ -218,28 +258,40 @@ namespace Switch.CardSavr.Http
             return await ApiPostAsync<BIN>("/cardsavr_bins", body, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<BIN>>> 
-            UpdateBinAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<BIN>> 
+            UpdateBinAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
-            return await ApiMultiPutDelAsync<BIN>(
-                "/cardsavr_bins", null, qd, HttpMethod.Put, body, null, paging, headers);
+            return await ApiPutDelAsync<BIN>(
+                "/cardsavr_bins/{0}", qd.ID, HttpMethod.Put, body, null, headers);
         }
 
         public async Task<CardSavrResponse<List<BIN>>> 
-            DeleteBinAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+            DeleteBinAsync(object query, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<BIN>(
-                "/cardsavr_bins", null, qd, HttpMethod.Delete, null, null, paging, headers);
+            return await ApiPutDelAsync<List<BIN>>(
+                "/cardsavr_bins/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
         }
 
         /*========== CARDS ==========*/
+        public async Task<CardSavrResponse<Card>> 
+            GetCardAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            if (!qd.IsID) {
+                throw new ArgumentException("Use GetCardsAsync when querying multiple elements");
+            }
+            return await ApiGetAsync<Card>("/cardsavr_cards", qd, null, headers);
+        }
 
         public async Task<CardSavrResponse<List<Card>>> 
             GetCardsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetCardAsync when querying a single elements");
+            }
             return await ApiGetAsync<List<Card>>("/cardsavr_cards", qd, paging, headers);
         }
 
@@ -261,11 +313,11 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<List<Card>>> 
-            DeleteCardAsync(object query, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
+            DeleteCardAsync(object query, string safeKey = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, null, false, true);
-            return await ApiMultiPutDelAsync<Card>(
-                "/cardsavr_cards", null, qd, HttpMethod.Delete, null, safeKey, paging, headers);
+            return await ApiPutDelAsync<List<Card>>(
+                "/cardsavr_cards/{0}", qd.ID, HttpMethod.Delete, null, safeKey, headers);
         }
 
         /*========== CARD PLACEMENT JOBS ==========*/
@@ -312,10 +364,23 @@ namespace Switch.CardSavr.Http
 
         /*========== INTEGRATORS ==========*/
 
+        public async Task<CardSavrResponse<Integrator>> 
+            GetIntegratorAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            if (!qd.IsID) {
+                throw new ArgumentException("Use GetIntegratorsAsync when querying multiple elements");
+            }
+            return await ApiGetAsync<Integrator>("/integrators", qd, null, headers);
+        }
+
         public async Task<CardSavrResponse<List<Integrator>>> 
             GetIntegratorsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetIntegratorAsync when querying a single elements ");
+            }
             return await ApiGetAsync<List<Integrator>>("/integrators", qd, paging, headers);
         }
 
@@ -325,31 +390,30 @@ namespace Switch.CardSavr.Http
             return await ApiPostAsync<Integrator>("/integrators", body, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<Integrator>>> 
-            UpdateIntegratorsAsync(
-                object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Integrator>> 
+            UpdateIntegratorAsync(
+                object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
-            return await ApiMultiPutDelAsync<Integrator>(
-                "/integrators", null, qd, HttpMethod.Put, body, null, paging, headers);
+            return await ApiPutDelAsync<Integrator>(
+                "/integrators/{0}", qd.ID, HttpMethod.Put, body, null, headers);
         }
 
         public async Task<CardSavrResponse<Integrator>> 
-            RotateIntegratorsAsync(
-                object query, HttpRequestHeaders headers = null)
+            RotateIntegratorAsync(
+                int id, HttpRequestHeaders headers = null)
         {
-            QueryDef qd = new QueryDef(query);
             string path = "/integrators/{0}/rotate_key";
             return await ApiPutDelAsync<Integrator>(
-                path, qd.ID, HttpMethod.Put, null, null, headers);
+                path, id.ToString(), HttpMethod.Put, null, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<Integrator>>> 
-            DeleteIntegratorAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Integrator>> 
+            DeleteIntegratorAsync(object query, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<Integrator>(
-                "/integrators", null, qd, HttpMethod.Delete, null, null, paging, headers);
+            return await ApiPutDelAsync<Integrator>(
+                "/integrators/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
         }
 
         /*========== MERCHANT SITES ==========*/
@@ -388,25 +452,36 @@ namespace Switch.CardSavr.Http
             return await ApiPostAsync<User>("/cardsavr_users", body, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<User>>> 
-            UpdateUserAsync(object query, PropertyBag body, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<User>> 
+            UpdateUserAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
         {
            QueryDef qd = new QueryDef(query, body);
-            string path = "/cardsavr_users";
+            string path = "/cardsavr_users/{0}";
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
-            return await ApiMultiPutDelAsync<User>(path, null, qd, HttpMethod.Put, body, null, paging, headers);
+            return await ApiPutDelAsync<User>(path, qd.ID, HttpMethod.Put, body, null, headers);
+        }
+
+        public async Task<CardSavrResponse<User>> 
+            DeleteUserAsync(object query, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            return await ApiPutDelAsync<User>(
+                "/cardsavr_users/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
         }
 
         public async Task<CardSavrResponse<List<User>>> 
-            DeleteUserAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+            DeleteUsersAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
-            QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<User>(
-                "/cardsavr_users", null, qd, HttpMethod.Delete, null, null, paging, headers);
+            CardSavrResponse<List<User>> users =  await GetUsersAsync(query, paging, headers);
+            
+            // this is sort of a non-standard way of doiing this, and we won't trap any of the errors, but it's really in here just for testing.
+            foreach (User u in users.Body) {
+                await DeleteUserAsync(u.id);
+            }
+            return users;
         }
-
 
         public async Task<CardSavrResponse<PropertyBag>> 
             UpdateUserPasswordAsync(object query, PropertyBag body, HttpRequestHeaders headers = null)
@@ -448,24 +523,28 @@ namespace Switch.CardSavr.Http
             return await ApiGetAsync<Cardholder>(path, null, null, headers);
         }
 
-        public async Task<CardSavrResponse<List<Cardholder>>> 
-            UpdateCardholderAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Cardholder>> 
+            UpdateCardholderAsync(object query, PropertyBag body, string newSafeKey = null, string safeKey = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
-            string path = "/cardholders";
+            if (qd.IsID) {
+                throw new ArgumentException("Use GetAccountAsync when querying a single element");
+            }
+
+            string path = "/cardholders/{0}";
             if (headers == null) {
                 headers = new HttpRequestMessage().Headers;
             }
             AddNewSafeKeyHeader(headers, newSafeKey);
-            return await ApiMultiPutDelAsync<Cardholder>(path, null, qd, HttpMethod.Put, body, null, paging, headers);
+            return await ApiPutDelAsync<Cardholder>(path, qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
-        public async Task<CardSavrResponse<List<Cardholder>>> 
-            DeleteCardholderAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        public async Task<CardSavrResponse<Cardholder>> 
+            DeleteCardholderAsync(object query, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
-            return await ApiMultiPutDelAsync<Cardholder>(
-                "/cardholders", null, qd, HttpMethod.Delete, null, null, paging, headers);
+            return await ApiPutDelAsync<Cardholder>(
+                "/cardholders/{0}", qd.ID, HttpMethod.Delete, null, null, headers);
         }
 
         /*========== PRIVATE IMPLEMENTATION ==========*/
@@ -511,9 +590,24 @@ namespace Switch.CardSavr.Http
             where T : class
         {
             string newPath = String.Format(path, id);
-            using (HttpRequestMessage request = CreateRequest(method, newPath, body, headers))
+            return await ApiMultiPutDelAsync<T>(newPath, null, method, body, safeKey, null, headers);
+        }
+
+        private async Task<CardSavrResponse<T>> ApiMultiPutDelAsync<T>(
+            string path, QueryDef qd, HttpMethod method, Object body, 
+            string safeKey, Paging paging = null, HttpRequestHeaders headers = null)
+            where T : class
+        {
+            
+            // allow an empty query: enumerates all entities.
+            path = ApiUtil.AppendQueryString(path, qd);
+            log.Info($"path with query: \"{path}\"");
+
+            using (HttpRequestMessage request = CreateRequest(method, path, body, headers))
             {
                 AddSafeKeyHeader(request.Headers, safeKey);
+                if (paging != null && paging.GetCount() > 0)
+                    request.Headers.Add("x-cardsavr-paging", paging.Stringify());
                 using (HttpResponseMessage response = await SendAsync(request))
                 {
                     return await ProcessResponseAsync<T>(request, response);
@@ -522,47 +616,6 @@ namespace Switch.CardSavr.Http
         }
 
         // Could be exposed publicly to give advanced users more flexibility.
-        private async Task<CardSavrResponse<List<T>>> ApiMultiPutDelAsync<T>(
-            string path, string pathWithId, QueryDef qd, HttpMethod method, object body, 
-            string safeKey, Paging paging = null, HttpRequestHeaders headers = null)
-            where T : class
-        {
-            // by default we just tack the id on the end (we assume no trailing slash).
-            pathWithId = pathWithId ?? path + "/{0}";
-
-            CardSavrResponse<List<T>> result;
-            if (qd.IsID)
-            {
-                // this is a singular operation, so just do it.
-                CardSavrResponse<T> singleResponse = await ApiPutDelAsync<T>(
-                    pathWithId, qd.ID, method, body, safeKey, headers);
-
-                // then transform the result into a list.
-                result = new CardSavrResponse<List<T>>()
-                {
-                    StatusCode = singleResponse.StatusCode,
-                    Paging = singleResponse.Paging,
-                    Body = new List<T>() { singleResponse.Body }
-                };
-            }
-            else
-            {
-                // get all the things implied by the query parameters, the iterate through and perform
-                // the operation on each thing successively.
-                result = await ApiGetAsync<List<T>>(path, qd, paging, headers);
-                foreach (T t in result.Body)
-                {
-                    // we have to use reflection on a generic type.
-                    string id = Convert.ToString(t.GetType().GetProperty("id").GetValue(t));
-
-                    // should probably have some error handling here so we can continue on failure.
-                    await ApiPutDelAsync<T>(pathWithId, id, method, body, safeKey, headers);
-                }
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Creates an HttpRequestMessage by serializing and encrypting the body content (if
         /// present), populating the message with headers, and signing
@@ -611,7 +664,6 @@ namespace Switch.CardSavr.Http
                 request.Content.Headers.Remove("Content-type");
                 request.Content.Headers.Add("Content-type", "application/json");
             }
-            
             return request;
         }
 
@@ -662,7 +714,6 @@ namespace Switch.CardSavr.Http
                 // without decrypting.
                 log.Error("possibly OK JSON serialization exception.", ex);
             }
-
             // no encryption; we should be able to deserialize the body directly.
             return new CardSavrResponse<T>(response, JsonConvert.DeserializeObject<T>(body));
         }
@@ -714,7 +765,7 @@ namespace Switch.CardSavr.Http
             if (encBody == null || encBody.encrypted_body == null)
             {
                 // deserialize directly into the expected type.
-                log.Info($"clear-text body: \"{body}\"");
+                log.Debug($"clear-text body: \"{body}\"");
                 return JsonConvert.DeserializeObject<T>(body);
             }
 

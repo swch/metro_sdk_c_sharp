@@ -72,7 +72,7 @@ namespace cardsavr_e2e
                 // update it.
                 bag.Clear();
                 bag["address1"] = $"{CardsavrSession.random.Next(1000, 9000)} CSharp-SDK Ave NE";
-                addr = (await this.session.http.UpdateAddressAsync(addr.id, bag)).Body[0];
+                addr = (await this.session.http.UpdateAddressAsync(addr.id, bag)).Body;
                 Assert.Equal(addr.address1, bag["address1"]);
                 log.Info($"updated primary address {addr.id} for cardholder: {cardholders[n].first_name} {cardholders[n].last_name} ({cardholders[n].id})");
 

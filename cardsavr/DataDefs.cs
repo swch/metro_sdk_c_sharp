@@ -65,6 +65,11 @@ namespace Switch.CardSavr.Http
         /// </summary>
         /// <value>The paging parameters returned from the server.</value>
         public Paging Paging { get; set; }
+
+        public static implicit operator CardSavrResponse<T>(CardSavrResponse<List<Cardholder>> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -310,23 +315,28 @@ namespace Switch.CardSavr.Http
     {
         public int id { get; set; }
         public string name { get; set; }
-        public string note { get; set; }
+        public string note { get; }
         public string host { get; set; }
         public string[] tags { get; }
-        public string interface_type { get; }
-        public bool quick_start { get; set; }
-        public string job_type { get; set; }
+        public string login_page { get; }
+        public string forgot_password_page { get; }
+        public string credit_card_page { get; }        
         public string[] required_form_fields { get; }
-        public Image[] images { get; set; }
-        public object[] account_link { get; set;}
-        public object messages { get; set; }
-        public string login_page { get; set; }
-        public string forgot_password_page { get; set; }
-        public string credit_card_page { get; set; }        
+        public Image[] images { get; }
+        public AccountLink[] account_link { get; }
         public string merchant_sso_group { get; set; }        
         public string wallet_page { get; set; }        
         public int tier { get; set; }        
         public object user_settings {get; set; }
+    }
+
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class AccountLink
+    {
+        public string key_name;
+        public string label;
+        public string type;
+        public Boolean storaable;
     }
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
