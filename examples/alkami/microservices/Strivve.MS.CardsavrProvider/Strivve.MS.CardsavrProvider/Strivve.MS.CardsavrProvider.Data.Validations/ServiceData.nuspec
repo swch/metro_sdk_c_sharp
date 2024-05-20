@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Strivve.MS.CardsavrProvider.Data</id>
+		<version>1.0.0</version>
+		<title>Strivve.MS.CardsavrProvider.Data</title>
+		<authors>Strivve, Inc.</authors>
+		<owners>Strivve, Inc.</owners>
+		<projectUrl>https://developers.strivve.com/</projectUrl>
+		<iconUrl>https://developers.strivve.com/images/strivve_logo_icon.png</iconUrl>
+		<licenseUrl>https://strivve.com/terms-of-use/</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>This is the data and contract for the Strivve.MS.CardsavrProvider Provider Service</description>
+		<releaseNotes/>
+		<copyright>Copyright (c) 2023 Strivve, Inc.</copyright>
+	</metadata>
+	<files>
+		<file src="bin\Release\Strivve.MS.CardsavrProvider.*" target="lib\net48\" />
+	</files>
+</package>

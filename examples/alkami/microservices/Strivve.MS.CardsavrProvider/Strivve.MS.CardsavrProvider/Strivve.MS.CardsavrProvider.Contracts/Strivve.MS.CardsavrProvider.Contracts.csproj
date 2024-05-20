@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Strivve.MS.CardsavrProvider.Contracts</RootNamespace>
+    <AssemblyName>Strivve.MS.CardsavrProvider.Contracts</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Strivve.MS.CardsavrProvider.Contracts.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Strivve.MS.CardsavrProvider.Contracts.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Alkami.Contracts, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Data.Access, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Data.Access.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Data.Validations, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Data.Validations.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Exceptions, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Exceptions.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Monitoring, Version=2.9.0.974, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Monitoring.2.9.0\lib\net462\Alkami.Monitoring.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Security, Version=4.2.0.909, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.4.2.0\lib\net462\Alkami.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ICardsavrProviderServiceContract.cs" />
+    <Compile Include="CustomDataObjectFields.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Filters\CustomDataObjectFilter.cs" />
+    <Compile Include="Mappers\CustomDataObjectMapper.cs" />
+    <Compile Include="Requests\GetCardholderGrantRequest.cs" />
+    <Compile Include="Responses\CardholderGrantResponse.cs" />
+    <Compile Include="Sorters\CustomDataObjectSorter.cs" />
+    <Compile Include="Requests\GetSettingsRequest.cs" />
+    <Compile Include="Requests\AddOrUpdateSomethingRequest.cs" />
+    <Compile Include="Requests\GetSomethingRequest.cs" />
+    <Compile Include="Requests\InitateSomethingRequest.cs" />
+    <Compile Include="Responses\CustomObjectResponse.cs" />
+    <Compile Include="Responses\SettingsResponse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj">
+      <Project>{47c1c52b-0a98-45c9-899a-f88c8f550c93}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

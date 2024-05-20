@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 
 using Switch.CardSavr.Exceptions;
@@ -303,11 +304,12 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<Card>> 
-            UpdateCardAsync(object query, PropertyBag body, string safeKey = null, HttpRequestHeaders headers = null)
+            UpdateCardAsync(object query, PropertyBag body, string safeKey = null, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query, body);
+
             return await ApiPutDelAsync<Card>(
-                "/cardsavr_cards/{0}", qd.ID, HttpMethod.Put, body, null, headers);
+                "/cardsavr_cards/{0}", qd.ID, HttpMethod.Put, body, safeKey, headers);
         }
 
         public async Task<CardSavrResponse<List<Card>>> 
@@ -345,12 +347,19 @@ namespace Switch.CardSavr.Http
         }
 
         public async Task<CardSavrResponse<List<CardPlacementResult>>> 
-            GetCardPlacementResultReportingJobsAsync(
-                object query, Paging paging = null, HttpRequestHeaders headers = null)
+            GetCardPlacementResultsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
         {
             QueryDef qd = new QueryDef(query);
             return await ApiGetAsync<List<CardPlacementResult>>(
-                "/card_placement_result_reporting_jobs", qd, paging, headers);
+                "/card_placement_results", qd, paging, headers);
+        }
+
+        public async Task<CardSavrResponse<List<CardholderSession>>> 
+            GetCardholderSessionsAsync(object query, Paging paging = null, HttpRequestHeaders headers = null)
+        {
+            QueryDef qd = new QueryDef(query);
+            return await ApiGetAsync<List<CardholderSession>>(
+                "/cardholder_sessions", qd, paging, headers);
         }
 
         /*========== INTEGRATORS ==========*/

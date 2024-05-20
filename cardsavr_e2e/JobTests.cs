@@ -9,6 +9,8 @@ using Switch.Security;
 using Switch.CardSavr.Exceptions;
 using Xunit;
 using Xunit.Priority;
+using Newtonsoft.Json;
+
 
 namespace cardsavr_e2e
 {
@@ -77,13 +79,54 @@ namespace cardsavr_e2e
                 bag = new PropertyBag()
                 {
                     { "cardholder_id", cardholders[n].id },
-                    { "requesting_brand", "mbudos" },
                     { "status", "INITIATED" },
                     { "account_id", account.Body.id },
                     { "card_id", card.Body.id }
                 };
 
+                Exception ex = await Assert.ThrowsAsync<RequestException>(async () => {
+                    await this.session.http.CreateSingleSiteJobAsync(bag, safeKeys[n]);
+                });
+
+                bag.Clear();
+                bag = new PropertyBag()
+                {
+                    { "cardholder_id", cardholders[n].id },
+                    { "is_primary", true },
+                    { "first_name", "first" },
+                    { "last_name", "last" },
+                    { "phone_number", "5555555555"},
+                    { "address1", "123 4th St"},
+                    { "address2", "Suite 100"},
+                    { "city", "Seattle"},
+                    { "subnational", "WA"},
+                    { "postal_code", "98105"},
+                    { "country", "USA" },
+                    { "email", "email@foo.com" }
+                };
+
+                CardSavrResponse<Address> address = await this.session.http.CreateAddressAsync(bag);
+                Assert.Equal(HttpStatusCode.Created, address.StatusCode);
+                
+                bag.Clear();
+                bag = new PropertyBag();
+                bag["address_id"] = address.Body.id;
+
+                card = await this.session.http.UpdateCardAsync(card.Body.id, bag);
+                Assert.Equal(HttpStatusCode.Created, card.StatusCode);
+
+                bag.Clear();
+                bag = new PropertyBag()
+                {
+                    { "cardholder_id", cardholders[n].id },
+                    { "status", "INITIATED" },
+                    { "account_id", account.Body.id },
+                    { "queue_name_override", "vbs_localstack_queue" },
+                    { "card_id", card.Body.id }
+                };
+
                 CardSavrResponse<SingleSiteJob> job = await this.session.http.CreateSingleSiteJobAsync(bag, safeKeys[n]);
+
                 Assert.Equal(HttpStatusCode.Created, job.StatusCode);
 
                 CardSavrResponse<List<SingleSiteJob>> singleJobs = await this.session.http.GetSingleSiteJobsAsync(
@@ -96,15 +139,35 @@ namespace cardsavr_e2e
                     Assert.Equal(job.Body.id, sj.id);
     
                 bag.Clear();
-                bag["status"] = "CANCEL_REQUESTED";
+                bag["status"] = "CANCELLED";
                 
                 // NOT BACKWARD COMPATIBLE - Only using agent now
                 job = await this.session.http.UpdateSingleSiteJobAsync(job.Body.id, bag, null);
                 log.Info($"{job.Body.id}: {job.Body.status}");
                 Assert.Equal(job.Body.status, bag["status"]);
 
+                CardSavrResponse<List<CardholderSession>> sessionsResponse = await this.session.http.GetCardholderSessionsAsync(
+                    new NameValueCollection() {
+                        { "cuid", cardholders[n].cuid }
+                    }
+                );
+
+                Assert.Equal(1, sessionsResponse.Body.Count);
+                Assert.Equal(sessionsResponse.Body[0].cardholder_id, cardholders[n].id);
             }            
-            
+
+            CardSavrResponse<List<CardholderSession>> sr = await this.session.http.GetCardholderSessionsAsync(
+                new NameValueCollection() {
+                    { "created_on_min", DateTime.UtcNow.AddSeconds(-10).ToString("s") + 'Z' } 
+                });
+            Assert.Equal(2, sr.Body.Count);
+
+            CardSavrResponse<List<CardPlacementResult>> cpr = await this.session.http.GetCardPlacementResultsAsync(
+                new NameValueCollection() {
+                    { "cuids", cardholders[0].cuid + "," + cardholders[1].cuid} 
+                });
+            Assert.Equal(2, sr.Body.Count);
+
             CardSavrResponse<List<Cardholder>> cardholderResponse = await this.session.http.GetCardholdersAsync(null);
 
             foreach (Cardholder c in cardholderResponse.Body) {

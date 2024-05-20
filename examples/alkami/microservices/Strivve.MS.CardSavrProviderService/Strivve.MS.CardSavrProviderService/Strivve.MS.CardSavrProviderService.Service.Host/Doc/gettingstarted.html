@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <link rel="stylesheet" type="text/css" href="gettingstarted.css" media="screen">
+    <title>Getting Started</title>
+</head>
+<body>
+    <div class="container">
+        <div id="header">
+            <div id="logo"></div>
+            <h1>Getting Started</h1>
+            <h2>Alkami Provider Service</h2>
+        </div>
+        <div id="main_content">
+            <div id="lpanel">
+				<br>
+				<h2>Overview</h2>
+				<p>The provider service template creates a runnable service that includes example settings to illustrate the configurable nature of the service implementation.</p>
+				<p>These settings should be changed to meet the intended purpose of this service. These setting values are located in the `insert_provider_settings.sql` script and the `ServiceImp.SettingManagement.cs` class.</p>
+                
+				<h2>Read about services</h2>
+                <p>Make sure to read the <a target="_blank" href="https://extranet.alkamitech.com/display/SDKC/My+First+Provider+Service">My First Provider Service</a> tutorial.</p>
+				<p>Make sure to read the other resources located on the right side panel of this page.</p>
+                
+                <h2>Build the service</h2>
+                <p>Build the solution and make sure the NuGet packages are properly restored and all the projects build correctly.</p>
+
+                <h2>Configure the service</h2>
+                <p>Run the included `insert_provider_setting.sql` script to insert the service information and the accompanying settings.</p>
+
+                <h2>Updating Packages</h2>
+                <p>It's always good to stay up to date with Alkami's latest packages. Update any stale Alkami packages using the NuGet Package Manager.</p>
+
+            </div>
+            <div id="rpanel">
+                <div>
+                    <h1>SDK Micro Service Resources</h1>
+                    <ol>
+                        <li><a target="_blank" href="https://extranet.alkamitech.com/display/SDKC/Microservice+Architecture">Microservice Architecture</a><br />A brief overview of the microservice architecture.</li>
+                        <li><a target="_blank" href="https://extranet.alkamitech.com/display/SDKC/My+First+Provider+Service">My First Provider Service</a><br />Using the template, create an example service to learn about the development patters. It demonstrates how to update existing settings, add new settings, create validations, add new public contract methods and testing the service.</li>
+                        <li><a target="_blank" href="https://extranet.alkamitech.com/display/SDKC/Integrate+a+widget+with+a+microservice">Integrate a widget with a microservice</a><br />Eventually, you'll want to connect a widget to a microservice. This will teach the developer how to add code to the widget in order to connect with the service.</li>
+                        <li><a target="_blank" href="https://extranet.alkamitech.com/display/SDKC/Package+A+Microservice+Installer">Package A Microservice: Installer</a><br />The service will need to be packaged using Chocolatey so that it can be installed to a given environment, this guide will teach the developer how to do that. The installer has already been included in the project so skip to "Configuring a custom .nuspec file" to complete the packaging process.</li>
+                    </ol>
+                    <h1>Give us feedback</h1>
+                    <ul>
+                        <li><a target="_blank" href="mailto:sdksupport@alkamitech.com">Have a question? Have an idea or suggestion? Send us an email!</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

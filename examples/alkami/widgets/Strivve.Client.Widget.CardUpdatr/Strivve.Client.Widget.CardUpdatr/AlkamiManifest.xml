@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<packageManifest>
+    <version>1.0</version>
+    <general>
+        <creatorCode>Strivve</creatorCode>
+        <compound>Strivve_SDK</compound>
+        <element>Strivve.Client.Widget.CardUpdatr</element>
+        <componentType>Widget</componentType>
+		<!-- SDK clients should add their BankIdentifier(s) in this list. No quotes or brackets - {} - are required. Dashes are encouraged.-->
+        <bankIdentifiers>
+            <bankIdentifier name="Strivve">12345678-1AB2-34CD-1234-5678901234E5</bankIdentifier>
+        </bankIdentifiers>
+		<!-- -->
+    </general>
+
+    <!-- Widget -->
+    <widgetManifest>
+		<displayName>StrivveCardUpdatr</displayName>
+		<description>Seamless card management solution powered by Strivve</description>
+        <!-- <widgetInstall>Client|Admin|Generic</widgetInstall> - Generic means this gets installed in both Admin and Client with v1.0 manifests -->
+        <widgetInstall>Client</widgetInstall>
+        <areaName>StrivveCardUpdatr</areaName>
+        <assemblyInfo>Strivve.Client.Widget.CardUpdatr</assemblyInfo>
+		<!-- <displaySettings>Desktop|Mobile|Tablet|DesktopMobile|All</displaySettings> -->
+        <displaySettings>All</displaySettings>
+        <iconName>manage-cards</iconName>
+	</widgetManifest>
+</packageManifest>

@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\NUnit.3.13.2\build\NUnit.props" Condition="Exists('..\..\packages\NUnit.3.13.2\build\NUnit.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EA652A21-E1FC-4C32-8064-51632E70D246}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Strivve.MS.CardsavrProvider.Service.Tests</RootNamespace>
+    <AssemblyName>Strivve.MS.CardsavrProvider.Service.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Alkami.Broker, Version=2.14.0.888, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Broker.2.14.0\lib\net462\Alkami.Broker.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Broker.ZeroMq, Version=2.14.0.888, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Broker.ZeroMQ.2.14.0\lib\net462\Alkami.Broker.ZeroMq.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Contracts, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Data.Access, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Data.Access.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Data.Validations, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Data.Validations.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Exceptions, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Exceptions.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.Contracts.4.9, Version=4.9.0.4082, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.Contracts.4.9.0\lib\net452\Alkami.MicroServices.Settings.Contracts.4.9.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.Data.4.9, Version=4.9.0.4082, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.Contracts.4.9.0\lib\net452\Alkami.MicroServices.Settings.Data.4.9.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.Data.Validations.4.9, Version=4.9.0.4082, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.Contracts.4.9.0\lib\net452\Alkami.MicroServices.Settings.Data.Validations.4.9.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.ProviderBased.Contracts, Version=4.9.2.4084, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.ProviderBased.Contracts.4.9.2\lib\net452\Alkami.MicroServices.Settings.ProviderBased.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.ProviderBasedClient, Version=4.9.2.4084, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.ProviderBasedClient.4.9.2\lib\net452\Alkami.MicroServices.Settings.ProviderBasedClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.ProviderBasedService, Version=4.9.2.4084, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.ProviderBasedService.4.9.2\lib\net452\Alkami.MicroServices.Settings.ProviderBasedService.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.MicroServices.Settings.Service.Client.4.9, Version=4.9.0.4082, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Settings.Client.4.9.0\lib\net452\Alkami.MicroServices.Settings.Service.Client.4.9.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Monitoring, Version=2.6.0.972, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Monitoring.2.6.0\lib\net462\Alkami.Monitoring.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Security, Version=2.34.0.886, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.MicroServices.Core.2.34.0\lib\net452\Alkami.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Services.Subscriptions.Data, Version=3.9.0.420, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Subscription.Base.3.9.0\lib\net452\Alkami.Services.Subscriptions.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Services.Subscriptions.ParticipatingClient, Version=3.9.0.420, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Subscription.ParticipatingClient.3.9.0\lib\net452\Alkami.Services.Subscriptions.ParticipatingClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Services.Subscriptions.ParticipatingService, Version=3.9.0.420, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Subscription.ParticipatingService.3.9.0\lib\net452\Alkami.Services.Subscriptions.ParticipatingService.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Services.Subscriptions.Resolver, Version=3.9.0.420, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Subscription.Base.3.9.0\lib\net452\Alkami.Services.Subscriptions.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Test, Version=4.0.7.855, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Test.4.0.7\lib\net452\Alkami.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.TrackableObjects, Version=4.9.2.4084, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.ConfigurationDrivenObjects.4.9.2\lib\net452\Alkami.TrackableObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.TrackableObjects.Plugins, Version=4.9.2.4084, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.ConnectorsAndProcessors.4.9.2\lib\net452\Alkami.TrackableObjects.Plugins.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Utilities, Version=1.12.2.935, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Utilities.1.12.2\lib\net462\Alkami.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Alkami.Utilities.Configuration, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Alkami.Utilities.Configuration.1.1.0\lib\net462\Alkami.Utilities.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="AsyncIO, Version=0.1.69.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AsyncIO.0.1.69\lib\net40\AsyncIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net.Universal, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Log4Net.Universal.3.4.1\lib\net40\Common.Logging.Log4Net.Universal.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.16.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Moq.4.16.1\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="NaCl, Version=0.1.13.0, Culture=neutral, PublicKeyToken=827c20e50a9775fa, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NaCl.Net.0.1.13\lib\net472\NaCl.dll</HintPath>
+    </Reference>
+    <Reference Include="NetMQ, Version=3.3.2.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NetMQ.3.3.2.1\lib\net40\NetMQ.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.13.2.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.13.2\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ServiceTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Contracts\Strivve.MS.CardsavrProvider.Contracts.csproj">
+      <Project>{deba65ad-7e6f-446d-b055-6d5be85f8a2c}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj">
+      <Project>{47c1c52b-0a98-45c9-899a-f88c8f550c93}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Data.Validations\Strivve.MS.CardsavrProvider.Data.Validations.csproj">
+      <Project>{03757ec0-a066-4cf6-bf03-ed13f6acb0d9}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Data.Validations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service\Strivve.MS.CardsavrProvider.Service.csproj">
+      <Project>{1ea0496e-897e-48a4-8de8-14eab1073ad3}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service.Client\Strivve.MS.CardsavrProvider.Service.Client.csproj">
+      <Project>{862fcab9-757a-4031-998e-6599851ab419}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Service.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Strivve.MS.CardsavrProvider.Service.Host\Strivve.MS.CardsavrProvider.Service.Host.csproj">
+      <Project>{3986d69a-d13d-470e-9d65-b82e34b6f10c}</Project>
+      <Name>Strivve.MS.CardsavrProvider.Service.Host</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\NUnit.3.13.2\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NUnit.3.13.2\build\NUnit.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

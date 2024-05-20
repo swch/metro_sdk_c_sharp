@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Service.Host", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Service.Host\Strivve.MS.CardsavrProvider.Service.Host.csproj", "{3986D69A-D13D-470E-9D65-B82E34B6F10C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Service", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Service\Strivve.MS.CardsavrProvider.Service.csproj", "{1EA0496E-897E-48A4-8DE8-14EAB1073AD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Service.Client", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Service.Client\Strivve.MS.CardsavrProvider.Service.Client.csproj", "{862FCAB9-757A-4031-998E-6599851AB419}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{FE3D514E-D619-414C-ACFE-7D05A56A154F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Data", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Data\Strivve.MS.CardsavrProvider.Data.csproj", "{47C1C52B-0A98-45C9-899A-F88C8F550C93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Contracts", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Contracts\Strivve.MS.CardsavrProvider.Contracts.csproj", "{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Data.Validations", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Data.Validations\Strivve.MS.CardsavrProvider.Data.Validations.csproj", "{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{854D8AC8-F394-44F4-83DD-C3C9A59C534F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strivve.MS.CardsavrProvider.Service.Tests", "Strivve.MS.CardsavrProvider\Strivve.MS.CardsavrProvider.Service.Tests\Strivve.MS.CardsavrProvider.Service.Tests.csproj", "{EA652A21-E1FC-4C32-8064-51632E70D246}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3986D69A-D13D-470E-9D65-B82E34B6F10C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3986D69A-D13D-470E-9D65-B82E34B6F10C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3986D69A-D13D-470E-9D65-B82E34B6F10C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3986D69A-D13D-470E-9D65-B82E34B6F10C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA0496E-897E-48A4-8DE8-14EAB1073AD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA0496E-897E-48A4-8DE8-14EAB1073AD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA0496E-897E-48A4-8DE8-14EAB1073AD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA0496E-897E-48A4-8DE8-14EAB1073AD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{862FCAB9-757A-4031-998E-6599851AB419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{862FCAB9-757A-4031-998E-6599851AB419}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{862FCAB9-757A-4031-998E-6599851AB419}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{862FCAB9-757A-4031-998E-6599851AB419}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47C1C52B-0A98-45C9-899A-F88C8F550C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C1C52B-0A98-45C9-899A-F88C8F550C93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C1C52B-0A98-45C9-899A-F88C8F550C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C1C52B-0A98-45C9-899A-F88C8F550C93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA652A21-E1FC-4C32-8064-51632E70D246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA652A21-E1FC-4C32-8064-51632E70D246}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA652A21-E1FC-4C32-8064-51632E70D246}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA652A21-E1FC-4C32-8064-51632E70D246}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{47C1C52B-0A98-45C9-899A-F88C8F550C93} = {FE3D514E-D619-414C-ACFE-7D05A56A154F}
+		{DEBA65AD-7E6F-446D-B055-6D5BE85F8A2C} = {FE3D514E-D619-414C-ACFE-7D05A56A154F}
+		{03757EC0-A066-4CF6-BF03-ED13F6ACB0D9} = {FE3D514E-D619-414C-ACFE-7D05A56A154F}
+		{EA652A21-E1FC-4C32-8064-51632E70D246} = {854D8AC8-F394-44F4-83DD-C3C9A59C534F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1F9A0A7-6B50-446E-800F-C6B56659C496}
+	EndGlobalSection
+EndGlobal

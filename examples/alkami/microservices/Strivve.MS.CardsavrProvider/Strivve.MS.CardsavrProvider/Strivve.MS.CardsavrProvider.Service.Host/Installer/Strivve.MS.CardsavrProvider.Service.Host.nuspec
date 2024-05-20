@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Strivve.MS.CardsavrProvider.Service.Host</id>
+    <version>1.0.0</version>
+    <title>Strivve CardsavrProvider Service Host</title>
+    <authors>Strivve, Inc.</authors>
+    <owners>Strivve, Inc.</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains all the files and assemblies necessary to create and stand up a new instance of the Strivve.MS.CardsavrProvider Micro Service.</description>
+    <copyright>Copyright 2016</copyright>
+	<dependencies>
+      <dependency id="Alkami.MicroServices.Choco.Installer.Logic" version="2.4.8" />
+	</dependencies>
+	<tags>ConfigurableMicroservice</tags>
+  </metadata>
+  <files>
+    <file src="..\bin\release\*" target="tools" />
+    <file src="*.ps1" target="tools" />
+    <file src="*.psm1" target="tools" />
+	<file src="..\InstallerOverrides\*.ps1" target="tools" />
+	<file src="..\..\..\**\*.*" target="src" exclude="**\Installer\**\*.*;**\Dependencies\**\*.*;**\obj\**\*.*;**\.vs\**\*.*;**\bin\**\*.*;**\tools\**\*.*;**\packages\**\*.*;**\.nuget\**\*.*;**\.git\**\*.*;**\.gitignore;**\node_modules\**\*.*;**\.suo;**\.user;**\tests\**\*.*;**\test\**\*.*" />
+	<file src="../AlkamiManifest.xml" target="/" />
+  </files>
+</package>
