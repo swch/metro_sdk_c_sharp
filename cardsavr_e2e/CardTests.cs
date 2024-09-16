@@ -81,7 +81,7 @@ namespace cardsavr_e2e
                 // so we can identify it later if needed.
                 DateTime expire = DateTime.Now.AddYears(1);
                 string expYear =  (expire.Year % 2000).ToString();
-                string expMonth = expire.Month.ToString();
+                string expMonth = (100 + expire.Month).ToString().Substring(1);
                 string pan = "4111111111111111";
 
                 PropertyBag body = new PropertyBag()
