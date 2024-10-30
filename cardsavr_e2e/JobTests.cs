@@ -139,7 +139,7 @@ namespace cardsavr_e2e
                     Assert.Equal(job.Body.id, sj.id);
     
                 bag.Clear();
-                bag["status"] = "CANCELLED";
+                bag["status"] = "INITIATED";
                 
                 // NOT BACKWARD COMPATIBLE - Only using agent now
                 job = await this.session.http.UpdateSingleSiteJobAsync(job.Body.id, bag, null);
