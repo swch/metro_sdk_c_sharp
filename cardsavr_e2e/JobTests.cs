@@ -57,7 +57,7 @@ namespace cardsavr_e2e
                 bag["cardholder_id"] = cardholders[n].id;
                 bag["merchant_site_id"] = 1;
                 bag["username"] = "good_email";
-                bag["password"] = "";
+                bag["password"] = "asdf";
 
                 CardSavrResponse<Account> account = await this.session.http.CreateAccountAsync(bag, safeKeys[n]);
                 Assert.Equal(HttpStatusCode.Created, account.StatusCode);
