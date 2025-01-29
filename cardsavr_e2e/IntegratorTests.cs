@@ -32,7 +32,7 @@ namespace cardsavr_e2e
             body["name"] = CardsavrSession.e2e_identifier + $"_{CardsavrSession.random.Next(1000, 2000)}";
             string integrator_name = (string)body["name"];
             body["description"] = CardsavrSession.e2e_identifier;
-            body["integrator_type"] = "cust_internal";
+            body["integrator_type"] = "application";
 
             CardSavrResponse<Integrator> result = await this.session.http.CreateIntegratorAsync(body);
             log.Info($"created integrator: {result.Body.id}");
