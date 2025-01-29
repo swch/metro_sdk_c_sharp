@@ -150,6 +150,7 @@ namespace Switch.CardSavr.Http
         public int cardholder_id { get; set; }
         public int merchant_site_id { get; set; }
         public string customer_key { get; set; }
+        public object account_link { get; set; }
     }
 
     /*========== ADDRESSES ==========*/

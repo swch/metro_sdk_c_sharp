@@ -16,8 +16,8 @@ namespace cardsavr_tests
             // this just verifies that nullable property values are null by default, without explicitly
             // setting them to null in the constructor (as expected).
             Account a = new Account();
-            Assert.Null(a.site_hostname);
-            Assert.Null(a.username);
+            Assert.Null(a.last_saved_card);
+            Assert.Null(a.account_link);
         }
 
         [Fact]
@@ -26,13 +26,12 @@ namespace cardsavr_tests
             Account a = new Account()
             {
                 id = 12,
-                site_hostname = "amazon.com"
+                merchant_site_id = 1
             };
 
             // be sure the serialized string contains ONLY the non-null properties.
             string s = JsonConvert.SerializeObject(a);
             Assert.Contains("id", s);
-            Assert.Contains("amazon.com", s);
             Assert.DoesNotContain("show_payment_method", s);
             Assert.DoesNotContain("auto_login", s);
             Assert.DoesNotContain("created_on", s);
